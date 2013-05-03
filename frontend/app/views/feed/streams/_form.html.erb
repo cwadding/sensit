@@ -1,0 +1,33 @@
+<%= form_for(@feed_stream) do |f| %>
+  <% if @feed_stream.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@feed_stream.errors.count, "error") %> prohibited this feed_stream from being saved:</h2>
+
+      <ul>
+      <% @feed_stream.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :unit_id %><br />
+    <%= f.number_field :unit_id %>
+  </div>
+  <div class="field">
+    <%= f.label :min_value %><br />
+    <%= f.number_field :min_value %>
+  </div>
+  <div class="field">
+    <%= f.label :max_value %><br />
+    <%= f.number_field :max_value %>
+  </div>
+  <div class="field">
+    <%= f.label :start_value %><br />
+    <%= f.number_field :start_value %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

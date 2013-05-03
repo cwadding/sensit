@@ -1,0 +1,25 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Unit:</strong>
+  <%= @feed_stream.unit_id %>
+</p>
+
+<p>
+  <strong>Min value:</strong>
+  <%= @feed_stream.min_value %>
+</p>
+
+<p>
+  <strong>Max value:</strong>
+  <%= @feed_stream.max_value %>
+</p>
+
+<p>
+  <strong>Start value:</strong>
+  <%= @feed_stream.start_value %>
+</p>
+
+
+<%= link_to 'Edit', edit_feed_stream_path(@feed_stream) %> |
+<%= link_to 'Back', feed_streams_path %>
