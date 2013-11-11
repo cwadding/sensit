@@ -1,0 +1,26 @@
+Finish Api Request Specs
+
+Socket.io subscribe to feeds to import data
+Faye subscribe to feeds to import data
+ROS subscribe to feeds to import data
+
+// Match rules
+The Rule Api Backend for Elastic Search Percolate
+Elastic Search Percolate Frontend
+
+//Different Handlers that may run when a rule is fired
+	Download an Image from a camera
+	Send an email/text message
+
+// Reporting
+Backend to generate specific facet like reports from queries and to persist queries
+frontend to create facet reports from the ui
+frontent to view reports frmo the ui
+
+// possible clients to easily consume the API
+
+// Ways to publish data into the database
+	// Through json api
+		1) watcher for a file drop and then send the batch to the service (csv,sqlite, etc)
+		2) an application with a database connection which polls the database for changes periodically looking for changes tha may have occured since the last time it check (like solrs dataimport)
+		3)

@@ -1,6 +1,10 @@
 # Sensit
 
-TODO: Write a gem description
+Node: The document root. It is the equivalent of database
+Topic: The equivalent of a Table in a database
+Field: The columns in the table
+Feed: The input source for the flow of data
+Data: A row of data at a specific time
 
 ## Installation
 
