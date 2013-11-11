@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20130503025336) do
+ActiveRecord::Schema.define(version: 20131110231858) do
 
   create_table "sensit_api_key_permission_restrictions", force: true do |t|
     t.integer  "api_key_permission_id"
@@ -42,56 +42,73 @@ ActiveRecord::Schema.define(version: 20130503025336) do
     t.datetime "updated_at"
   end
 
-  create_table "sensit_device_sensor_data_points", force: true do |t|
-    t.integer  "sensor_id"
+  create_table "sensit_datatypes", force: true do |t|
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "sensit_node_topic_feed_data_rows", force: true do |t|
+    t.integer  "feed_id"
+    t.string   "key"
+    t.string   "value"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "sensit_node_topic_feeds", force: true do |t|
+    t.integer  "topic_id"
     t.datetime "at"
-    t.decimal  "value"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "sensit_device_sensors", force: true do |t|
+  create_table "sensit_node_topic_fields", force: true do |t|
+    t.string   "name"
+    t.string   "key"
     t.integer  "unit_id"
-    t.integer  "min_value"
-    t.integer  "max_value"
-    t.integer  "start_value"
-    t.integer  "device_id"
+    t.integer  "topic_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "sensit_devices", force: true do |t|
-    t.string   "title"
-    t.string   "url"
-    t.string   "status"
+  create_table "sensit_node_topics", force: true do |t|
+    t.integer  "node_id"
+    t.string   "name"
     t.string   "description"
-    t.string   "icon"
-    t.integer  "user_id"
-    t.integer  "location_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "sensit_measurements", force: true do |t|
-    t.integer "sensor_id"
-    t.integer "unit_id"
+  create_table "sensit_nodes", force: true do |t|
+    t.string   "name"
+    t.string   "description"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "sensit_unit_groups", force: true do |t|
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "sensit_units", force: true do |t|
     t.string   "name"
-    t.string   "kind"
-    t.string   "symbol"
+    t.string   "abbr"
+    t.integer  "datatype_id"
+    t.integer  "group_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
   create_table "users", force: true do |t|
-    t.string   "email",                              default: "", null: false
-    t.string   "encrypted_password",     limit: 128, default: "", null: false
+    t.string   "email",                  default: "", null: false
+    t.string   "encrypted_password",     default: "", null: false
     t.string   "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer  "sign_in_count",                      default: 0
+    t.integer  "sign_in_count",          default: 0,  null: false
     t.datetime "current_sign_in_at"
     t.datetime "last_sign_in_at"
     t.string   "current_sign_in_ip"

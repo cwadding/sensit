@@ -1,5 +1,7 @@
 module Sensit
   class Unit < ActiveRecord::Base
-  	has_many :sensors, class_name: "Device::Sensor"
+  	belongs_to :group, :class_name => "UnitGroup"
+  	belongs_to :datatype
+  	has_many :fields, :class_name => "Node::Topic::Field"
   end
 end

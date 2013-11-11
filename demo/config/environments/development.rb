@@ -26,4 +26,8 @@ Demo::Application.configure do
   # This option may cause significant delays in view rendering with a large
   # number of complex assets.
   config.assets.debug = true
+
+
+  config.view_versions = [1]
+  config.view_version_extraction_strategy = [:query_parameter, :http_header]
 end

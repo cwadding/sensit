@@ -1,8 +1,11 @@
 Sensit::Api::Engine.routes.draw do
-	scope :defaults => {:format => 'json'} do
-		resources :devices, :except => [:new, :edit] do
-			resources :sensors, :except => [:new, :edit] do
-				resources :data_points, :except => [:new, :edit]
+	scope :path => "api", :defaults => {:format => 'json'} do
+		resources :nodes, :except => [:new, :edit] do
+			resources :topics, :except => [:new, :edit] do
+				resources :feeds, :except => [:new, :edit] do
+					resources :data, :except => [:new, :edit]
+				end
+				resources :fields, :except => [:new, :edit]				
 			end
 		end
 	end

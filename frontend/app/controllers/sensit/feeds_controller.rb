@@ -56,7 +56,7 @@ module Sensit
 
       # Never trust parameters from the scary internet, only allow the white list through.
       def feed_params
-        params.require(:feed).permit(:title, :url, :status, :description, :icon, :used_id, :location_id)
+        params.require(:feed).permit(:name)
       end
   end
 end

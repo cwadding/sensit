@@ -14,6 +14,7 @@ Gem::Specification.new do |s|
   s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.rdoc"]
 
   s.add_dependency 'sensit_core', Sensit::VERSION
+  s.add_dependency 'lazy_high_charts'
 
   s.add_development_dependency 'rspec-rails'
   s.add_development_dependency 'capybara'#, '~> 2.10.0'
