@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "sensit/nodes/show", :current => true do
+describe "sensit/nodes/show" do
   before(:each) do
   @node = assign(:node, FactoryGirl.create(:complete_node, topics_count: 3))
   end

@@ -57,7 +57,9 @@ FactoryGirl.define do
 
     ignore do
       feeds_count 1
-    end    
+    end
+    
+    node
 
     factory :topic_with_feeds_and_fields do
       after(:create) do |topic, evaluator|
