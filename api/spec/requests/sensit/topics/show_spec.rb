@@ -51,13 +51,39 @@ describe "GET sensit/topics#show" do
 #       }
 #    }   
 # }
-	before(:each) do
-		@node = FactoryGirl.create(:complete_node)
-		@topic = @node.topics.first
-	end
-  it "" do
-  	params = {}
-    get "/api/nodes/:node_id/topics/:id", valid_request(params), valid_session
 
-  end
+
+
+	def process_request(node)
+		topic = node.topics.first
+		get "/api/nodes/#{node.id}/topics/#{topic.id}", valid_request, valid_session
+	end
+
+	context "when the node exists" do
+		before(:each) do
+			@node = FactoryGirl.create(:complete_node)
+			@topic = @node.topics.first
+		end
+		it "is successful" do
+			status = process_request(@node)
+			status.should == 200
+		end
+
+		it "returns the expected json" do
+			process_request(@node)
+			response.body.should be_json_eql("{\"id\":1,\"name\":\"Test node\",\"description\":\"A description of my node\",\"topics\":[]}")
+		end  
+	end
+
+	context "when the node does not exists" do
+		it "is unsuccessful" do
+			status = get "/api/nodes/1/topics/1", valid_request, valid_session
+			status.should == 400
+		end
+
+		it "returns the expected json" do
+			get "/api/nodes/1/topics/1", valid_request, valid_session
+			response.body.should be_json_eql("{\"id\":1,\"name\":\"Test node\",\"description\":\"A description of my node\",\"topics\":[]}")
+		end
+	end    
 end

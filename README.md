@@ -3,8 +3,8 @@
 Node: The document root. It is the equivalent of database
 Topic: The equivalent of a Table in a database
 Field: The columns in the table
-Feed: The input source for the flow of data
-Data: A row of data at a specific time
+Feed: A row of data at a particular time
+Data: A single key value pair of data with the key being the same as one of its parents fields and the value being the corresponding correct datatype
 
 ## Installation
 

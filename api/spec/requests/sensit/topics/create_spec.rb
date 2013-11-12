@@ -127,6 +127,6 @@ describe "POST sensit/topics#create", :current => true do
             process_request(@node, @params)
           }.to change(Sensit::Node::Topic, :count).by(1)
         end
-   end   
+   end
 
 end

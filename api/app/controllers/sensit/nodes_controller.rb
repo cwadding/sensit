@@ -40,7 +40,7 @@ module Sensit
     # DELETE /nodes/1
     def destroy
       @node.destroy
-      respond_with(@topic, :status => 204)
+      respond_with(@node, :status => 204)
     end
 
     private
