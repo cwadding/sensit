@@ -35,8 +35,8 @@ describe "PUT sensit/topics#update" do
       it "updates the existing Topic" do
 			process_request(@node, @params)
 			updated_topic = Sensit::Node::Topic.find(@topic.id)
-			expect(updated_topic.name).to == "New topic name"
-			expect(updated_topic.description).to == "new description"
+			updated_topic.name.should == "New topic name"
+			updated_topic.description.should == "new description"
         end
    end
 end

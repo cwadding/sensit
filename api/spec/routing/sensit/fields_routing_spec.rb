@@ -6,7 +6,7 @@ module Sensit
     describe "routing" do
 
       it "routes to #index" do
-        get("/api/nodes/1/topics1/fields").should route_to("sensit/fields#index", :node_id => "1", :topic_id => "1", format: "json")
+        get("/api/nodes/1/topics/1/fields").should route_to("sensit/fields#index", :node_id => "1", :topic_id => "1", format: "json")
       end
 
       it "routes to #create" do

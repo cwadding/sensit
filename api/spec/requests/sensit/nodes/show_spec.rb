@@ -141,13 +141,17 @@ describe "GET sensit/nodes#show" do
 
 	context "when the node does not exists" do
 		it "is unsuccessful" do
-			status = get "/api/nodes/3", valid_request, valid_session
-			status.should == 400
+			expect{
+				status = get "/api/nodes/3", valid_request, valid_session
+			}.to raise_error(ActiveRecord::RecordNotFound)
+			#status.should == 404
 		end
 
 		it "returns the expected json" do
-			get "/api/nodes/3", valid_request, valid_session
-			response.body.should be_json_eql("{\"id\":1,\"name\":\"Test node\",\"description\":\"A description of my node\",\"topics\":[]}")
+			expect{
+				get "/api/nodes/3", valid_request, valid_session
+			}.to raise_error(ActiveRecord::RecordNotFound)
+			#response.body.should be_json_eql("{\"id\":1,\"name\":\"Test node\",\"description\":\"A description of my node\",\"topics\":[]}")
 		end
 	end
 end

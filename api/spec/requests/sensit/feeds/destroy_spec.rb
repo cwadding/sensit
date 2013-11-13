@@ -18,11 +18,6 @@ describe "DELETE sensit/feeds#destroy" do
 			status.should == 204
 		end
 
-		it "returns the expected json" do
-			process_request(@node)
-			response.body.should be_json_eql("{\"id\":1,\"name\":\"Test node\",\"description\":\"A description of my node\",\"topics\":[]}")
-		end
-
 		it "deletes the Feed" do
           expect {
             process_request(@node)
@@ -35,13 +30,10 @@ describe "DELETE sensit/feeds#destroy" do
 
 	context "when the field does not exist" do
 		it "is unsuccessful" do
+			expect{
 			status = delete "/api/nodes/1/topics/1/feeds/1", valid_request, valid_session
-			status.should == 400
-		end
-
-		it "returns the expected json" do
-			delete "/api/nodes/1/topics/1/feeds/1", valid_request, valid_session
-			response.body.should be_json_eql("{\"id\":1,\"name\":\"Test node\",\"description\":\"A description of my node\",\"topics\":[]}")
+			}.to raise_error(ActiveRecord::RecordNotFound)
+			#status.should == 404
 		end
 	end	
 end

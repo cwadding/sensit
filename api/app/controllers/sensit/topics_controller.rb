@@ -2,7 +2,7 @@ require_dependency "sensit/base_controller"
 
 module Sensit
   class TopicsController < ApiController
-    before_action :set_node_topic, only: [:show, :edit, :update, :destroy]
+    before_action :set_topic, only: [:show, :edit, :update, :destroy]
     respond_to :json
     # GET /nodes/1/topics
     def index
@@ -12,12 +12,14 @@ module Sensit
 
     # GET /nodes/1/topics/1
     def show
-      respond_with(@topics)
+        respond_with(@topic)
     end
 
     # POST /nodes/1/topics
     def create
-      @topic = Node::Topic.new(node_topic_params)
+      node = Node.find(params[:node_id])
+      @topic = Node::Topic.new(topic_params)
+      @topic.node = node
       if @topic.save
         
       else
@@ -28,7 +30,7 @@ module Sensit
 
     # PATCH/PUT /nodes/1/topics/1
     def update
-      if @topic.update(node_topic_params)
+      if @topic.update(topic_params)
 
       else
         
@@ -44,13 +46,13 @@ module Sensit
 
     private
       # Use callbacks to share common setup or constraints between actions.
-      def set_node_topic
+      def set_topic
         @topic = Node::Topic.find(params[:id])
       end
 
       # Only allow a trusted parameter "white list" through.
-      def node_topic_params
-        params.require(:node_topic).permit(:name, :node_id)
+      def topic_params
+        params.require(:topic).permit(:name, :node_id)
       end
   end
 end

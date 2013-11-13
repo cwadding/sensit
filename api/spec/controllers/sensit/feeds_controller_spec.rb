@@ -29,7 +29,7 @@ module Sensit
       # ::Sensit::Node::Topic::Feed. As you add validations to ::Sensit::Node::Topic::Feed, be sure to
       # update the return value of this method accordingly.
       def valid_attributes
-        { "topic_id" => "1"}
+        { at: Time.now}
       end
 
       # This should return the minimal set of values that should be in the session
@@ -56,21 +56,24 @@ module Sensit
       end
 
       describe "POST create" do
+      before(:each) do
+        Node::Topic.any_instance.stub(:find).with(1).and_return(FactoryGirl.create(:topic))
+      end
         describe "with valid params" do
           it "creates a new ::Sensit::Node::Topic::Feed" do
             expect {
-              post :create, valid_request(:feed => valid_attributes), valid_session
+              post :create, valid_request("topic_id" => "1", :feed => valid_attributes), valid_session
             }.to change(::Sensit::Node::Topic::Feed, :count).by(1)
           end
 
           it "assigns a newly created feed as @feed" do
-            post :create, valid_request(:feed => valid_attributes), valid_session
+            post :create, valid_request("topic_id" => "1", :feed => valid_attributes), valid_session
             assigns(:feed).should be_a(::Sensit::Node::Topic::Feed)
             assigns(:feed).should be_persisted
           end
 
           it "renders to the created feed" do
-            post :create, valid_request(:feed => valid_attributes), valid_session
+            post :create, valid_request("topic_id" => "1", :feed => valid_attributes), valid_session
             response.should render_template("sensit/feeds/show")
           end
         end
@@ -79,14 +82,14 @@ module Sensit
           it "assigns a newly created but unsaved feed as @feed" do
             # Trigger the behavior that occurs when invalid params are submitted
             ::Sensit::Node::Topic::Feed.any_instance.stub(:save).and_return(false)
-            post :create, valid_request(:feed => { "topic_id" => "invalid value" }), valid_session
+            post :create, valid_request("topic_id" => "1", :feed => { "topic_id" => "1"}), valid_session
             assigns(:feed).should be_a_new(::Sensit::Node::Topic::Feed)
           end
 
           it "re-renders the 'new' template" do
             # Trigger the behavior that occurs when invalid params are submitted
             ::Sensit::Node::Topic::Feed.any_instance.stub(:save).and_return(false)
-            post :create, valid_request(:feed => { "topic_id" => "invalid value" }), valid_session
+            post :create, valid_request("topic_id" => "1", :feed => { "topic_id" => "1"}), valid_session
             response.should render_template("sensit/feeds/show")
           end
         end

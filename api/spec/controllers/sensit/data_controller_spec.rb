@@ -22,13 +22,13 @@ module Sensit
   describe DataController do
 
       def valid_request(h = {})
-        h.merge!({:use_route => :sensit_api, :format => "json", :api_version => 1})
+        {:use_route => :sensit_api, :format => "json", :api_version => 1}.merge!(h)
       end
       # This should return the minimal set of attributes required to create a valid
       # ::Sensit::Node::Topic::Feed. As you add validations to ::Sensit::Node::Topic::Feed, be sure to
       # update the return value of this method accordingly.
       def valid_attributes
-        { value: "123"}
+        { key: "my_key", value: "123"}
       end
 
       # This should return the minimal set of values that should be in the session
@@ -55,21 +55,24 @@ module Sensit
     end
 
     describe "POST create" do
+      before(:each) do
+        Node::Topic::Feed.any_instance.stub(:find).with(1).and_return(FactoryGirl.create(:feed))
+      end
       describe "with valid params" do
         it "creates a new Node::Topic::Feed::DataRow" do
           expect {
-            post :create, valid_request({:data => valid_attributes}), valid_session
+            post :create, valid_request({feed_id:1, :data => valid_attributes}), valid_session
           }.to change(::Sensit::Node::Topic::Feed::DataRow, :count).by(1)
         end
 
         it "assigns a newly created data as @data" do
-          post :create, valid_request({:data => valid_attributes}), valid_session
+          post :create, valid_request({feed_id:1, :data => valid_attributes}), valid_session
           assigns(:data).should be_a(::Sensit::Node::Topic::Feed::DataRow)
           assigns(:data).should be_persisted
         end
 
         it "redirects to the created data" do
-          post :create, valid_request({:data => valid_attributes}), valid_session
+          post :create, valid_request({feed_id:1, :data => valid_attributes}), valid_session
           response.should render_template("sensit/data/show")
         end
       end
@@ -78,14 +81,14 @@ module Sensit
         it "assigns a newly created but unsaved data as @data" do
           # Trigger the behavior that occurs when invalid params are submitted
           ::Sensit::Node::Topic::Feed::DataRow.any_instance.stub(:save).and_return(false)
-          post :create, valid_request({:data => { "value" => "456" }}), valid_session
+          post :create, valid_request({feed_id:1, :data => { "value" => "456" }}), valid_session
           assigns(:data).should be_a_new(::Sensit::Node::Topic::Feed::DataRow)
         end
 
         it "re-renders the 'new' template" do
           # Trigger the behavior that occurs when invalid params are submitted
           ::Sensit::Node::Topic::Feed::DataRow.any_instance.stub(:save).and_return(false)
-          post :create, valid_request({:data => { "value" => "456" }}), valid_session
+          post :create, valid_request({feed_id:1, :data => { feed_id:1, "value" => "456" }}), valid_session
           response.should render_template("sensit/data/show")
         end
       end

@@ -14,7 +14,7 @@ module Sensit
       end
 
       it "routes to #create" do
-        post("/api/nodes/1/topics/1/feeds/1/data").should route_to("sensit/data#create", :node_id => "1", :topic_id => "1", :feed_id => "1", :id => "1",  format: "json")
+        post("/api/nodes/1/topics/1/feeds/1/data").should route_to("sensit/data#create", :node_id => "1", :topic_id => "1", :feed_id => "1",  format: "json")
       end
 
       it "routes to #update" do

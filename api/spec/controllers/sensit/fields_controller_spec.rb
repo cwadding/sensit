@@ -31,7 +31,7 @@ module Sensit
       # ::Sensit::Node::Topic::Field. As you add validations to ::Sensit::Node::Topic::Feed, be sure to
       # update the return value of this method accordingly.
       def valid_attributes
-        { "key" => "hello", "name" => "world", "topic_id" => "1" }
+        { "key" => "hello", "name" => "world" }
       end
 
       def invalid_attributes
@@ -60,21 +60,24 @@ module Sensit
     end
 
     describe "POST create" do
+      before(:each) do
+        Node::Topic.any_instance.stub(:find).with(1).and_return(FactoryGirl.create(:topic))
+      end
       describe "with valid params" do
         it "creates a new ::Sensit::Node::Topic::Field" do
           expect {
-            post :create, valid_request({:field => valid_attributes}), valid_session
+            post :create, valid_request({ "topic_id" => "1", :field => valid_attributes}), valid_session
           }.to change(::Sensit::Node::Topic::Field, :count).by(1)
         end
 
         it "assigns a newly created field as @field" do
-          post :create, valid_request({:field => valid_attributes}), valid_session
+          post :create, valid_request({ "topic_id" => "1", :field => valid_attributes}), valid_session
           assigns(:field).should be_a(::Sensit::Node::Topic::Field)
           assigns(:field).should be_persisted
         end
 
         it "redirects to the created field" do
-          post :create, valid_request({:field => valid_attributes}), valid_session
+          post :create, valid_request({ "topic_id" => "1", :field => valid_attributes}), valid_session
           response.should render_template("sensit/fields/show")
         end
       end
@@ -83,14 +86,14 @@ module Sensit
         it "assigns a newly created but unsaved field as @field" do
           # Trigger the behavior that occurs when invalid params are submitted
           ::Sensit::Node::Topic::Field.any_instance.stub(:save).and_return(false)
-          post :create, valid_request({:field => { :key => "asd"  }}), valid_session
+          post :create, valid_request({ "topic_id" => "1", :field => { "topic_id" => "1", :key => "asd"  }}), valid_session
           assigns(:field).should be_a_new(::Sensit::Node::Topic::Field)
         end
 
         it "re-renders the 'new' template" do
           # Trigger the behavior that occurs when invalid params are submitted
           ::Sensit::Node::Topic::Field.any_instance.stub(:save).and_return(false)
-          post :create, valid_request({:field => { :key => "asd" }}), valid_session
+          post :create, valid_request({ "topic_id" => "1", :field => { "topic_id" => "1", :key => "asd" }}), valid_session
           response.should render_template("sensit/fields/show")
         end
       end

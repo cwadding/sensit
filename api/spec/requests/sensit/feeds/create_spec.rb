@@ -13,8 +13,7 @@ describe "POST sensit/feeds#create" do
 
 
    before(:each) do
-      @node = FactoryGirl.create(:complete_node)
-      @field = @topic.fields.first     
+      @node = FactoryGirl.create(:complete_node) 
    end
 
    def process_request(node, params)
@@ -25,9 +24,9 @@ describe "POST sensit/feeds#create" do
    context "with correct attributes" do
       before(:all) do
          @params = {
-            :field => {
-               :name => "My Field",
-               :key => "my_field"
+            :feed => {
+               :at => Time.now,
+               :data => []
             }
          }
       end
@@ -40,7 +39,7 @@ describe "POST sensit/feeds#create" do
       it "returns the expected json" do
          process_request(@node, @params)
          expect(response).to render_template(:show)
-         response.body.should be_json_eql("{\"key\":\"my_field\",\"name\":\"Test topic\",\"description\":\"A description of my topic\",\"topics\":[]}")
+         response.body.should be_json_eql("{\"at\":\"my_field\",\"data\":\"Test topic\",\"description\":\"A description of my topic\",\"topics\":[]}")
       end
 
       it "creates a new Feed" do
@@ -54,12 +53,12 @@ describe "POST sensit/feeds#create" do
       before(:all) do
          @params = {
             :feed => {
-               :data => []
+               :data => [{"sdf" => dsfds}]
             }
          }
       end
 
-      it "is an unprocessable entity" do
+      it "is an unprocessable entity", :current => true do
          status = process_request(@node, @params)
          status.should == 422
       end

@@ -37,7 +37,7 @@ describe "PUT sensit/feeds#update" do
 		it "updates a Feed" do
 			process_request(@node)
 			updated_field = Sensit::Node::Topic::Feed.find(@feed.id)
-			expect(updated_node.at).to == Time.new(2002, 10, 31, 2, 2, 2, "+02:00")
+			updated_node.at.should == Time.new(2002, 10, 31, 2, 2, 2, "+02:00")
 		end
 	end		
 end

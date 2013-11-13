@@ -1,7 +1,7 @@
 module Sensit
   class Node::Topic < ActiveRecord::Base
 
-  	after_delete :delete_index
+  	after_destroy :delete_index
 
   	belongs_to :node
   	has_many :feeds, dependent: :destroy
@@ -17,7 +17,7 @@ private
 	end
 
 	def elastic_client
-		@client ||= Elasticsearch::Client.new log: true
+		#@client ||= Elasticsearch::Client.new log: true
 	end
   end
 end

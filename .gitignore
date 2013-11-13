@@ -30,3 +30,4 @@ demo/db/*.sqlite3-journal
 demo/log/*.log
 demo/tmp
 demo/db/migrate/*.rb
+/demo/app/models/user.rb

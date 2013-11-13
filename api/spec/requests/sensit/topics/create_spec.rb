@@ -1,5 +1,5 @@
 require 'spec_helper'
-describe "POST sensit/topics#create", :current => true do
+describe "POST sensit/topics#create" do
    # {
    #    "topic":{
    #       "name":"my_topic2",

@@ -29,7 +29,7 @@ module Sensit
       # Node::Topic. As you add validations to Node::Topic, be sure to
       # update the return value of this method accordingly.
       def valid_attributes
-        { "node_id" => 1, "name" => "my topic" }
+        { "name" => "my topic" }
       end
 
       # This should return the minimal set of values that should be in the session
@@ -40,7 +40,7 @@ module Sensit
       end
 
       describe "GET index" do
-        it "assigns all node_topics as @node_topics" do
+        it "assigns all topics as @topics" do
           topic = Node::Topic.create! valid_attributes
           get :index, valid_request, valid_session
           assigns(:topics).should eq([topic])
@@ -48,7 +48,7 @@ module Sensit
       end
 
       describe "GET show" do
-        it "assigns the requested node_topic as @node_topic" do
+        it "assigns the requested topic as @topic" do
           topic = Node::Topic.create! valid_attributes
           get :show, valid_request({:id => topic.to_param}), valid_session
           assigns(:topic).should eq(topic)
@@ -56,37 +56,40 @@ module Sensit
       end
 
       describe "POST create" do
+        before(:each) do
+        Node.any_instance.stub(:find).with(1).and_return(FactoryGirl.create(:node))
+      end
         describe "with valid params" do
           it "creates a new Node::Topic" do
             expect {
-              post :create, valid_request({:node_topic => valid_attributes}), valid_session
+              post :create, valid_request({"node_id" => 1,:topic => valid_attributes}), valid_session
             }.to change(Node::Topic, :count).by(1)
           end
 
-          it "assigns a newly created node_topic as @node_topic" do
-            post :create, valid_request({:node_topic => valid_attributes}), valid_session
+          it "assigns a newly created topic as @topic" do
+            post :create, valid_request({"node_id" => 1,:topic => valid_attributes}), valid_session
             assigns(:topic).should be_a(Node::Topic)
             assigns(:topic).should be_persisted
           end
 
-          it "redirects to the created node_topic" do
-            post :create, valid_request({:node_topic => valid_attributes}), valid_session
+          it "redirects to the created topic" do
+            post :create, valid_request({"node_id" => 1,:topic => valid_attributes}), valid_session
             response.should render_template("sensit/topics/show")
           end
         end
 
         describe "with invalid params" do
-          it "assigns a newly created but unsaved node_topic as @node_topic" do
+          it "assigns a newly created but unsaved topic as @topic" do
             # Trigger the behavior that occurs when invalid params are submitted
             Node::Topic.any_instance.stub(:save).and_return(false)
-            post :create, valid_request({:node_topic => { "name" => "invalid value" }}), valid_session
+            post :create, valid_request({"node_id" => 1,:topic => { "node_id" => 1,"name" => "invalid value" }}), valid_session
             assigns(:topic).should be_a_new(Node::Topic)
           end
 
           it "re-renders the 'new' template" do
             # Trigger the behavior that occurs when invalid params are submitted
             Node::Topic.any_instance.stub(:save).and_return(false)
-            post :create, valid_request({:node_topic => { "name" => "invalid value" }}), valid_session
+            post :create, valid_request({"node_id" => 1,:topic => { "node_id" => 1,"name" => "invalid value" }}), valid_session
             response.should render_template("sensit/topics/show")
           end
         end
@@ -94,35 +97,35 @@ module Sensit
 
       describe "PUT update" do
         describe "with valid params" do
-          it "updates the requested node_topic" do
+          it "updates the requested topic" do
             topic = Node::Topic.create! valid_attributes
-            # Assuming there are no other node_topics in the database, this
+            # Assuming there are no other topics in the database, this
             # specifies that the Node::Topic created on the previous line
             # receives the :update_attributes message with whatever params are
             # submitted in the request.
             Node::Topic.any_instance.should_receive(:update).with({ "name" => "1" })
-            put :update, valid_request({:id => topic.to_param, :node_topic => { "name" => "1" }}), valid_session
+            put :update, valid_request({:id => topic.to_param, :topic => { "name" => "1" }}), valid_session
           end
 
-          it "assigns the requested node_topic as @node_topic" do
+          it "assigns the requested topic as @topic" do
             topic = Node::Topic.create! valid_attributes
-            put :update, valid_request({:id => topic.to_param, :node_topic => { "name" => "1" }}), valid_session
+            put :update, valid_request({:id => topic.to_param, :topic => { "name" => "1" }}), valid_session
             assigns(:topic).should eq(topic)
           end
 
-          it "redirects to the node_topic" do
+          it "redirects to the topic" do
             topic = Node::Topic.create! valid_attributes
-            put :update, valid_request({:id => topic.to_param, :node_topic => { "name" => "1" }}), valid_session
+            put :update, valid_request({:id => topic.to_param, :topic => { "name" => "1" }}), valid_session
             response.should render_template("sensit/topics/show")
           end
         end
 
         describe "with invalid params" do
-          it "assigns the node_topic as @node_topic" do
+          it "assigns the topic as @topic" do
             topic = Node::Topic.create! valid_attributes
             # Trigger the behavior that occurs when invalid params are submitted
             Node::Topic.any_instance.stub(:save).and_return(false)
-            put :update, valid_request({:id => topic.to_param, :node_topic => { "name" => "invalid value" }}), valid_session
+            put :update, valid_request({:id => topic.to_param, :topic => { "name" => "invalid value" }}), valid_session
             assigns(:topic).should eq(topic)
           end
 
@@ -130,21 +133,21 @@ module Sensit
             topic = Node::Topic.create! valid_attributes
             # Trigger the behavior that occurs when invalid params are submitted
             Node::Topic.any_instance.stub(:save).and_return(false)
-            put :update, valid_request({:id => topic.to_param, :node_topic => { "name" => "invalid value" }}), valid_session
+            put :update, valid_request({:id => topic.to_param, :topic => { "name" => "invalid value" }}), valid_session
             response.should render_template("sensit/topics/show")
           end
         end
       end
 
       describe "DELETE destroy" do
-        it "destroys the requested node_topic" do
+        it "destroys the requested topic" do
           topic = Node::Topic.create! valid_attributes
           expect {
             delete :destroy, valid_request({:id => topic.to_param}), valid_session
           }.to change(Node::Topic, :count).by(-1)
         end
 
-        it "redirects to the node_topics list" do
+        it "redirects to the topics list" do
           topic = Node::Topic.create! valid_attributes
           delete :destroy, valid_request({:id => topic.to_param}), valid_session
           response.status.should == 204

@@ -17,8 +17,12 @@ module Sensit
 
     # POST /nodes/1/topic/1/feeds
     def create
+      puts params
+      topic = Node::Topic.find(params[:topic_id])
+      puts feed_params
       @feed = Node::Topic::Feed.new(feed_params)
-
+      @feed.topic = topic
+      
       if @feed.save
 
       else
@@ -51,7 +55,7 @@ module Sensit
 
       # Only allow a trusted parameter "white list" through.
       def feed_params
-        params.require(:feed).permit(:topic_id, :at, :value)
+        params.require(:feed).permit(:at, :data => [])
       end
   end
 end

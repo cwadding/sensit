@@ -24,6 +24,15 @@ Or install it yourself as:
 
 TODO: Write usage instructions here
 
+## Building the demo
+
+cd demo
+bundle install
+rails g sensit:core:install
+rails g sensit api:install
+rails g devise user
+bundle exec rake db:migrate
+
 ## Contributing
 
 1. Fork it

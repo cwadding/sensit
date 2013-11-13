@@ -34,8 +34,8 @@ describe "PUT sensit/nodes#update" do
 		it "updates a Node" do
 			process_request(@node, @params)
 			updated_node = Sensit::Node.find(@node.id)
-			expect(updated_node.name).to == "New node name"
-			expect(updated_node.description).to == "new description"
+			updated_node.name.should == "New node name"
+			updated_node.description.should == "new description"
 		end
 	end
 end

@@ -70,7 +70,9 @@ FactoryGirl.define do
   end
 
   factory :node, :class => Sensit::Node do
-    name "Title"
+    sequence :name do |n|
+      "Node#{n}"
+    end
       
     # topics_count is declared as an ignored attribute and available in
     # attributes on the factory, as well as the callback via the evaluator

@@ -17,14 +17,15 @@ module Sensit
 
     # POST /nodes/1/topics/1/fields
     def create
+      topic = Node::Topic.find(params[:topic_id])
       @field = Node::Topic::Field.new(field_params)
-
+      @field.topic = topic
       if @field.save
 
       else
 
       end
-      respond_with(@feed,:status => 200, :template => "sensit/fields/show")
+      respond_with(@field,:status => 200, :template => "sensit/fields/show")
     end
 
     # PATCH/PUT /nodes/1/topics/1/fields/1
@@ -34,13 +35,13 @@ module Sensit
       else
 
       end
-      respond_with(@feed,:status => 200, :template => "sensit/fields/show")
+      respond_with(@field,:status => 200, :template => "sensit/fields/show")
     end
 
     # DELETE /nodes/topics/fields/1
     def destroy
       @field.destroy
-      respond_with(@feed, :status => 204)
+      respond_with(@field, :status => 204)
     end
 
     private

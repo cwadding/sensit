@@ -37,7 +37,7 @@ describe "PUT sensit/fields#update" do
 		it "updates a Field" do
 			process_request(@node, @params)
 			updated_field = Sensit::Node::Topic::Field.find(@field.id)
-			expect(updated_node.name).to == "New field name"
+			updated_node.name.should == "New field name"
 		end
 	end	
 end

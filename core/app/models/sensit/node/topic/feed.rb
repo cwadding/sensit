@@ -16,36 +16,36 @@ module Sensit
 	validates :at, presence: true
 
 	def data_row
-		elastic_client.get index: topic_name, type: 'mytype', id: self.id
+		#elastic_client.get index: topic_name, type: 'mytype', id: self.id
 	end
 
 	def data_count(body = {})
-		elastic_client.count index: topic_name, body: body
+		#elastic_client.count index: topic_name, body: body
 	end
 
 	def self.percolate(body = {})
-		elastic_client.percolate index: name, body: body
+		#elastic_client.percolate index: name, body: body
 	end
 	
 	def self.search(body = {})
-		elastic_client.search index: name, body: body
+		#elastic_client.search index: name, body: body
 	end
 
 private
 	def add_data()
-		elastic_client.create index: topic_name, type: 'mytype', id: id#, body: import_data
+		#elastic_client.create index: topic_name, type: 'mytype', id: id#, body: import_data
 	end
 
 	def update_data()
-		elastic_client.update index: topic_name, type: 'mytype', id: id#, body: import_data
+		#elastic_client.update index: topic_name, type: 'mytype', id: id#, body: import_data
 	end
 
 	def delete_data()
-		elastic_client.delete index: topic_name, type: 'mytype', id: id
+		#elastic_client.delete index: topic_name, type: 'mytype', id: id
 	end
 
 	def self.elastic_client
-		@client ||= Elasticsearch::Client.new log: true
+		#@client ||= Elasticsearch::Client.new log: true
 	end
   end
 end
