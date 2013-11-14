@@ -6,7 +6,6 @@ describe "sensit/topics/show" do
   end
   it "renders the json data" do
     render
-    puts "sensit/topics/show: #{rendered}"
     [:id, :name, :description, :fields, :feeds].each do |key|
       rendered.should have_json_path("#{key.to_s}")
     end

@@ -28,7 +28,7 @@ describe "PUT sensit/nodes#update" do
 		it "returns the expected json" do
 			process_request(@node, @params)
 			expect(response).to render_template(:show)
-			response.body.should be_json_eql("{\"id\":1,\"name\":\"Test node\",\"description\":\"A description of my node\",\"topics\":[]}")
+			response.body.should be_json_eql('{"description": "new description","name": "New node name","topics": []}')
 		end
 
 		it "updates a Node" do

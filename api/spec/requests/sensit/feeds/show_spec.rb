@@ -52,7 +52,7 @@ describe "GET sensit/feeds#show" do
 
 		it "returns the expected json" do
 			process_request(@node)
-			response.body.should be_json_eql("{\"id\":1,\"name\":\"Test node\",\"description\":\"A description of my node\",\"topics\":[]}")
+			response.body.should be_json_eql('{"at": "' + @node.topics.first.at.to_s + '","data": [{"key30": "Value30"}],"fields": [{"key": "key25","name": "Field25"}]}')
 		end
 
 	end

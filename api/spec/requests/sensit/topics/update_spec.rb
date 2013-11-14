@@ -29,7 +29,8 @@ describe "PUT sensit/topics#update" do
       it "returns the expected json" do
          process_request(@node, @params)
          expect(response).to render_template(:show)
-         response.body.should be_json_eql("{\"id\":1,\"name\":\"Test topic\",\"description\":\"A description of my topic\",\"topics\":[]}")
+         response.body.should be_json_eql('{\"id\":1,"description": null,"feeds": [{"data": [{"key150": "Value150"}]}],"fields": [{"key": "key145","name": "Field145"}],"name": "New topic name"}')
+
       end
 
       it "updates the existing Topic" do

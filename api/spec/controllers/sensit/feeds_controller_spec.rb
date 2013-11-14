@@ -82,14 +82,14 @@ module Sensit
           it "assigns a newly created but unsaved feed as @feed" do
             # Trigger the behavior that occurs when invalid params are submitted
             ::Sensit::Node::Topic::Feed.any_instance.stub(:save).and_return(false)
-            post :create, valid_request("topic_id" => "1", :feed => { "topic_id" => "1"}), valid_session
+            post :create, valid_request("topic_id" => "1", :feed => { "at" => "1"}), valid_session
             assigns(:feed).should be_a_new(::Sensit::Node::Topic::Feed)
           end
 
           it "re-renders the 'new' template" do
             # Trigger the behavior that occurs when invalid params are submitted
             ::Sensit::Node::Topic::Feed.any_instance.stub(:save).and_return(false)
-            post :create, valid_request("topic_id" => "1", :feed => { "topic_id" => "1"}), valid_session
+            post :create, valid_request("topic_id" => "1", :feed => { "at" => "1"}), valid_session
             response.should render_template("sensit/feeds/show")
           end
         end
@@ -103,8 +103,8 @@ module Sensit
             # specifies that the ::Sensit::Node::Topic::Feed created on the previous line
             # receives the :update_attributes message with whatever params are
             # submitted in the request.
-            ::Sensit::Node::Topic::Feed.any_instance.should_receive(:update).with({ "topic_id" => "1" })
-            put :update, valid_request(:id => feed.to_param, :feed => { "topic_id" => "1" }), valid_session
+            ::Sensit::Node::Topic::Feed.any_instance.should_receive(:update).with({ "at" => "1" })
+            put :update, valid_request(:id => feed.to_param, :feed => { "at" => "1" }), valid_session
           end
 
           it "assigns the requested feed as @feed" do
@@ -125,7 +125,7 @@ module Sensit
             feed = ::Sensit::Node::Topic::Feed.create! valid_attributes
             # Trigger the behavior that occurs when invalid params are submitted
             ::Sensit::Node::Topic::Feed.any_instance.stub(:save).and_return(false)
-            put :update, valid_request(:id => feed.to_param, :feed => { "topic_id" => "invalid value" }), valid_session
+            put :update, valid_request(:id => feed.to_param, :feed => { "at" => "invalid value" }), valid_session
             assigns(:feed).should eq(feed)
           end
 
@@ -133,7 +133,7 @@ module Sensit
             feed = ::Sensit::Node::Topic::Feed.create! valid_attributes
             # Trigger the behavior that occurs when invalid params are submitted
             ::Sensit::Node::Topic::Feed.any_instance.stub(:save).and_return(false)
-            put :update, valid_request(:id => feed.to_param, :feed => { "topic_id" => "invalid value" }), valid_session
+            put :update, valid_request(:id => feed.to_param, :feed => { "at" => "invalid value" }), valid_session
             response.should render_template("sensit/feeds/show")
           end
         end

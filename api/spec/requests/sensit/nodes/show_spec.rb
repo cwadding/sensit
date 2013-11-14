@@ -125,7 +125,8 @@ describe "GET sensit/nodes#show" do
 
 		it "returns the expected json" do
 			process_request(@node)
-			response.body.should be_json_eql("{\"id\":1,\"name\":\"Test node\",\"description\":\"A description of my node\",\"topics\":[]}")
+			response.body.should be_json_eql('{"description": null, "name": "Node57","topics": []}')
+			        
 		end
 	end
 
@@ -135,7 +136,7 @@ describe "GET sensit/nodes#show" do
 		end
 		it "returns the expected json" do
 			process_request(@node)
-			response.body.should be_json_eql("{\"id\":1,\"name\":\"Test node\",\"description\":\"A description of my node\",\"topics\":[]}")
+			response.body.should be_json_eql('{"description": null,"name": "Node58","topics": [{"description": null,"feeds": [{"data": [{"key120": "Value120"}]}],"fields": [{"key": "key115","name": "Field115"}],"name": "Topic125"},{"description": null,"feeds": [{"data": [{"key121": "Value121"}]}],"fields": [{"key": "key116","name": "Field116"}],"name": "Topic126"},{"description": null,"feeds": [{"data": [{"key122": "Value122"}]}],"fields": [{"key": "key117","name": "Field117"}],"name": "Topic127"}]}')
 		end
 	end	
 

@@ -31,13 +31,13 @@ describe "PUT sensit/fields#update" do
 		it "returns the expected json" do
 			process_request(@node, @params)
 			expect(response).to render_template(:show)
-			response.body.should be_json_eql("{\"id\":1,\"name\":\"Test node\",\"description\":\"A description of my node\",\"topics\":[]}")
+			response.body.should be_json_eql('{"key": "key100","name": "New field name"}')
 		end
 
 		it "updates a Field" do
 			process_request(@node, @params)
 			updated_field = Sensit::Node::Topic::Field.find(@field.id)
-			updated_node.name.should == "New field name"
+			updated_field.name.should == "New field name"
 		end
 	end	
 end

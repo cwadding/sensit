@@ -6,7 +6,6 @@ describe "sensit/fields/show" do
   end
   it "renders the json data" do
     render
-    puts "sensit/fields/show: #{rendered}"
     [:key, :name].each do |key|
       rendered.should have_json_path("#{key.to_s}")
     end

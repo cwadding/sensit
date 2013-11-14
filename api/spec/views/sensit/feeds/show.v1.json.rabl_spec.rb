@@ -7,7 +7,6 @@ describe "sensit/feeds/show" do
   end
   it "renders the json data" do
     render
-    puts "sensit/feeds/show: #{rendered}"
     [:id, :at, :data].each do |key|
       rendered.should have_json_path("#{key.to_s}")
     end

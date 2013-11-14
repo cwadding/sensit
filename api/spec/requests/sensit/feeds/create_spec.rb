@@ -12,6 +12,7 @@ describe "POST sensit/feeds#create" do
    # }
 
 
+
    before(:each) do
       @node = FactoryGirl.create(:complete_node) 
    end
@@ -25,7 +26,7 @@ describe "POST sensit/feeds#create" do
       before(:all) do
          @params = {
             :feed => {
-               :at => Time.now,
+               :at => Time.new(2013,11,14,3,56,6),
                :data => []
             }
          }
@@ -39,7 +40,7 @@ describe "POST sensit/feeds#create" do
       it "returns the expected json" do
          process_request(@node, @params)
          expect(response).to render_template(:show)
-         response.body.should be_json_eql("{\"at\":\"my_field\",\"data\":\"Test topic\",\"description\":\"A description of my topic\",\"topics\":[]}")
+         response.body.should be_json_eql("{\"at\": \"#{@params[:at].to_s}\",\"data\": [],\"fields\": [{\"key\": \"key4\"name\": \"Field4\"}]}")
       end
 
       it "creates a new Feed" do
@@ -53,7 +54,7 @@ describe "POST sensit/feeds#create" do
       before(:all) do
          @params = {
             :feed => {
-               :data => [{"sdf" => dsfds}]
+               :data => [{"sdf" => 'dsfds'}]
             }
          }
       end

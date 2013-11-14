@@ -17,9 +17,7 @@ module Sensit
 
     # POST /nodes/1/topic/1/feeds
     def create
-      puts params
       topic = Node::Topic.find(params[:topic_id])
-      puts feed_params
       @feed = Node::Topic::Feed.new(feed_params)
       @feed.topic = topic
       

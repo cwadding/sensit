@@ -18,7 +18,7 @@ describe "GET sensit/fields#show" do
 
 		it "returns the expected json" do
 			process_request(@node)
-			response.body.should be_json_eql("{\"id\":1,\"name\":\"Test node\",\"description\":\"A description of my node\",\"topics\":[]}")
+			response.body.should be_json_eql('{"key": "key94","name": "Field94"}')
 		end
 	end
 
@@ -39,3 +39,4 @@ describe "GET sensit/fields#show" do
 		end
 	end  
 end
+

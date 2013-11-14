@@ -18,7 +18,7 @@ describe "GET sensit/fields#index" do
 
 		it "returns the expected json" do
 			process_request(@node)
-			response.body.should be_json_eql("{\"id\":1,\"name\":\"Test node\",\"description\":\"A description of my node\",\"topics\":[]}")
+			response.body.should be_json_eql('{"fields": [{"key": "key88","name": "Field88"},{"key": "key89","name": "Field89"},{"key": "key90","name": "Field90"}]}')
 		end
 	end
 end

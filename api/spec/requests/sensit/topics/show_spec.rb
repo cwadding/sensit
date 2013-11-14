@@ -71,7 +71,7 @@ describe "GET sensit/topics#show" do
 
 		it "returns the expected json" do
 			process_request(@node)
-			response.body.should be_json_eql("{\"id\":1,\"name\":\"Test node\",\"description\":\"A description of my node\",\"topics\":[]}")
+			response.body.should be_json_eql('{"id":1,"description": null,"feeds": [{"data": [{"key144": "Value144"}]}],"fields": [{"key": "key139","name": "Field139"}],"name": "Topic149"')
 		end  
 	end
 
