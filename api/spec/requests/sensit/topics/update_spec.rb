@@ -20,7 +20,7 @@ describe "PUT sensit/topics#update" do
             }
          }
       end
-      
+
       it "returns a 200 status code" do
          status = process_request(@node, @params)
          status.should == 200
@@ -28,8 +28,22 @@ describe "PUT sensit/topics#update" do
 
       it "returns the expected json" do
          process_request(@node, @params)
+         topic = @node.topics.first
+         # feeds_arr = []
+         # topic.feeds.each do |feed|
+
+         # end
+         data_arr = []
+         feed = topic.feeds.first
+         feed.data_rows.each do |datum|
+            data_arr << "{\"#{datum.key}\": \"#{datum.value}\"}"
+         end
+         fields_arr = []
+         topic.fields.each do |field|
+            fields_arr << "{\"key\": \"#{field.key}\",\"name\": \"#{field.name}\"}"
+         end         
          expect(response).to render_template(:show)
-         response.body.should be_json_eql('{\"id\":1,"description": null,"feeds": [{"data": [{"key150": "Value150"}]}],"fields": [{"key": "key145","name": "Field145"}],"name": "New topic name"}')
+         response.body.should be_json_eql("{\"id\":1,\"description\": null,\"feeds\": [{\"data\": [#{data_arr.join(',')}]}],\"fields\": [#{fields_arr.join(',')}],\"name\": \"New topic name\"}")
 
       end
 

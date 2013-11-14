@@ -18,7 +18,11 @@ describe "GET sensit/fields#index" do
 
 		it "returns the expected json" do
 			process_request(@node)
-			response.body.should be_json_eql('{"fields": [{"key": "key88","name": "Field88"},{"key": "key89","name": "Field89"},{"key": "key90","name": "Field90"}]}')
+			topic = @node.topics.first
+			fields_arr = topic.fields.inject([]) do |arr, field|
+				arr << "{\"key\": \"#{field.key}\",\"name\": \"#{field.name}\"}"
+			end
+			response.body.should be_json_eql("{\"fields\": [#{fields_arr.join(',')}]}")
 		end
 	end
 end

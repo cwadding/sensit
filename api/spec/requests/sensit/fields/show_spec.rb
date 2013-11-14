@@ -18,7 +18,10 @@ describe "GET sensit/fields#show" do
 
 		it "returns the expected json" do
 			process_request(@node)
-			response.body.should be_json_eql('{"key": "key94","name": "Field94"}')
+
+			topic = @node.topics.first
+			field = topic.fields.first
+			response.body.should be_json_eql("{\"key\": \"#{field.key}\",\"name\": \"#{field.name}\"}")
 		end
 	end
 

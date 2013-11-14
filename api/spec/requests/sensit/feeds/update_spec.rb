@@ -24,20 +24,20 @@ describe "PUT sensit/feeds#update" do
 		end
 		
 		it "returns a 200 status code" do
-			status = process_request(@params, @params)
+			status = process_request(@node, @params)
 			status.should == 200
 		end
 
 		it "returns the expected json" do
 			process_request(@node, @params)
 			expect(response).to render_template(:show)
-			response.body.should be_json_eql("{\"id\":1,\"name\":\"Test node\",\"description\":\"A description of my node\",\"topics\":[]}")
+			response.body.should be_json_eql("{\"at\": #{@params['feed']['at'].to_s},\"data\": [{\"key42\": \"Value42\"}],\"fields\": [{\"key\": \"key37\",\"name\": \"Field37\"}]}")
 		end
 
 		it "updates a Feed" do
 			process_request(@node, @params)
 			updated_field = Sensit::Node::Topic::Feed.find(@feed.id)
-			updated_node.at.should == Time.new(2002, 10, 31, 2, 2, 2, "+02:00")
+			updated_field.at.should == Time.new(2002, 10, 31, 2, 2, 2, "+02:00")
 		end
 	end		
 end

@@ -71,7 +71,17 @@ describe "GET sensit/topics#show" do
 
 		it "returns the expected json" do
 			process_request(@node)
-			response.body.should be_json_eql('{"id":1,"description": null,"feeds": [{"data": [{"key144": "Value144"}]}],"fields": [{"key": "key139","name": "Field139"}],"name": "Topic149"')
+			topic = @node.topics.first
+			feed = topic.feeds.first
+			data_arr = []
+			feed.data_rows.each do |datum|
+				data_arr << "{\"#{datum.key}\": \"#{datum.value}\"}"
+			end
+			fields_arr = []
+			topic.fields.each do |field|
+				fields_arr << "{\"key\": \"#{field.key}\",\"name\": \"#{field.name}\"}"
+			end
+			response.body.should be_json_eql("{\"id\":1,\"description\": null,\"feeds\": [{\"data\": [#{data_arr.join(',')}]}],\"fields\": [#{fields_arr.join(',')}],\"name\": \"#{topic.name}\"}")
 		end  
 	end
 

@@ -40,7 +40,7 @@ describe "POST sensit/feeds#create" do
       it "returns the expected json" do
          process_request(@node, @params)
          expect(response).to render_template(:show)
-         response.body.should be_json_eql("{\"at\": \"#{@params[:at].to_s}\",\"data\": [],\"fields\": [{\"key\": \"key4\"name\": \"Field4\"}]}")
+         response.body.should be_json_eql("{\"at\": \"#{@params[:at].to_s}\",\"data\": [],\"fields\": [{\"key\": \"key4\", \"name\": \"Field4\"}]}")
       end
 
       it "creates a new Feed" do

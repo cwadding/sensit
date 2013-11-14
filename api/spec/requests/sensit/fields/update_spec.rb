@@ -31,7 +31,9 @@ describe "PUT sensit/fields#update" do
 		it "returns the expected json" do
 			process_request(@node, @params)
 			expect(response).to render_template(:show)
-			response.body.should be_json_eql('{"key": "key100","name": "New field name"}')
+			topic = @node.topics.first
+			field = topic.fields.first
+			response.body.should be_json_eql("{\"key\": \"#{field.key}\",\"name\": \"New field name\"}")
 		end
 
 		it "updates a Field" do

@@ -30,7 +30,7 @@ describe "POST sensit/fields#create" do
       it "returns the expected json" do
          process_request(@node, @params)
          expect(response).to render_template(:show)
-         response.body.should be_json_eql("{\"key\":\"my_field\",\"name\":\"Test topic\",\"description\":\"A description of my topic\",\"topics\":[]}")
+         response.body.should be_json_eql("{\"key\":\"my_field\",\"name\":\"My Field\"}")
       end
 
       it "creates a new Field" do
