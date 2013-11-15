@@ -43,11 +43,11 @@ describe "PUT sensit/topics#update" do
             fields_arr << "{\"key\": \"#{field.key}\",\"name\": \"#{field.name}\"}"
          end         
          expect(response).to render_template(:show)
-         response.body.should be_json_eql("{\"id\":1,\"description\": null,\"feeds\": [{\"data\": [#{data_arr.join(',')}]}],\"fields\": [#{fields_arr.join(',')}],\"name\": \"New topic name\"}")
+         response.body.should be_json_eql("{\"id\":1,\"description\": \"new description\",\"feeds\": [{\"data\": [#{data_arr.join(',')}]}],\"fields\": [#{fields_arr.join(',')}],\"name\": \"New topic name\"}")
 
       end
 
-      it "updates the existing Topic" do
+      it "updates the existing Topic", :current => true do
 			process_request(@node, @params)
 			updated_topic = Sensit::Node::Topic.find(@topic.id)
 			updated_topic.name.should == "New topic name"

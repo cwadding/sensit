@@ -18,7 +18,7 @@ describe "PUT sensit/feeds#update" do
 		before(:all) do
 			@params = {
 				:feed => {
-					:at => Time.new(2002, 10, 31, 2, 2, 2, "+02:00")
+					:at => Time.new(2002, 10, 31, 2, 2, 2, "+00:00")
 				}
 			}
 		end
@@ -31,13 +31,22 @@ describe "PUT sensit/feeds#update" do
 		it "returns the expected json" do
 			process_request(@node, @params)
 			expect(response).to render_template(:show)
-			response.body.should be_json_eql("{\"at\": #{@params['feed']['at'].to_s},\"data\": [{\"key42\": \"Value42\"}],\"fields\": [{\"key\": \"key37\",\"name\": \"Field37\"}]}")
+
+			topic = @node.topics.first
+			feed = topic.feeds.first
+			field_arr = topic.fields.inject([]) do |arr, field|
+				arr << "{\"key\": \"#{field.key}\",\"name\": \"#{field.name}\"}"
+			end
+			data_arr = feed.data_rows.inject([]) do |arr, datum|
+				arr << "{\"#{datum.key}\": \"#{datum.value}\"}"
+			end
+			response.body.should be_json_eql("{\"at\": \"#{@params[:feed][:at].strftime("%Y-%m-%dT%H:%M:%S.000Z")}\",\"data\": [#{data_arr.join(',')}],\"fields\": [#{field_arr.join(',')}]}")
 		end
 
 		it "updates a Feed" do
 			process_request(@node, @params)
 			updated_field = Sensit::Node::Topic::Feed.find(@feed.id)
-			updated_field.at.should == Time.new(2002, 10, 31, 2, 2, 2, "+02:00")
+			updated_field.at.should == @params[:feed][:at]
 		end
 	end		
 end

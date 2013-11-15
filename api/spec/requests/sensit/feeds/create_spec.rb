@@ -26,7 +26,7 @@ describe "POST sensit/feeds#create" do
       before(:all) do
          @params = {
             :feed => {
-               :at => Time.new(2013,11,14,3,56,6),
+               :at => Time.new(2013,11,14,3,56,6, "-00:00"),
                :data => []
             }
          }
@@ -40,7 +40,13 @@ describe "POST sensit/feeds#create" do
       it "returns the expected json" do
          process_request(@node, @params)
          expect(response).to render_template(:show)
-         response.body.should be_json_eql("{\"at\": \"#{@params[:at].to_s}\",\"data\": [],\"fields\": [{\"key\": \"key4\", \"name\": \"Field4\"}]}")
+         
+         topic = @node.topics.first
+         field_arr = topic.fields.inject([]) do |arr, field|
+            arr << "{\"key\": \"#{field.key}\",\"name\": \"#{field.name}\"}"
+         end
+
+         response.body.should be_json_eql("{\"at\": \"#{@params[:feed][:at].strftime("%Y-%m-%dT%H:%M:%S.000Z")}\",\"data\": [],\"fields\": [#{field_arr.join(",")}]}")
       end
 
       it "creates a new Feed" do
@@ -59,7 +65,7 @@ describe "POST sensit/feeds#create" do
          }
       end
 
-      it "is an unprocessable entity", :current => true do
+      it "is an unprocessable entity" do
          status = process_request(@node, @params)
          status.should == 422
       end

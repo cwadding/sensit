@@ -125,7 +125,9 @@ describe "POST sensit/fields#create" do
          response.body.should be_json_eql("{\"errors\":{\"key\":[\"has already been taken\"]}}")
       end
    end
-   context "without a unique name within a topic" do
+
+
+   context "with a non-unique name between topics" do
       before(:each) do
          FactoryGirl.create(:field, :name => "Existing Field", :key => "my_key")
       end
@@ -150,8 +152,7 @@ describe "POST sensit/fields#create" do
 
       it "returns the expected json" do
          process_request(@node, @params)
-         response.body.should be_json_eql("{\"errors\":{\"name\":[\"has already been taken\"]}}")
+         response.body.should be_json_eql('{"key": "a_new_key","name": "Existing Field"}')
       end
    end
-
 end

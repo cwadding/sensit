@@ -6,7 +6,7 @@ module Sensit
     respond_to :json
     # GET /nodes/1/topics/1/feeds
     def index
-      @feeds = Node::Topic::Feed.all
+      @feeds = Node::Topic::Feed.where(topic_id: params[:topic_id])
       respond_with(@feeds)
     end
 

@@ -6,7 +6,7 @@ module Sensit
     respond_to :json
     # GET /nodes/1/topics/1/fields
     def index
-      @fields = Node::Topic::Field.all
+      @fields = Node::Topic::Field.where(topic_id: params[:topic_id])
       respond_with(@fields)
     end
 
@@ -52,7 +52,7 @@ module Sensit
 
       # Only allow a trusted parameter "white list" through.
       def field_params
-        params.require(:field).permit(:name, :key, :topic_id)
+        params.require(:field).permit(:name, :key)
       end
   end
 end

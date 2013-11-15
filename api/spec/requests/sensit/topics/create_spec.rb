@@ -54,7 +54,7 @@ describe "POST sensit/topics#create" do
       it "returns the expected json" do
          process_request(@node, @params)
          expect(response).to render_template(:show)
-         response.body.should be_json_eql('{"description": null,"feeds": [],"fields": [],"name": "Test topic"}')
+         response.body.should be_json_eql('{"description": "A description of my topic","feeds": [],"fields": [],"name": "Test topic"}')
       end
 
       it "creates a new Topic" do

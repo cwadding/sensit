@@ -4,9 +4,9 @@ module Sensit
   class DataController < ApiController
     before_action :set_data, only: [:show, :update, :destroy]
     respond_to :json
-    # GET /nodes/topics/feeds/data
+    # GET /nodes/1/topics/1/feeds/1/data
     def index
-      @data = Node::Topic::Feed::DataRow.all
+      @data = Node::Topic::Feed::DataRow.where(feed_id: params[:feed_id])
     end
 
     # GET /nodes/topics/feeds/data/1
@@ -46,7 +46,7 @@ module Sensit
 
       # Only allow a trusted parameter "white list" through.
       def data_params
-        params.require(:data).permit(:feed_id, :key, :value)
+        params.require(:data).permit(:key, :value)
       end
   end
 end
