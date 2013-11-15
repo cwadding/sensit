@@ -47,7 +47,7 @@ describe "PUT sensit/topics#update" do
 
       end
 
-      it "updates the existing Topic", :current => true do
+      it "updates the existing Topic" do
 			process_request(@node, @params)
 			updated_topic = Sensit::Node::Topic.find(@topic.id)
 			updated_topic.name.should == "New topic name"

@@ -1,6 +1,6 @@
 # Configure Rails Environment
 ENV["RAILS_ENV"] = "test"
-
+require 'elasticsearch'
 require File.expand_path("../../../demo/config/environment.rb",  __FILE__)
 require "rails/test_help"
 require 'rspec/rails'
