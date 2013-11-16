@@ -79,16 +79,33 @@ module Sensit
 	end
 
 	describe ".percolate" do
-		it "executes the percolation"
+		before(:each) do
+			@params = {index: "transactions", type: "atm", body: { query: { term: { topic_id: 1 } } } }
+		end
+		it "executes the elastic percolate query" do
+			@client.should_receive(:percolate).with(@params).and_return({})
+			Node::Topic::Feed.stub(:elastic_client).and_return(@client)
+			feed = Node::Topic::Feed.percolate(@params)
+		end
 	end		
 
 	describe "#topic" do
-		it "returns its parent topic"
+		Node::Topic.find(self.topic_id)
+		it "returns its parent topic" do
+			Node::Topic.stub(:find).with(3).and_return(Node::Topic.new)
+			feed = Node::Topic::Feed.new(index: "transactions", type: "atm", topic_id: 3)
+			feed.topic.should be_an_instance_of Node::Topic
+		end
 	end
 
 	describe "#destroy" do
 		context "when record exists" do
-			it "removes the record"
+			it "executes the elastic delete" do
+				@client.should_receive(:delete).with(@params).and_return({})
+				Node::Topic::Feed.stub(:elastic_client).and_return(@client)
+				feed = Node::Topic::Feed.new(index: "transactions", type: "atm", topic_id: 3)
+				feed.destroy
+			end
 		end
 		context "when record doesn't exist" do
 			it "throws an exception that it is not found"
