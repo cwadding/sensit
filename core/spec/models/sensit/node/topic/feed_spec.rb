@@ -46,6 +46,7 @@ module Sensit
 		context "being called subsequent times" do
 			it "adds the feed to the index"
 		end
+		it "is no longer a new record"
 	end
 
 	describe ".search" do
@@ -56,9 +57,7 @@ module Sensit
 		end
 		it "executes the elastic search query" do
 			@client.should_receive(:search).with(@params).and_return([@result1, @result2])
-
 			Node::Topic::Feed.stub(:elastic_client).and_return(@client)
-
 			feeds = Node::Topic::Feed.search(@params)
 		end
 
@@ -98,6 +97,43 @@ module Sensit
 		end
 	end
 
+	describe ".count" do
+		before(:each) do
+			@params = {index: "transactions", type: "atm"}
+		end
+		it "executes the percolation" do
+			@client.should_receive(:count).with(@params)
+			Node::Topic::Feed.stub(:elastic_client).and_return(@client)
+			feeds = Node::Topic::Feed.count(@params)
+		end
+	end
+
+	describe "#topic" do
+		it "returns its parent topic" do
+			topic_id = 1
+			Node::Topic.stub(:find).with(topic_id).and_return(Node.Topic.new)
+			feed = Node::Topic::Feed.new(:topic_id => 1)
+			feed.topic.should be_an_instance_of Node::Topic
+		end
+	end
+
+	describe "#topic=" do
+		before(:each) do
+			@topic = FactoryGirl.create(:topic)
+		end
+		it "sets the topic_id from the topic" do
+			feed = Node::Topic::Feed.new
+			feed.topic = @topic
+			feed.topic_id.should == @topic_id
+		end
+		it "checks that the parameter is a Node::Topic" do
+			class SomeClass; end
+			expect{
+				feed.topic = SomeClass.new
+			}to raise_error(ActiveRecord::RecordNotFound)
+		end
+	end
+
 	describe "#destroy" do
 		context "when record exists" do
 			it "executes the elastic delete" do
@@ -113,11 +149,23 @@ module Sensit
 	end	
 
 	describe "#save" do
-		context "when the record already exists" do
-			it "updates the existing record"
+		context "when the record is not a new record" do
+			before(:each) do
+				@feed = Node::Topic::Feed.new({index: "transactions", type: "atm", body: { query: { term: { topic_id: 1 } } } })
+			end
+			it "updates the record" do
+				@client.should_receive(:count).with(@params)
+				Node::Topic::Feed.stub(:elastic_client).and_return(@client)
+				feeds = Node::Topic::Feed.count(@params)
+			end
 		end
-		context "when the record doesn't exist" do
-			it "creates the record"
+		context "when the record is a new record" do
+			before(:each) do
+
+			end			
+			it "creates the record" do
+
+			end
 		end		
 	end
 

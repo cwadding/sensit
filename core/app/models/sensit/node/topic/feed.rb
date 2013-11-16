@@ -13,6 +13,9 @@ module Sensit
 
 	def initialize(params={})
     	@errors = ActiveModel::Errors.new(self)
+    	@new_record = true
+    	@type = params.delete("type")
+    	@index = params.delete("index")
     	super(params)
   	end
 
@@ -35,9 +38,14 @@ module Sensit
 		result = elastic_client.percolate arguments
 	end
 
+	def self.count(arguments = {})
+		result = elastic_client.count arguments
+	end
+
 	def self.create(arguments = {})
 		run_callbacks :create do
 			response = elastic_client.create arguments
+			@new_record = false
 		end
 	end
 
@@ -47,9 +55,13 @@ module Sensit
 		end
 	end
 
-	def save(body)
+	def new_record?
+		@new_record || false
+	end
+
+	def save
 		run_callbacks :save do
-			# Your create action methods here
+			new_record? ? update(attributes_to_submit) : create(attributes_to_submit)
 		end
 	end	
 
@@ -91,11 +103,30 @@ private
 		obj.instance_variable_set(:@id, result["_id"])
 		obj.instance_variable_set(:@index, result["_index"])
 		obj.instance_variable_set(:@type, result["_type"])
+		obj.instance_variable_set(:@new_record, false)
 		obj
 	end
 
 	def self.elastic_client
 		@client ||= ::Elasticsearch::Client.new log: true
+	end
+
+	def attributes_to_submit
+		index: 'myindex',
+              type: 'mytype',
+              id: '1',
+              body: {
+               title: 'Test 1',
+               tags: ['y', 'z'],
+               published: true,
+               published_at: Time.now.utc.iso8601,
+               counter: 1
+              }
+        body = data
+        body.merge!({at:self.at, topic_id:self.topic_id})
+		h = {index: index, type: type, body:body}
+		h.merge!(id:id) unless new_record?
+		h
 	end
   end
 end
