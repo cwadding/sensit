@@ -1,25 +1,25 @@
 module Sensit
   class Node::Topic::Feed
-  	include ActiveModel::Model
+  	include ::ActiveModel::Model
   	    #  extend  ActiveModel::Naming
         # extend  ActiveModel::Translation
         # include ActiveModel::Validations
         # include ActiveModel::Conversion
-	extend ActiveModel::Callbacks
-	include ActiveModel::Dirty
+	extend ::ActiveModel::Callbacks
+	include ::ActiveModel::Dirty
 
   	attr_accessor :at, :data, :topic_id
 	attr_reader :errors, :id, :type, :index
 
 	def initialize(params={})
-    	@errors = ActiveModel::Errors.new(self)
     	@new_record = true
-    	@type = params.delete("type")
-    	@index = params.delete("index")
+    	@type = params.delete(:type)
+    	@index = params.delete(:index)
     	super(params)
+    	@errors = ActiveModel::Errors.new(self)
   	end
 
-  	define_model_callbacks :create, :update, :destroy, :save
+  	# define_model_callbacks :create, :update, :destroy, :save
 
 	validates :at, presence: true
 	validates :data, presence: true
@@ -43,16 +43,21 @@ module Sensit
 	end
 
 	def self.create(arguments = {})
-		run_callbacks :create do
-			response = elastic_client.create arguments
-			@new_record = false
-		end
+		feed = self.new(arguments)
+		feed.send(:create)
+		feed
 	end
 
-	def update(body)
-		run_callbacks :update do
-			elastic_client.update index: topic_name, type: 'mytype', id: id#, body: import_data
-		end
+	def self.destroy(arguments = {})
+		# run_callbacks :destroy do
+			elastic_client.delete arguments
+		# end
+	end
+
+	def self.destroy_all(arguments = {})
+		# run_callbacks :destroy do
+			elastic_client.indices.delete arguments
+		# end
 	end
 
 	def new_record?
@@ -60,15 +65,15 @@ module Sensit
 	end
 
 	def save
-		run_callbacks :save do
-			new_record? ? update(attributes_to_submit) : create(attributes_to_submit)
-		end
+		# run_callbacks :save do
+			new_record? ? create : update
+		# end
 	end	
 
-	def destroy(body)
-		run_callbacks :destroy do
-			elastic_client.delete index: topic_name, type: 'mytype', id: id
-		end
+	def destroy
+		raise Elasticsearch::Transport::Transport::Errors::BadRequest.new if new_record? || id.nil?
+		
+		self.class.destroy({index: index, type: type, id: id})
 	end
 
 	def topic
@@ -76,11 +81,13 @@ module Sensit
 	end
 
 	def topic=(record)
-		self.topic_id = record.topic_id
+		raise ::TypeError.new("Not a Node::Topic") unless record.instance_of? Node::Topic
+		self.topic_id = record.id
 	end
 
   	delegate :fields, :to => :topic, :prefix => false
 	delegate :name, :to => :topic, :prefix => true
+	delegate :node_name, :to => :topic, :prefix => false
 
 	# need a custom validation to ensure that the data value is the datatype that is expected based on the field value type and that the key is correct as well
 
@@ -108,25 +115,38 @@ private
 	end
 
 	def self.elastic_client
-		@client ||= ::Elasticsearch::Client.new log: true
+		@@client ||= ::Elasticsearch::Client.new log: true
 	end
 
-	def attributes_to_submit
-		index: 'myindex',
-              type: 'mytype',
-              id: '1',
-              body: {
-               title: 'Test 1',
-               tags: ['y', 'z'],
-               published: true,
-               published_at: Time.now.utc.iso8601,
-               counter: 1
-              }
-        body = data
-        body.merge!({at:self.at, topic_id:self.topic_id})
-		h = {index: index, type: type, body:body}
-		h.merge!(id:id) unless new_record?
-		h
+	def elastic_client
+		self.class.elastic_client
+	end
+
+	def index_attributes
+		{index: index, type: type}
+	end
+
+	def attributes_to_create
+		index_attributes.merge!({ body: self.data.merge!({at:self.at, topic_id:self.topic_id}) })
+	end
+
+	def attributes_to_update
+		index_attributes.merge!({id: id, body:{ doc: data.merge!({at:self.at, topic_id:self.topic_id})}})
+	end
+
+	def update
+		response = elastic_client.update attributes_to_update
+		response["ok"] || false
+	end
+
+	def create
+		# run_callbacks :create do
+		response = elastic_client.create attributes_to_create
+		if (response["ok"])
+			@new_record = false
+			@id = response["_id"]
+		end
+		# end
 	end
   end
 end
