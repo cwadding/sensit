@@ -35,7 +35,7 @@ describe "PUT sensit/topics#update" do
          # end
          data_arr = []
          feed = topic.feeds.first
-         feed.data_rows.each do |datum|
+         feed.values.each do |datum|
             data_arr << "{\"#{datum.key}\": \"#{datum.value}\"}"
          end
          fields_arr = []

@@ -47,7 +47,7 @@ module Sensit
       it "assigns all fields as @fields" do
         field = ::Sensit::Node::Topic::Field.create! valid_attributes
         get :index, valid_request, valid_session
-        assigns(:fields).should eq([field])
+        assigns(:fields).to_a.should eq([field])
       end
     end
 

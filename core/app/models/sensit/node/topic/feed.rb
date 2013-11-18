@@ -8,21 +8,32 @@ module Sensit
 	extend ::ActiveModel::Callbacks
 	include ::ActiveModel::Dirty
 
-  	attr_accessor :at, :data, :topic_id
+  	attr_accessor :at, :values, :topic_id
 	attr_reader :errors, :id, :type, :index
 
 	def initialize(params={})
     	@new_record = true
     	@type = params.delete(:type)
     	@index = params.delete(:index)
+    	t = params.delete(:at)
+    	if (t.kind_of?(Numeric))
+    		self.at = Time.at(t)
+    	elsif (t.kind_of?(Time) || t.kind_of?(DateTime))
+    		self.at = t
+    	elsif (t.is_a?(String) && /^[\d]+(\.[\d]+){0,1}$/ === t)
+    		self.at = Time.at(t.to_f)
+    	end
     	super(params)
     	@errors = ActiveModel::Errors.new(self)
   	end
 
   	# define_model_callbacks :create, :update, :destroy, :save
 
+	validates :index, presence: true
+	validates :type, presence: true
+	validates :topic_id, presence: true
 	validates :at, presence: true
-	validates :data, presence: true
+	validates :values, presence: true
 
   	def self.find(arguments = {})
 		result = elastic_client.get arguments
@@ -31,7 +42,7 @@ module Sensit
 
 	def self.search(arguments = {})
 		results = elastic_client.search arguments
-		results.inject([]) {|arr, result| arr << map_results(result)}
+		results["hits"]["hits"].inject([]) {|arr, result| arr << map_results(result)}
 	end
 
 	def self.percolate(arguments = {})
@@ -40,6 +51,7 @@ module Sensit
 
 	def self.count(arguments = {})
 		result = elastic_client.count arguments
+		result["count"].to_i
 	end
 
 	def self.create(arguments = {})
@@ -66,12 +78,12 @@ module Sensit
 
 	def save
 		# run_callbacks :save do
-			new_record? ? create : update
+		valid? ? (new_record? ? create : update) : false
 		# end
 	end	
 
 	def destroy
-		raise Elasticsearch::Transport::Transport::Errors::BadRequest.new if new_record? || id.nil?
+		raise ::Elasticsearch::Transport::Transport::Errors::BadRequest.new if new_record? || id.nil?
 		
 		self.class.destroy({index: index, type: type, id: id})
 	end
@@ -99,17 +111,20 @@ module Sensit
 		"Name"
 	end
 
+	def update_attributes(params)
+		values.merge!(params)
+		save
+	end
+
 private
 
 	def self.map_results(result)
 		t = result["_source"].delete("at")
 		at = Time.at(t) unless t.nil?
 		topic_id = result["_source"].delete("topic_id")
-		data = result["_source"]
-		obj = self.new({at: at, topic_id: topic_id, data: data})
+		body = result["_source"]
+		obj = self.new({index: result["_index"], type: result["_type"], at: at, topic_id: topic_id, values: body})
 		obj.instance_variable_set(:@id, result["_id"])
-		obj.instance_variable_set(:@index, result["_index"])
-		obj.instance_variable_set(:@type, result["_type"])
 		obj.instance_variable_set(:@new_record, false)
 		obj
 	end
@@ -122,17 +137,18 @@ private
 		self.class.elastic_client
 	end
 
-	def index_attributes
-		{index: index, type: type}
-	end
-
 	def attributes_to_create
-		index_attributes.merge!({ body: self.data.merge!({at:self.at, topic_id:self.topic_id}) })
+		body = {"dfads" => "dsgdf"}
+		body.merge!({at:self.at.utc.to_f, topic_id:self.topic_id})
+		{index: index, type: type, body: body}
 	end
 
 	def attributes_to_update
-		index_attributes.merge!({id: id, body:{ doc: data.merge!({at:self.at, topic_id:self.topic_id})}})
+		body = self.values.clone
+		body.merge!({at:self.at.utc.to_f, topic_id:self.topic_id})
+		{index: index, type: type, id: id, body: {doc: body} }
 	end
+
 
 	def update
 		response = elastic_client.update attributes_to_update
@@ -147,6 +163,7 @@ private
 			@id = response["_id"]
 		end
 		# end
+		response["ok"]
 	end
   end
 end

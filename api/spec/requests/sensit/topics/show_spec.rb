@@ -74,7 +74,7 @@ describe "GET sensit/topics#show" do
 			topic = @node.topics.first
 			feed = topic.feeds.first
 			data_arr = []
-			feed.data_rows.each do |datum|
+			feed.values.each do |datum|
 				data_arr << "{\"#{datum.key}\": \"#{datum.value}\"}"
 			end
 			fields_arr = []

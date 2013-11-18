@@ -22,7 +22,7 @@ describe "GET sensit/feeds#index" do
 			field_arr = topic.fields.inject([]) do |arr, field|
 				arr << "{\"key\": \"#{field.key}\",\"name\": \"#{field.name}\"}"
 			end
-			data_arr = feed.data_rows.inject([]) do |arr, datum|
+			data_arr = feed.values.inject([]) do |arr, datum|
 				arr << "{\"#{datum.key}\": \"#{datum.value}\"}"
 			end
 			response.body.should be_json_eql("{\"feeds\": [{\"at\": \"#{feed.at.strftime("%Y-%m-%dT%H:%M:%S.000Z")}\",\"data\": [#{data_arr.join(',')}],\"fields\": [#{field_arr.join(',')}]}]}")

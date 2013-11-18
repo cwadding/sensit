@@ -1,12 +1,32 @@
 require 'spec_helper'
 
 module Sensit
-  describe Node::Topic::Feed do#, :current => true do
+  describe Node::Topic::Feed do
 	it { should validate_presence_of(:at) }
-	it { should validate_presence_of(:data) }
+	it { should validate_presence_of(:values) }
 
 	before(:each) do
 		@client = ::Elasticsearch::Client.new log: true
+	end
+
+	describe ".count" do
+		context "when the index exists" do
+			before(:each) do
+				@params = {index: "transactions", type: "atm"}
+			end
+			it "executes the elastic count query" do
+				
+				@client.should_receive(:count).with(@params).and_return({"count"=>36, "_shards"=>{"total"=>5, "successful"=>5, "failed"=>0}})
+				Node::Topic::Feed.stub(:elastic_client).and_return(@client)
+				feed = Node::Topic::Feed.count(@params)
+			end
+			it "returns the number of rows" do
+				@client.stub(:count).with(@params).and_return({"count"=>36, "_shards"=>{"total"=>5, "successful"=>5, "failed"=>0}})
+				Node::Topic::Feed.stub(:elastic_client).and_return(@client)
+				feed = Node::Topic::Feed.count(@params)
+				feed.should be_an Integer
+			end
+		end
 	end
 
 	describe ".find" do
@@ -58,10 +78,10 @@ module Sensit
 
 	describe ".create" do
 		before(:each) do
-			@params = {index: 'myindex', type: 'mytype', topic_id: 3, at: Time.now, data: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}}
+			@params = {index: 'myindex', type: 'mytype', topic_id: 3, at: Time.now, values: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}}
 			@feed = Node::Topic::Feed.new(@params)
 		end
-		it "executes the create instance",:current => true do
+		it "executes the create instance" do
 			@feed.should_receive(:create).and_return(true)
 			Node::Topic::Feed.should_receive(:new).with(@params).and_return(@feed)
 			feed = Node::Topic::Feed.create(@params)
@@ -78,17 +98,18 @@ module Sensit
 	describe ".search" do
 		before(:each) do
 			@params = {index: "transactions", type: "atm", body: { query: { term: { topic_id: 1 } } } }
-			@result1 = {"_index"=>"transactions", "_type"=>"atm", "_id"=>"CXoceLLWQdaSbEDmX_MtTg", "_score"=>1.0, "_source"=>{"topic_id"=>1, "at"=> 1384487733.546266, "qwe"=>123}}
-			@result2 = {"_index"=>"transactions", "_type"=>"atm", "_id"=>"cOsusCVJQUabbfZcIdDyAg", "_score"=>1.0, "_source"=>{"topic_id"=>1, "at"=> 1384487890.546266, "qwe"=>1342323}}
+			@result1 = {"_index"=>"3","_type"=>"3","_id"=>"vVHkzUTuThOTpl-tstkzhg","_score"=>1.0, "_source" => {"at"=>1384743416.433696,"topic_id"=>3}}
+			@result2 = {"_index"=>"3","_type"=>"3","_id"=>"1ZiRp7VHSHK_-3NmoJjusQ","_score"=>1.0, "_source" => {"at"=>1384743416.530578,"topic_id"=>3}}
+			@results = {"took" => 2,"timed_out" => false, "_shards" => {"total" => 5,"successful" => 5,"failed" => 0},"hits" => {"total"=>2,"max_score"=>1.0,"hits"=>[@result1,@result2]}}
 		end
 		it "executes the elastic search query" do
-			@client.should_receive(:search).with(@params).and_return([@result1, @result2])
+			@client.should_receive(:search).with(@params).and_return(@results)
 			Node::Topic::Feed.stub(:elastic_client).and_return(@client)
 			feeds = Node::Topic::Feed.search(@params)
 		end
 
 		it "returns an array of Feeds" do
-			@client.stub(:search).and_return([@result1, @result2])
+			@client.stub(:search).and_return(@results)
 			Node::Topic::Feed.should_receive(:map_results).with(@result1).and_return(Node::Topic::Feed.new)
 			Node::Topic::Feed.should_receive(:map_results).with(@result2).and_return(Node::Topic::Feed.new)
 
@@ -119,17 +140,6 @@ module Sensit
 			Node::Topic.stub(:find).with(3).and_return(Node::Topic.new)
 			feed = Node::Topic::Feed.new(index: "transactions", type: "atm", topic_id: 3)
 			feed.topic.should be_an_instance_of Node::Topic
-		end
-	end
-
-	describe ".count" do
-		before(:each) do
-			@params = {index: "transactions", type: "atm"}
-		end
-		it "executes the percolation" do
-			@client.should_receive(:count).with(@params)
-			Node::Topic::Feed.stub(:elastic_client).and_return(@client)
-			feeds = Node::Topic::Feed.count(@params)
 		end
 	end
 
@@ -214,8 +224,8 @@ module Sensit
 
 		before(:each) do
 			@indices_client = Elasticsearch::API::Indices::IndicesClient.new(@client)
-			@feed = Node::Topic::Feed.new({index: 'myindex', type: 'mytype', topic_id: 3, at: Time.now, data: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}})
-			# @params = {index: 'myindex', type: 'mytype', topic_id: 3, at: Time.now, data: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}}
+			@feed = Node::Topic::Feed.new({index: 'myindex', type: 'mytype', topic_id: 3, at: Time.now, values: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}})
+			# @params = {index: 'myindex', type: 'mytype', topic_id: 3, at: Time.now, values: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}}
 			# {index: 'myindex',type: 'mytype', body: {title: 'Test 1',tags: ['y', 'z'], published: true, published_at: Time.now.utc.iso8601, counter: 1}}
 		end
 		# context "when the index doesn't exist (called for first time)" do
@@ -236,7 +246,7 @@ module Sensit
 			end
 			context "with valid response" do
 				it "executes the elastic create action" do
-					@client.should_receive(:create).with({:index=>"myindex", :type=>"mytype", :body=>{:title=>"Test 1", :tags=>["y", "z"], :published=>true, :counter=>1, :at=>@feed.at, :topic_id=>3}}).and_return({"ok"=>true, "_index"=>'myindex', "_type"=>'mytype', "_id"=>"8eI2kKfwSymCrhqkjnGYiA", "_version"=>1})
+					@client.should_receive(:create).with({:index=>"myindex", :type=>"mytype", :body=>{:title=>"Test 1", :tags=>["y", "z"], :published=>true, :counter=>1, :at=>@feed.at.utc.to_f, :topic_id=>3}}).and_return({"ok"=>true, "_index"=>'myindex', "_type"=>'mytype', "_id"=>"8eI2kKfwSymCrhqkjnGYiA", "_version"=>1})
 					Node::Topic::Feed.stub(:elastic_client).and_return(@client)
 					@feed.send(:create)
 				end
@@ -266,12 +276,12 @@ module Sensit
 
 	describe "#update" do
 		before(:each) do
-			@feed = Node::Topic::Feed.new({index: 'myindex', type: 'mytype', topic_id: 3, at: Time.now, data: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}})
+			@feed = Node::Topic::Feed.new({index: 'myindex', type: 'mytype', topic_id: 3, at: Time.now, values: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}})
 			@feed.stub(:id).and_return(3)
 			@feed.stub(:new_record?).and_return(false)
 		end
 		it "executes the update class action" do
-			@client.should_receive(:update).with({index: 'myindex', type: 'mytype', id: 3, body:{ doc:{ :topic_id=>3, at: @feed.at, title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}}}).and_return({"ok"=>true, "_index"=>'myindex', "_type"=>'mytype', "_id"=>"8eI2kKfwSymCrhqkjnGYiA", "_version"=>2})
+			@client.should_receive(:update).with({index: 'myindex', type: 'mytype', id: 3, body:{ doc:{ :topic_id=>3, at: @feed.at.utc.to_f, title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}}}).and_return({"ok"=>true, "_index"=>'myindex', "_type"=>'mytype', "_id"=>"8eI2kKfwSymCrhqkjnGYiA", "_version"=>2})
 			@feed.stub(:elastic_client).and_return(@client)
 			success = @feed.send(:update)
 		end
@@ -288,7 +298,7 @@ module Sensit
 
 	describe "#destroy" do
 		before(:each) do
-			@feed = Node::Topic::Feed.new({index: 'myindex', type: 'mytype', topic_id: 3, at: Time.now, data: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}})
+			@feed = Node::Topic::Feed.new({index: 'myindex', type: 'mytype', topic_id: 3, at: Time.now, values: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}})
 		end
 		context "when the record is not a new record" do
 			before(:each) do
@@ -311,7 +321,7 @@ module Sensit
 
 	describe "#save" do
 		before(:each) do
-			@feed = Node::Topic::Feed.new({index: 'myindex', type: 'mytype', topic_id: 3, at: Time.now, data: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}})
+			@feed = Node::Topic::Feed.new({index: 'myindex', type: 'mytype', topic_id: 3, at: Time.now, values: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}})
 		end
 		context "when the record is not a new record" do
 			before(:each) do

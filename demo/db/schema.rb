@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131110231858) do
+ActiveRecord::Schema.define(version: 20131117235324) do
 
   create_table "sensit_api_key_permission_restrictions", force: true do |t|
     t.integer  "api_key_permission_id"
@@ -44,21 +44,6 @@ ActiveRecord::Schema.define(version: 20131110231858) do
 
   create_table "sensit_datatypes", force: true do |t|
     t.string   "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "sensit_node_topic_feed_data_rows", force: true do |t|
-    t.integer  "feed_id"
-    t.string   "key"
-    t.string   "value"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "sensit_node_topic_feeds", force: true do |t|
-    t.integer  "topic_id"
-    t.datetime "at"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

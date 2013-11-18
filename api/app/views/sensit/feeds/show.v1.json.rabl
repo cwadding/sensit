@@ -1,10 +1,13 @@
 object @feed
-attribute :id, :at
+attributes :id
+
+node :at do |u|
+	u.at.utc.to_f
+end
+
 child :fields do
 	extends "sensit/fields/show"
 end
-child :data_rows => :data do
-	node do |u|
-		{u.key => u.value}
-	end
+node :data do |u|
+	u.values
 end

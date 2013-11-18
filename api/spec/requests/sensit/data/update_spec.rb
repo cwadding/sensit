@@ -8,7 +8,7 @@ describe "PUT sensit/data#update" do
 	# 	@node = FactoryGirl.create(:complete_node)
 	# 	@topic = @node.topics.first
 	# 	@feed = @topic.feeds.first
-	# 	@data = @feed.data_rows.first
+	# 	@values = @feed.values.first
 	# end
  #  it "" do
  #  	params = {}

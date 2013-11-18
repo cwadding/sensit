@@ -17,24 +17,24 @@ FactoryGirl.define do
     name "metric measurement"
   end
   
-  factory :data_row, :class => Sensit::Node::Topic::Feed::DataRow do
-    sequence :key do |n|
-      "key#{n}"
-    end
-    sequence :value do |n|
-      "Value#{n}"
-    end
-  end
+  # factory :data_row, :class => Sensit::Node::Topic::Feed::DataRow do
+  #   sequence :key do |n|
+  #     "key#{n}"
+  #   end
+  #   sequence :value do |n|
+  #     "Value#{n}"
+  #   end
+  # end
   
-  factory :feed, :class => Sensit::Node::Topic::Feed do
-    at Time.now
-    ignore do
-      rows_count 1
-    end
-    after(:create) do |feed, evaluator|
-      FactoryGirl.create_list(:data_row, evaluator.rows_count , feed: feed)
-    end
-  end
+  # factory :feed, :class => Sensit::Node::Topic::Feed do
+  #   at Time.now
+  #   ignore do
+  #     rows_count 1
+  #   end
+  #   # after(:create) do |feed, evaluator|
+  #     # FactoryGirl.create_list(:data_row, evaluator.rows_count , feed: feed)
+  #   # end
+  # end
 
   factory :field, :class => Sensit::Node::Topic::Field do
     sequence :name do |n|
@@ -63,8 +63,15 @@ FactoryGirl.define do
 
     factory :topic_with_feeds_and_fields do
       after(:create) do |topic, evaluator|
-        FactoryGirl.create(:field, topic: topic)
-        FactoryGirl.create(:feed, topic: topic)
+        key_arr = []
+        evaluator.fields_count.times do |i|
+          field = FactoryGirl.create(:field, topic: topic)
+          key_arr << field.key
+        end
+        evaluator.feeds_count.times do |i|
+          values = key_arr.inject({}) {|h, key| h.merge!(key => i)}
+          Sensit::Node::Topic::Feed.create({:topic_id => topic.id, index: topic.node.id.to_s, type: topic.id, at: Time.now, values: values})
+        end
       end
     end
   end
