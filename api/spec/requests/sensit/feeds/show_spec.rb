@@ -36,7 +36,7 @@ describe "GET sensit/feeds#show" do
 
 	def process_request(node)
 		topic = @node.topics.first
-		feed = topic.fields.first
+		feed = topic.feeds.first
 		get "/api/nodes/#{node.id}/topics/#{topic.id}/feeds/#{feed.id}", valid_request, valid_session
 	end
 
@@ -57,10 +57,10 @@ describe "GET sensit/feeds#show" do
 			field_arr = topic.fields.inject([]) do |arr, field|
 				arr << "{\"key\": \"#{field.key}\",\"name\": \"#{field.name}\"}"
 			end
-			data_arr = feed.values.inject([]) do |arr, datum|
-				arr << "{\"#{datum.key}\": \"#{datum.value}\"}"
+			data_arr = feed.values.inject([]) do |arr, (key, value)|
+				arr << "{\"#{key}\": \"#{value}\"}"
 			end
-			response.body.should be_json_eql("{\"at\": \"#{topic.feeds.first.at.strftime("%Y-%m-%dT%H:%M:%S.000Z")}\",\"data\": [#{data_arr.join(',')}],\"fields\": [#{field_arr.join(',')}]}")
+			response.body.should be_json_eql("{\"at\": #{feed.at.utc.to_f},\"data\": #{data_arr.join(',')},\"fields\": [#{field_arr.join(',')}]}")
 		end
 
 	end
@@ -69,14 +69,14 @@ describe "GET sensit/feeds#show" do
 		it "is unsuccessful" do
 			expect{
 			status = get "/api/nodes/1/topics/1/feeds/1", valid_request, valid_session
-			}.to raise_error(ActiveRecord::RecordNotFound)
+			}.to raise_error(Elasticsearch::Transport::Transport::Errors::NotFound)
 			#status.should == 404
 		end
 
 		it "returns the expected json" do
 			expect{
 				get "/api/nodes/1/topics/1/feeds/1", valid_request, valid_session
-			}.to raise_error(ActiveRecord::RecordNotFound)
+			}.to raise_error(Elasticsearch::Transport::Transport::Errors::NotFound)
 			
 			#response.body.should be_json_eql("{\"id\":1,\"name\":\"Test node\",\"description\":\"A description of my node\",\"topics\":[]}")
 		end

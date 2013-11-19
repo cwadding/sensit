@@ -3,7 +3,7 @@ describe "DELETE sensit/feeds#destroy" do
 
 	def process_request(node)
 		topic = @node.topics.first
-		feed = topic.fields.first
+		feed = topic.feeds.first
 		delete "/api/nodes/#{node.id}/topics/#{topic.id}/feeds/#{feed.id}", valid_request, valid_session
 	end
 
@@ -18,11 +18,11 @@ describe "DELETE sensit/feeds#destroy" do
 			status.should == 204
 		end
 
-		it "deletes the Feed" do
-          expect {
-            process_request(@node)
-          }.to change(Sensit::Node::Topic::Feed, :count).by(-1)
-        end
+		# it "deletes the Feed" do
+  #         expect {
+  #           process_request(@node)
+  #         }.to change(Sensit::Node::Topic::Feed, :count).by(-1)
+  #       end
 
         it "removes that feed from the elastic_search index"
 
@@ -32,7 +32,7 @@ describe "DELETE sensit/feeds#destroy" do
 		it "is unsuccessful" do
 			expect{
 			status = delete "/api/nodes/1/topics/1/feeds/1", valid_request, valid_session
-			}.to raise_error(ActiveRecord::RecordNotFound)
+			}.to raise_error(Elasticsearch::Transport::Transport::Errors::NotFound)
 			#status.should == 404
 		end
 	end	

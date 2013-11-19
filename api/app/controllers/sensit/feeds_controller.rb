@@ -23,8 +23,7 @@ module Sensit
 
     # POST /nodes/1/topic/1/feeds
     def create
-      @feed = Node::Topic::Feed.new(feed_params.merge!({index: params[:node_id].to_s, type: params[:topic_id].to_s, :topic_id => params[:topic_id]}))
-         # debugger      
+      @feed = Node::Topic::Feed.new(feed_params.merge!({index: params[:node_id].to_s, type: params[:topic_id].to_s, :topic_id => params[:topic_id]})) 
       if @feed.save
         respond_with(@feed,:status => 200, :template => "sensit/feeds/show")
       else
@@ -56,7 +55,7 @@ module Sensit
 
       # Only allow a trusted parameter "white list" through.
       def feed_update_params
-        params.require(:feed).require(:data).permit!
+        params.require(:feed).require(:values).permit!
       end
 
       def feed_params

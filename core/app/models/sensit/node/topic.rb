@@ -13,7 +13,7 @@ module Sensit
 	delegate :name, :to => :node, :prefix => true
 
 	def feeds
-		@feeds ||= Node::Topic::Feed.search({index: node_name, type: name, body: { query: { term: { topic_id: self.id } } }})
+		@feeds = Node::Topic::Feed.search({index: self.node_id.to_s, type: self.id.to_s, body: { query: { term: { topic_id: self.id } } }})
 	end
 
 	def create_index

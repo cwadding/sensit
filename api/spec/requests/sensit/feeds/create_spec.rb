@@ -1,5 +1,5 @@
 require 'spec_helper'
-describe "POST sensit/feeds#create", :current => true  do
+describe "POST sensit/feeds#create"  do
    # {
    #    "feed":{
    #       "timestamp":1383794969.654,
@@ -23,7 +23,7 @@ describe "POST sensit/feeds#create", :current => true  do
 
    context "with correct attributes" do
       
-      it "returns a 200 status code", :current => true do
+      it "returns a 200 status code" do
          fields = @topic.fields.map(&:key)
          values = {}
          fields.each_with_index do |field, i|

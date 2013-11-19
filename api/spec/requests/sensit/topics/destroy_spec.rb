@@ -30,13 +30,13 @@ describe "DELETE sensit/topics#destroy" do
           }.to change(Sensit::Node::Topic::Field, :count).by(-1*number_of_fields)
         end
 
-        it "deletes its feeds" do
-			number_of_feeds = @topic.feeds.count
-			number_of_feeds.should > 0
-          expect {
-            process_request(@node)
-          }.to change(Sensit::Node::Topic::Feed, :count).by(-1*number_of_feeds)
-        end        
+   #      it "deletes its feeds" do
+			# number_of_feeds = @topic.feeds.count
+			# number_of_feeds.should > 0
+   #        expect {
+   #          process_request(@node)
+   #        }.to change(Sensit::Node::Topic::Feed, :count).by(-1*number_of_feeds)
+   #      end        
 	end
 
 	context "when the node does not exists" do
