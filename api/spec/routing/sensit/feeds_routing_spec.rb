@@ -5,10 +5,6 @@ module Sensit
         routes { Sensit::Api::Engine.routes }
       describe "routing" do
 
-        it "routes to #index" do
-          get("/api/nodes/1/topics/1/feeds").should route_to("sensit/feeds#index", :node_id => "1", :topic_id => "1", format: "json")
-        end
-
         it "routes to #create" do
           post("/api/nodes/1/topics/1/feeds").should route_to("sensit/feeds#create", :node_id => "1", :topic_id => "1", format: "json")
         end

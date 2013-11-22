@@ -35,7 +35,7 @@ describe "GET sensit/feeds#show" do
 # }
 
 	def process_request(node)
-		topic = @node.topics.first
+		topic = node.topics.first
 		feed = topic.feeds.first
 		get "/api/nodes/#{node.id}/topics/#{topic.id}/feeds/#{feed.id}", valid_request, valid_session
 	end
@@ -54,9 +54,11 @@ describe "GET sensit/feeds#show" do
 			process_request(@node)
 			topic = @node.topics.first
 			feed = topic.feeds.first
+			
 			field_arr = topic.fields.inject([]) do |arr, field|
 				arr << "{\"key\": \"#{field.key}\",\"name\": \"#{field.name}\"}"
 			end
+
 			data_arr = feed.values.inject([]) do |arr, (key, value)|
 				arr << "{\"#{key}\": \"#{value}\"}"
 			end

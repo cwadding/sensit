@@ -21,12 +21,8 @@ require 'spec_helper'
 module Sensit
     describe FeedsController do
 
-      before(:all) do
+      before(:each) do
         Node::Topic::Field.create(:topic_id => 3, :key => "assf", :name => "Assf" )
-      end
-
-      after(:all) do
-        Node::Topic::Field.destory_all
       end
 
       def valid_request(h = {})
@@ -36,7 +32,7 @@ module Sensit
       # ::Sensit::Node::Topic::Feed. As you add validations to ::Sensit::Node::Topic::Feed, be sure to
       # update the return value of this method accordingly.
       def valid_attributes
-        { at: Time.now, index: "3", type: "3", topic_id: 3, values: {"assf" => "dsdsag"}}
+        { at: Time.now, index: ELASTIC_SEARCH_INDEX_NAME, type: ELASTIC_SEARCH_INDEX_TYPE, topic_id: 3, values: {"assf" => "dsdsag"}}
       end
 
       # This should return the minimal set of values that should be in the session
@@ -44,17 +40,6 @@ module Sensit
       # ::Sensit::Node::Topic::FeedsController. Be sure to keep this updated too.
       def valid_session
         {}
-      end
-
-      describe "GET index" do
-        it "assigns all feeds as @feeds" do
-          feed = ::Sensit::Node::Topic::Feed.create valid_attributes
-          get :index, valid_request(), valid_session
-          assigns(:feeds).should be_an Array
-          assigns(:feeds).each do |feed|
-            feed.should be_a ::Sensit::Node::Topic::Feed
-          end
-        end
       end
 
       describe "GET show" do
@@ -67,12 +52,13 @@ module Sensit
 
       describe "POST create" do
         describe "with valid params" do
-          # it "creates a new ::Sensit::Node::Topic::Feed" do
-          #   expect {
-          #     post :create, valid_request(topic_id: 5, node_id: 5, :feed => { :at => Time.now, :values => {"assf" => "fssa"} }), valid_session
-          #     sleep(1)
-          #   }.to change{::Sensit::Node::Topic::Feed.count({index: "5", type: "5"})}.by(1)
-          # end
+          it "creates a new ::Sensit::Node::Topic::Feed" do
+            client = ::Elasticsearch::Client.new
+            expect {
+              post :create, valid_request(topic_id: 5, node_id: 5, :feed => { :at => Time.now, :values => {"assf" => "fssa"} }), valid_session
+              client.indices.refresh(:index => ELASTIC_SEARCH_INDEX_NAME)
+            }.to change{::Sensit::Node::Topic::Feed.count({index: ELASTIC_SEARCH_INDEX_NAME, type: ELASTIC_SEARCH_INDEX_TYPE})}.by(1)
+          end
 
           it "assigns a newly created feed as @feed" do
             post :create, valid_request(:feed => { :at => Time.now, :values => {"assf" => "fssa"} }), valid_session
@@ -148,15 +134,15 @@ module Sensit
       end
 
       describe "DELETE destroy" do
-        # it "destroys the requested feed" do
-        #   feed = ::Sensit::Node::Topic::Feed.create valid_attributes
-        #   client = ::Elasticsearch::Client.new log: true
-        #   client.indices.create ({index: "4", type: "4"})
-        #   expect {
-        #     delete :destroy, valid_request(topic_id: 4, node_id: 4, :id => feed.id), valid_session
-        #     sleep(1)
-        #   }.to change{::Sensit::Node::Topic::Feed.count({index: "4", type: "4"})}.by(-1)
-        # end
+        it "destroys the requested feed" do
+          feed = ::Sensit::Node::Topic::Feed.create valid_attributes
+          client = ::Elasticsearch::Client.new
+          client.indices.refresh(:index => ELASTIC_SEARCH_INDEX_NAME)
+          expect {
+            delete :destroy, valid_request(topic_id: 4, node_id: 4, :id => feed.id), valid_session
+            client.indices.refresh(:index => ELASTIC_SEARCH_INDEX_NAME)
+          }.to change{::Sensit::Node::Topic::Feed.count({index: ELASTIC_SEARCH_INDEX_NAME, type: ELASTIC_SEARCH_INDEX_TYPE})}.by(-1)
+        end
 
         it "redirects to the feeds list" do
           feed = ::Sensit::Node::Topic::Feed.create valid_attributes

@@ -130,7 +130,7 @@ private
 	end
 
 	def self.elastic_client
-		@@client ||= ::Elasticsearch::Client.new log: true
+		@@client ||= ::Elasticsearch::Client.new
 	end
 
 	def elastic_client
@@ -138,7 +138,7 @@ private
 	end
 
 	def attributes_to_create
-		body = {"dfads" => "dsgdf"}
+		body = values
 		body.merge!({at:self.at.utc.to_f, topic_id:self.topic_id})
 		{index: index, type: type, body: body}
 	end

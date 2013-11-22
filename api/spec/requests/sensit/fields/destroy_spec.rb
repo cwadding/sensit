@@ -29,7 +29,7 @@ describe "DELETE sensit/fields#destroy" do
 	context "when the field does not exist" do
 		it "is unsuccessful" do
 			expect{
-			status = delete "/api/nodes/1/topics/1/fields/1", valid_request, valid_session
+				status = delete "/api/nodes/1/topics/1/fields/1", valid_request, valid_session
 			}.to raise_error(ActiveRecord::RecordNotFound)
 			#status.should == 404
 		end

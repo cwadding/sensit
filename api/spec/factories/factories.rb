@@ -70,7 +70,9 @@ FactoryGirl.define do
         end
         evaluator.feeds_count.times do |i|
           values = key_arr.inject({}) {|h, key| h.merge!(key => i)}
-          Sensit::Node::Topic::Feed.create({:topic_id => topic.id, index: topic.node.id.to_s, type: topic.id, at: Time.now, values: values})
+          client = ::Elasticsearch::Client.new
+          Sensit::Node::Topic::Feed.create({:topic_id => topic.id, index: ELASTIC_SEARCH_INDEX_NAME, type: ELASTIC_SEARCH_INDEX_TYPE, at: Time.now, values: values})
+          client.indices.refresh(:index => ELASTIC_SEARCH_INDEX_NAME)
         end
       end
     end

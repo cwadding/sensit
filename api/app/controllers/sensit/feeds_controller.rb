@@ -4,17 +4,6 @@ module Sensit
   class FeedsController < ApiController
     before_action :set_feed, only: [:show, :update, :destroy]
     respond_to :json
-    # GET /nodes/1/topics/1/feeds
-    def index
-      @feeds = []
-      if params.has_key?(:body)
-        @feeds = Node::Topic::Feed.search({index: params[:node_id].to_s, type: params[:topic_id].to_s, body: params[:body]})
-      else
-        @feeds = Node::Topic::Feed.search({index: params[:node_id].to_s, type: params[:topic_id].to_s})
-      end
-      
-      respond_with(@feeds)
-    end
 
     # GET /nodes/1/topics/1/feeds/1
     def show
@@ -23,7 +12,7 @@ module Sensit
 
     # POST /nodes/1/topic/1/feeds
     def create
-      @feed = Node::Topic::Feed.new(feed_params.merge!({index: params[:node_id].to_s, type: params[:topic_id].to_s, :topic_id => params[:topic_id]})) 
+      @feed = Node::Topic::Feed.new(feed_params.merge!({index: elastic_index_name, type: elastic_type_name, :topic_id => params[:topic_id]})) 
       if @feed.save
         respond_with(@feed,:status => 200, :template => "sensit/feeds/show")
       else
@@ -43,14 +32,21 @@ module Sensit
 
     # DELETE /nodes/1/topics/1/feeds/1
     def destroy
-      Node::Topic::Feed.destroy({index: params[:node_id].to_s, type: params[:topic_id].to_s, id:  params[:id].to_s})
+      Node::Topic::Feed.destroy({index: elastic_index_name, type: elastic_type_name, id:  params[:id].to_s})
       head :status => 204
     end
 
     private
+
+      def elastic_index_name
+        Rails.env.test? ? ELASTIC_SEARCH_INDEX_NAME : params[:node_id].to_s
+      end
+      def elastic_type_name
+        Rails.env.test? ? ELASTIC_SEARCH_INDEX_TYPE : params[:topic_id].to_s
+      end      
       # Use callbacks to share common setup or constraints between actions.
       def set_feed
-        @feed = Node::Topic::Feed.find({index: params[:node_id].to_s, type: params[:topic_id].to_s, id:  params[:id].to_s})
+        @feed = Node::Topic::Feed.find({index: elastic_index_name, type: elastic_type_name, id:  params[:id].to_s})
       end
 
       # Only allow a trusted parameter "white list" through.

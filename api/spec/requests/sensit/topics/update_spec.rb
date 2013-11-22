@@ -29,21 +29,21 @@ describe "PUT sensit/topics#update" do
       it "returns the expected json" do
          process_request(@node, @params)
          topic = @node.topics.first
-         # feeds_arr = []
-         # topic.feeds.each do |feed|
-
-         # end
-         data_arr = []
          feed = topic.feeds.first
-         feed.values.each do |key,value|
-            data_arr << "{\"#{key}\": \"#{value}\"}"
+         feeds_arr = []
+
+         topic.feeds.each do |feed|
+            data_arr = []
+            feed.values.each do |key, value|
+               data_arr << "\"#{key}\": \"#{value}\""
+            end
+            feeds_arr << "{\"at\":#{feed.at.utc.to_f}, \"data\":{#{data_arr.join(',')}}}"
          end
          fields_arr = []
          topic.fields.each do |field|
             fields_arr << "{\"key\": \"#{field.key}\",\"name\": \"#{field.name}\"}"
-         end         
-         expect(response).to render_template(:show)
-         response.body.should be_json_eql("{\"id\":1,\"description\": \"new description\",\"feeds\": [{\"data\": [#{data_arr.join(',')}]}],\"fields\": [#{fields_arr.join(',')}],\"name\": \"New topic name\"}")
+         end
+         response.body.should be_json_eql("{\"id\":1,\"description\": \"#{@params[:topic][:description]}\",\"feeds\": [#{feeds_arr.join(',')}],\"fields\": [#{fields_arr.join(',')}],\"name\": \"#{@params[:topic][:name]}\"}")
 
       end
 

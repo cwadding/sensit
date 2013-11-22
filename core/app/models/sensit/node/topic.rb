@@ -12,8 +12,14 @@ module Sensit
 
 	delegate :name, :to => :node, :prefix => true
 
-	def feeds
-		@feeds = Node::Topic::Feed.search({index: self.node_id.to_s, type: self.id.to_s, body: { query: { term: { topic_id: self.id } } }})
+	def feeds(params = nil)
+		
+      if params.nil?
+        Node::Topic::Feed.search({index: elastic_index_name, type: elastic_type_name, body: { query: { term: { topic_id: self.id } } }})
+      else
+		params.deep_merge!({ query: { term: { topic_id: self.id } } })
+        Node::Topic::Feed.search({index: elastic_index_name, type: elastic_type_name, body: params})
+      end
 	end
 
 	def create_index
@@ -72,5 +78,12 @@ private
 	def destroy_feeds
 		# elastic_client.
 	end
+
+	def elastic_index_name
+		Rails.env.test? ? ELASTIC_SEARCH_INDEX_NAME : self.node_id.to_s
+	end
+	def elastic_type_name
+		Rails.env.test? ? ELASTIC_SEARCH_INDEX_TYPE : self.id.to_s
+	end   
   end
 end

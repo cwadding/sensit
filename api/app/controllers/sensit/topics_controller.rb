@@ -12,7 +12,8 @@ module Sensit
 
     # GET /nodes/1/topics/1
     def show
-        respond_with(@topic)
+        @body = params.delete(:body)
+        respond_with({topic: @topic, query: @body})
     end
 
     # POST /nodes/1/topics

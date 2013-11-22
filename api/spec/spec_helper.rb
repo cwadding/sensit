@@ -40,13 +40,28 @@ RSpec.configure do |config|
   # automatically. This will be the default behavior in future versions of
   # rspec-rails.
   config.infer_base_class_for_anonymous_controllers = false
-  
 
   config.around do |example|
       ActiveRecord::Base.transaction do
         example.run
         raise ActiveRecord::Rollback
       end
+  end
+
+  config.before(:all) do
+    client = ::Elasticsearch::Client.new
+    client.indices.create({index: ELASTIC_SEARCH_INDEX_NAME, :body => {:settings => {:index => {:store => {:type => :memory}}}}})
+  end
+
+  config.after(:each) do
+    client = ::Elasticsearch::Client.new
+    client.indices.flush(index: ELASTIC_SEARCH_INDEX_NAME, refresh: true)
+  end
+
+
+  config.after(:all) do
+    client = ::Elasticsearch::Client.new
+    client.indices.delete(index: ELASTIC_SEARCH_INDEX_NAME)
   end
 
   # config.before(:suite) do

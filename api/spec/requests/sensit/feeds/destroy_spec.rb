@@ -18,11 +18,13 @@ describe "DELETE sensit/feeds#destroy" do
 			status.should == 204
 		end
 
-		# it "deletes the Feed" do
-  #         expect {
-  #           process_request(@node)
-  #         }.to change(Sensit::Node::Topic::Feed, :count).by(-1)
-  #       end
+		it "deletes the Feed" do
+			client = ::Elasticsearch::Client.new
+          expect {
+            process_request(@node)
+            client.indices.refresh(:index => ELASTIC_SEARCH_INDEX_NAME)
+          }.to change(Sensit::Node::Topic::Feed, :count).by(-1)
+        end
 
         it "removes that feed from the elastic_search index"
 
@@ -31,7 +33,7 @@ describe "DELETE sensit/feeds#destroy" do
 	context "when the field does not exist" do
 		it "is unsuccessful" do
 			expect{
-			status = delete "/api/nodes/1/topics/1/feeds/1", valid_request, valid_session
+				status = delete "/api/nodes/1/topics/1/feeds/1", valid_request, valid_session
 			}.to raise_error(Elasticsearch::Transport::Transport::Errors::NotFound)
 			#status.should == 404
 		end
