@@ -1,5 +1,5 @@
 module Sensit
-  class Node::Topic::Feed
+  class Node::Percolator
   	include ::ActiveModel::Model
   	    #  extend  ActiveModel::Naming
         # extend  ActiveModel::Translation
@@ -8,67 +8,60 @@ module Sensit
 	extend ::ActiveModel::Callbacks
 	include ::ActiveModel::Dirty
 
-  	attr_accessor :at, :values, :topic_id
-	attr_reader :errors, :id, :type, :index
+  	attr_accessor :id, :body, :type
+	attr_reader :errors
 
 	def initialize(params={})
     	@new_record = true
-    	@type = params.delete(:type)
-    	@index = params.delete(:index)
-    	t = params.delete(:at)
-    	if (t.kind_of?(Numeric))
-    		self.at = Time.at(t)
-    	elsif (t.kind_of?(Time) || t.kind_of?(DateTime))
-    		self.at = t
-    	elsif (t.is_a?(String) && /^[\d]+(\.[\d]+){0,1}$/ === t)
-    		self.at = Time.at(t.to_f)
-    	end
     	super(params)
     	@errors = ActiveModel::Errors.new(self)
   	end
 
   	# define_model_callbacks :create, :update, :destroy, :save
 
-	validates :index, presence: true
 	validates :type, presence: true
-	validates :topic_id, presence: true
-	validates :at, presence: true
-	validates :values, presence: true
+	validates :id, presence: true
+	validates :body, presence: true
 
   	def self.find(arguments = {})
-		result = elastic_client.get arguments
+  		# Should make sure that it has a id index  and type
+		result = elastic_client.get arguments.merge({index: elastic_index_name})
 		result.nil? ? nil : map_results(result)
   	end
 
 	def self.search(arguments = {})
-		results = elastic_client.search arguments
+		# Should make sure that it has a id index  and type
+		results = elastic_client.search arguments.merge({index: elastic_index_name})
 		results["hits"]["hits"].inject([]) {|arr, result| arr << map_results(result)}
 	end
 
-	def self.percolate(arguments = {})
-		result = elastic_client.percolate arguments
-	end
-
 	def self.count(arguments = {})
-		result = elastic_client.count arguments
+		result = elastic_client.count arguments.merge({index: elastic_index_name})
 		result["count"].to_i
 	end
 
 	def self.create(arguments = {})
-		feed = self.new(arguments)
-		feed.send(:create)
-		feed
+		percolator = self.new(arguments)
+		percolator.send(:create)
+		percolator
+	end
+
+	def self.update(arguments = {})
+		percolator = self.new(arguments)
+		percolator.send(:update)
+		percolator.instance_variable_set(:@new_record, false)
+		percolator
 	end
 
 	def self.destroy(arguments = {})
 		# run_callbacks :destroy do
-			elastic_client.delete arguments
+			elastic_client.delete arguments.merge(index: elastic_index_name)
 		# end
 	end
 
 	def self.destroy_all(arguments = {})
 		# run_callbacks :destroy do
-			elastic_client.indices.delete arguments
+			elastic_client.indices.delete arguments.merge(index: elastic_index_name)
 		# end
 	end
 
@@ -85,26 +78,13 @@ module Sensit
 	def destroy
 		raise ::Elasticsearch::Transport::Transport::Errors::BadRequest.new if new_record? || id.nil?
 		
-		self.class.destroy({index: index, type: type, id: id})
+		self.class.destroy({index: elastic_index_name, type: type, id: id})
 	end
-
-	def topic
-		@topic ||= Node::Topic.find(self.topic_id)
-	end
-
-	def topic=(record)
-		raise ::TypeError.new("Not a Node::Topic") unless record.instance_of? Node::Topic
-		self.topic_id = record.id
-	end
-
-  	delegate :fields, :to => :topic, :prefix => false
-	delegate :name, :to => :topic, :prefix => true
-	delegate :node_name, :to => :topic, :prefix => false
 
 	# need a custom validation to ensure that the data value is the datatype that is expected based on the field value type and that the key is correct as well
 
 	def validate!
-		errors.add(:name, "can not be nil") if name.nil?
+		errors.add(:id, "can not be nil") if id.nil?
 	end
 
 	def self.human_attribute_name(attr, options = {})
@@ -112,19 +92,14 @@ module Sensit
 	end
 
 	def update_attributes(params)
-		values.merge!(params)
+		body = params
 		save
 	end
 
 private
 
 	def self.map_results(result)
-		t = result["_source"].delete("at")
-		at = Time.at(t) unless t.nil?
-		topic_id = result["_source"].delete("topic_id")
-		body = result["_source"]
-		obj = self.new({index: result["_index"], type: result["_type"], at: at, topic_id: topic_id, values: body})
-		obj.instance_variable_set(:@id, result["_id"])
+		obj = self.new({type: result["_type"], id: result["_id"], body: result["_source"]})
 		obj.instance_variable_set(:@new_record, false)
 		obj
 	end
@@ -138,15 +113,11 @@ private
 	end
 
 	def attributes_to_create
-		body = self.values.clone
-		body.merge!({at:self.at.utc.to_f, topic_id:self.topic_id})
-		{index: index, type: type, body: body}
+		{index: elastic_index_name, type: type, id: id, body: body}
 	end
 
 	def attributes_to_update
-		body = self.values.clone
-		body.merge!({at:self.at.utc.to_f, topic_id:self.topic_id})
-		{index: index, type: type, id: id, body: {doc: body} }
+		{index: elastic_index_name, type: type, id: id, body: {doc: body} }
 	end
 
 
@@ -160,11 +131,18 @@ private
 		response = elastic_client.create attributes_to_create
 		if (response["ok"])
 			@new_record = false
-			@id = response["_id"]
 		end
 		# end
 		response["ok"]
 	end
+
+	def self.elastic_index_name
+		@@index ||= Rails.env.test? ? ELASTIC_SEARCH_INDEX_NAME : "_percolator"
+	end
+
+	def elastic_index_name
+		self.class.elastic_index_name
+	end	
   end
 end
 

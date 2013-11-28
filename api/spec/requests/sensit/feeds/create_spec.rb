@@ -39,7 +39,7 @@ describe "POST sensit/feeds#create"  do
          status.should == 200
       end
 
-      it "returns the expected json" do
+      it "returns the expected json", :current => true do
          fields = @topic.fields.map(&:key)
          values = {}
          fields.each_with_index do |field, i|
@@ -57,7 +57,6 @@ describe "POST sensit/feeds#create"  do
          field_arr = @topic.fields.inject([]) do |arr, field|
             arr << "{\"key\": \"#{field.key}\",\"name\": \"#{field.name}\"}"
          end
-
          response.body.should be_json_eql("{\"at\": #{params[:feed][:at]},\"data\": #{values.to_json},\"fields\": [#{field_arr.join(",")}]}")
       end
 

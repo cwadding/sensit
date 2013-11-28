@@ -34,7 +34,7 @@ describe "PUT sensit/feeds#update" do
 			field_arr = @topic.fields.inject([]) do |arr, field|
 				arr << "{\"key\": \"#{field.key}\",\"name\": \"#{field.name}\"}"
 			end
-			values.merge!(@feed.values)
+			# values.merge!(@feed.values)
 			data_arr = values.inject([]) do |arr, (key, value)|
 				arr << "\"#{key}\": \"#{value}\""
 			end
