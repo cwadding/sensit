@@ -1,22 +1,22 @@
-require_dependency "sensit/base_controller"
+require_dependency "sensit/api_controller"
 
 module Sensit
   class DataController < ApiController
     before_action :set_feed, only: [:show, :update, :destroy]
     respond_to :json
-    # GET /nodes/1/topics/1/feeds/1/data
+    # GET /topics/1/feeds/1/data
     def index
-      # @values = Node::Topic::Feed::DataRow.where(feed_id: params[:feed_id])
+      # @values = Topic::Feed::DataRow.where(feed_id: params[:feed_id])
     end
 
-    # GET /nodes/topics/feeds/data/1
+    # GET topics/1/feeds/1/data/1
     def show
     end
 
-    # POST /nodes/topics/feeds/data
+    # POST topics/1/feeds/1/data
     def create
-      feed = Node::Topic::Feed.find(params[:feed_id])
-      # @values = Node::Topic::Feed::DataRow.new(data_params)
+      feed = Topic::Feed.find(params[:feed_id])
+      # @values = Topic::Feed::DataRow.new(data_params)
       # @data.feed = feed
       # if @data.save
       # else
@@ -24,7 +24,7 @@ module Sensit
       respond_with(@feed,:status => 200, :template => "sensit/data/show")
     end
 
-    # PATCH/PUT /nodes/topics/feeds/data/1
+    # PATCH/PUT topics/1/feeds/1/data/1
     def update
       # if @data.update(data_params)
       # else
@@ -32,7 +32,7 @@ module Sensit
       # respond_with(@data,:status => 200, :template => "sensit/data/show")
     end
 
-    # DELETE /nodes/topics/feeds/data/1
+    # DELETE topics/1/feeds/1/data/1
     def destroy
       @data.destroy
       respond_with(@data, :status => 204)
@@ -41,7 +41,7 @@ module Sensit
     private
       # Use callbacks to share common setup or constraints between actions.
       def set_feed
-        @feed = Node::Topic::Feed.find(params[:id])
+        @feed = Topic::Feed.find(params[:id])
       end
 
       # Only allow a trusted parameter "white list" through.

@@ -22,14 +22,14 @@ module Sensit
     describe FeedsController do
 
       before(:each) do
-        Node::Topic::Field.create(:topic_id => 3, :key => "assf", :name => "Assf" )
+        Topic::Field.create(:topic_id => 3, :key => "assf", :name => "Assf" )
       end
 
       def valid_request(h = {})
         h.merge!({topic_id: 3, node_id: 3, :use_route => :sensit_api, :format => "json", :api_version => 1})
       end
       # This should return the minimal set of attributes required to create a valid
-      # ::Sensit::Node::Topic::Feed. As you add validations to ::Sensit::Node::Topic::Feed, be sure to
+      # ::Sensit::Topic::Feed. As you add validations to ::Sensit::Topic::Feed, be sure to
       # update the return value of this method accordingly.
       def valid_attributes
         { at: Time.now, index: ELASTIC_SEARCH_INDEX_NAME, type: ELASTIC_SEARCH_INDEX_TYPE, topic_id: 3, values: {"assf" => "dsdsag"}}
@@ -37,14 +37,14 @@ module Sensit
 
       # This should return the minimal set of values that should be in the session
       # in order to pass any filters (e.g. authentication) defined in
-      # ::Sensit::Node::Topic::FeedsController. Be sure to keep this updated too.
+      # ::Sensit::Topic::FeedsController. Be sure to keep this updated too.
       def valid_session
         {}
       end
 
       describe "GET show" do
         it "assigns the requested feed as @feed" do
-          feed = ::Sensit::Node::Topic::Feed.create valid_attributes
+          feed = ::Sensit::Topic::Feed.create valid_attributes
           get :show, valid_request(:id => feed.id), valid_session
           assigns(:feed).id.should eq(feed.id)
         end
@@ -52,17 +52,17 @@ module Sensit
 
       describe "POST create" do
         describe "with valid params" do
-          it "creates a new ::Sensit::Node::Topic::Feed" do
+          it "creates a new ::Sensit::Topic::Feed" do
             client = ::Elasticsearch::Client.new
             expect {
               post :create, valid_request(topic_id: 5, node_id: 5, :feed => { :at => Time.now, :values => {"assf" => "fssa"} }), valid_session
               client.indices.refresh(:index => ELASTIC_SEARCH_INDEX_NAME)
-            }.to change{::Sensit::Node::Topic::Feed.count({index: ELASTIC_SEARCH_INDEX_NAME, type: ELASTIC_SEARCH_INDEX_TYPE})}.by(1)
+            }.to change{::Sensit::Topic::Feed.count({index: ELASTIC_SEARCH_INDEX_NAME, type: ELASTIC_SEARCH_INDEX_TYPE})}.by(1)
           end
 
           it "assigns a newly created feed as @feed" do
             post :create, valid_request(:feed => { :at => Time.now, :values => {"assf" => "fssa"} }), valid_session
-            assigns(:feed).should be_a(::Sensit::Node::Topic::Feed)
+            assigns(:feed).should be_a(::Sensit::Topic::Feed)
             # assigns(:feed).should_not be_a_new_record
           end
 
@@ -75,14 +75,14 @@ module Sensit
         describe "with invalid params" do
           it "assigns a newly created but unsaved feed as @feed" do
             # Trigger the behavior that occurs when invalid params are submitted
-            ::Sensit::Node::Topic::Feed.any_instance.stub(:save).and_return(false)
+            ::Sensit::Topic::Feed.any_instance.stub(:save).and_return(false)
             post :create, valid_request(:feed => { :at => Time.now, :values => {"assf" => "fssa"} }), valid_session
-            assigns(:feed).should be_a_new(::Sensit::Node::Topic::Feed)
+            assigns(:feed).should be_a_new(::Sensit::Topic::Feed)
           end
 
           it "re-renders the 'new' template" do
             # Trigger the behavior that occurs when invalid params are submitted
-            ::Sensit::Node::Topic::Feed.any_instance.stub(:save).and_return(false)
+            ::Sensit::Topic::Feed.any_instance.stub(:save).and_return(false)
             post :create, valid_request(:feed => { :at => Time.now, :values => {"assf" => "fssa"} }), valid_session
             response.status.should == 422
           end
@@ -92,23 +92,23 @@ module Sensit
       describe "PUT update" do
         describe "with valid params" do
           it "updates the requested feed" do
-            feed = ::Sensit::Node::Topic::Feed.create valid_attributes
+            feed = ::Sensit::Topic::Feed.create valid_attributes
             # Assuming there are no other feed_feeds in the database, this
-            # specifies that the ::Sensit::Node::Topic::Feed created on the previous line
+            # specifies that the ::Sensit::Topic::Feed created on the previous line
             # receives the :update_attributes message with whatever params are
             # submitted in the request.
-            ::Sensit::Node::Topic::Feed.any_instance.should_receive(:update_attributes).with({"assf" => "fssa"})
+            ::Sensit::Topic::Feed.any_instance.should_receive(:update_attributes).with({"assf" => "fssa"})
             put :update, valid_request(:id => feed.id, :feed => { :at => Time.now, :values => {"assf" => "fssa"} }), valid_session
           end
 
           it "assigns the requested feed as @feed" do
-            feed = ::Sensit::Node::Topic::Feed.create valid_attributes
+            feed = ::Sensit::Topic::Feed.create valid_attributes
             put :update, valid_request(:id => feed.id, :feed => { :at => Time.now, :values => {"assf" => "fssa"} }), valid_session
             assigns(:feed).id.should == feed.id
           end
 
           it "renders the feed" do
-            feed = ::Sensit::Node::Topic::Feed.create valid_attributes
+            feed = ::Sensit::Topic::Feed.create valid_attributes
             put :update, valid_request(:id => feed.id, :feed => { :at => Time.now, :values => {"assf" => "fssa"} }), valid_session
             response.should render_template("sensit/feeds/show")
           end
@@ -116,17 +116,17 @@ module Sensit
 
         describe "with invalid params" do
           it "assigns the feed as @feed" do
-            feed = ::Sensit::Node::Topic::Feed.create valid_attributes
+            feed = ::Sensit::Topic::Feed.create valid_attributes
             # Trigger the behavior that occurs when invalid params are submitted
-            ::Sensit::Node::Topic::Feed.any_instance.stub(:save).and_return(false)
+            ::Sensit::Topic::Feed.any_instance.stub(:save).and_return(false)
             put :update, valid_request(:id => feed.id, :feed => { :at => Time.now, :values => {"assf" => "fssa"} } ), valid_session
             assigns(:feed).id.should == feed.id
           end
 
           it "re-renders the 'edit' template" do
-            feed = ::Sensit::Node::Topic::Feed.create valid_attributes
+            feed = ::Sensit::Topic::Feed.create valid_attributes
             # Trigger the behavior that occurs when invalid params are submitted
-            ::Sensit::Node::Topic::Feed.any_instance.stub(:save).and_return(false)
+            ::Sensit::Topic::Feed.any_instance.stub(:save).and_return(false)
             put :update, valid_request(:id => feed.id, :feed => { :at => Time.now, :values => {"assf" => "fssa"} } ), valid_session
             response.status.should == 422
           end
@@ -135,17 +135,17 @@ module Sensit
 
       describe "DELETE destroy" do
         it "destroys the requested feed" do
-          feed = ::Sensit::Node::Topic::Feed.create valid_attributes
+          feed = ::Sensit::Topic::Feed.create valid_attributes
           client = ::Elasticsearch::Client.new
           client.indices.refresh(:index => ELASTIC_SEARCH_INDEX_NAME)
           expect {
-            delete :destroy, valid_request(topic_id: 4, node_id: 4, :id => feed.id), valid_session
+            delete :destroy, valid_request(topic_id: 4, :id => feed.id), valid_session
             client.indices.refresh(:index => ELASTIC_SEARCH_INDEX_NAME)
-          }.to change{::Sensit::Node::Topic::Feed.count({index: ELASTIC_SEARCH_INDEX_NAME, type: ELASTIC_SEARCH_INDEX_TYPE})}.by(-1)
+          }.to change{::Sensit::Topic::Feed.count({index: ELASTIC_SEARCH_INDEX_NAME, type: ELASTIC_SEARCH_INDEX_TYPE})}.by(-1)
         end
 
         it "redirects to the feeds list" do
-          feed = ::Sensit::Node::Topic::Feed.create valid_attributes
+          feed = ::Sensit::Topic::Feed.create valid_attributes
           delete :destroy, valid_request(:id => feed.id), valid_session
           response.status.should == 204
         end

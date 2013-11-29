@@ -2,13 +2,11 @@ require 'spec_helper'
 describe "PUT sensit/topics#update" do
 
    before(:each) do
-      @node = FactoryGirl.create(:complete_node)
-      @topic = @node.topics.first
+      @topic = FactoryGirl.create(:topic_with_feeds_and_fields)
    end
 
-   def process_request(node, params)
-   	  topic = node.topics.first
-      put "/api/nodes/#{node.id}/topics/#{topic.id}", valid_request(params), valid_session
+   def process_request(topic, params)
+      put "/api/topics/#{topic.id}", valid_request(params), valid_session
    end
 
    context "with updated attributes" do
@@ -22,17 +20,15 @@ describe "PUT sensit/topics#update" do
       end
 
       it "returns a 200 status code" do
-         status = process_request(@node, @params)
+         status = process_request(@topic, @params)
          status.should == 200
       end
 
       it "returns the expected json" do
-         process_request(@node, @params)
-         topic = @node.topics.first
-         feed = topic.feeds.first
+         process_request(@topic, @params)
          feeds_arr = []
 
-         topic.feeds.each do |feed|
+         @topic.feeds.each do |feed|
             data_arr = []
             feed.values.each do |key, value|
                data_arr << "\"#{key}\": #{value}"
@@ -40,7 +36,7 @@ describe "PUT sensit/topics#update" do
             feeds_arr << "{\"at\":#{feed.at.utc.to_f}, \"data\":{#{data_arr.join(',')}}}"
          end
          fields_arr = []
-         topic.fields.each do |field|
+         @topic.fields.each do |field|
             fields_arr << "{\"key\": \"#{field.key}\",\"name\": \"#{field.name}\"}"
          end
          response.body.should be_json_eql("{\"id\":1,\"description\": \"#{@params[:topic][:description]}\",\"feeds\": [#{feeds_arr.join(',')}],\"fields\": [#{fields_arr.join(',')}],\"name\": \"#{@params[:topic][:name]}\"}")
@@ -48,8 +44,8 @@ describe "PUT sensit/topics#update" do
       end
 
       it "updates the existing Topic" do
-			process_request(@node, @params)
-			updated_topic = Sensit::Node::Topic.find(@topic.id)
+			process_request(@topic, @params)
+			updated_topic = Sensit::Topic.find(@topic.id)
 			updated_topic.name.should == "New topic name"
 			updated_topic.description.should == "new description"
         end

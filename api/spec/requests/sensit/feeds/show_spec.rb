@@ -34,28 +34,26 @@ describe "GET sensit/feeds#show" do
 #    }
 # }
 
-	def process_request(node)
-		topic = node.topics.first
+	def process_request(topic)
 		feed = topic.feeds.first
-		get "/api/nodes/#{node.id}/topics/#{topic.id}/feeds/#{feed.id}", valid_request, valid_session
+		get "/api/topics/#{topic.id}/feeds/#{feed.id}", valid_request, valid_session
 	end
 
 
 	context "when the feed exists" do
 		before(:each) do
-			@node = FactoryGirl.create(:complete_node)
+			@topic = FactoryGirl.create(:topic_with_feeds_and_fields)
 		end
 		it "is successful" do
-			status = process_request(@node)
+			status = process_request(@topic)
 			status.should == 200
 		end
 
 		it "returns the expected json" do
-			process_request(@node)
-			topic = @node.topics.first
-			feed = topic.feeds.first
+			process_request(@topic)
+			feed = @topic.feeds.first
 			
-			field_arr = topic.fields.inject([]) do |arr, field|
+			field_arr = @topic.fields.inject([]) do |arr, field|
 				arr << "{\"key\": \"#{field.key}\",\"name\": \"#{field.name}\"}"
 			end
 
@@ -70,14 +68,14 @@ describe "GET sensit/feeds#show" do
 	context "when the field does not exist" do
 		it "is unsuccessful" do
 			expect{
-			status = get "/api/nodes/1/topics/1/feeds/1", valid_request, valid_session
+			status = get "/api/topics/1/feeds/1", valid_request, valid_session
 			}.to raise_error(Elasticsearch::Transport::Transport::Errors::NotFound)
 			#status.should == 404
 		end
 
 		it "returns the expected json" do
 			expect{
-				get "/api/nodes/1/topics/1/feeds/1", valid_request, valid_session
+				get "/api/topics/1/feeds/1", valid_request, valid_session
 			}.to raise_error(Elasticsearch::Transport::Transport::Errors::NotFound)
 			
 			#response.body.should be_json_eql("{\"id\":1,\"name\":\"Test node\",\"description\":\"A description of my node\",\"topics\":[]}")

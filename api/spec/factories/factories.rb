@@ -2,6 +2,11 @@
 
 FactoryGirl.define do
 
+  factory :api_key, :class => Sensit::ApiKey do
+    user_id 1
+    name "my_api_key"
+  end
+
   factory :datatype, :class => Sensit::Datatype do
     name "integer"
   end
@@ -17,7 +22,7 @@ FactoryGirl.define do
     name "metric measurement"
   end
   
-  # factory :data_row, :class => Sensit::Node::Topic::Feed::DataRow do
+  # factory :data_row, :class => Sensit::Topic::Feed::DataRow do
   #   sequence :key do |n|
   #     "key#{n}"
   #   end
@@ -26,7 +31,7 @@ FactoryGirl.define do
   #   end
   # end
   
-  # factory :feed, :class => Sensit::Node::Topic::Feed do
+  # factory :feed, :class => Sensit::Topic::Feed do
   #   at Time.now
   #   ignore do
   #     rows_count 1
@@ -36,7 +41,7 @@ FactoryGirl.define do
   #   # end
   # end
 
-  factory :field, :class => Sensit::Node::Topic::Field do
+  factory :field, :class => Sensit::Topic::Field do
     sequence :name do |n|
       "Field#{n}"
     end
@@ -46,7 +51,7 @@ FactoryGirl.define do
     unit
   end  
 
-	factory :topic, :class => Sensit::Node::Topic do
+	factory :topic, :class => Sensit::Topic do
 	  sequence :name do |n|
 	    "Topic#{n}"
 	  end
@@ -58,8 +63,8 @@ FactoryGirl.define do
     ignore do
       feeds_count 1
     end
-    
-    node
+
+    api_key
 
     factory :topic_with_feeds_and_fields do
       after(:create) do |topic, evaluator|
@@ -71,33 +76,11 @@ FactoryGirl.define do
         evaluator.feeds_count.times do |i|
           values = key_arr.inject({}) {|h, key| h.merge!(key => i)}
           client = ::Elasticsearch::Client.new
-          Sensit::Node::Topic::Feed.create({:topic_id => topic.id, index: ELASTIC_SEARCH_INDEX_NAME, type: ELASTIC_SEARCH_INDEX_TYPE, at: Time.now, values: values})
+          Sensit::Topic::Feed.create({:topic_id => topic.id, index: ELASTIC_SEARCH_INDEX_NAME, type: ELASTIC_SEARCH_INDEX_TYPE, at: Time.now, values: values})
           client.indices.refresh(:index => ELASTIC_SEARCH_INDEX_NAME)
         end
       end
     end
   end
 
-  factory :node, :class => Sensit::Node do
-    sequence :name do |n|
-      "Node#{n}"
-    end
-      
-    # topics_count is declared as an ignored attribute and available in
-    # attributes on the factory, as well as the callback via the evaluator
-    ignore do
-      topics_count 3
-    end
-
-    # the after(:create) yields two values; the node instance itself and the
-    # evaluator, which stores all values from the factory, including ignored
-    # attributes; `create_list`'s second argument is the number of records
-    # to create and we make sure the node is associated properly to the topic
-
-    factory :complete_node do
-      after(:create) do |node, evaluator|
-        FactoryGirl.create_list(:topic_with_feeds_and_fields, evaluator.topics_count, node: node)
-      end
-    end
-  end
 end

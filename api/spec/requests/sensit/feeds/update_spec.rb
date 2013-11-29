@@ -2,16 +2,14 @@ require 'spec_helper'
 describe "PUT sensit/feeds#update" do
 
 	before(:each) do
-		@node = FactoryGirl.create(:complete_node)
-		@topic = @node.topics.first
+		@topic = FactoryGirl.create(:topic_with_feeds_and_fields)
 		@feed = @topic.feeds.first
 	end
 
 
-	def process_request(node, params)
-		topic = node.topics.first
+	def process_request(topic, params)
 		feed = topic.feeds.first
-		put "/api/nodes/#{node.id}/topics/#{topic.id}/feeds/#{feed.id}", valid_request(params), valid_session
+		put "/api/topics/#{topic.id}/feeds/#{feed.id}", valid_request(params), valid_session
 	end
 
 	context "with correct attributes" do
@@ -28,7 +26,7 @@ describe "PUT sensit/feeds#update" do
 	            }
 	         }
 
-			process_request(@node, params)
+			process_request(@topic, params)
 			expect(response).to render_template(:show)
 
 			field_arr = @topic.fields.inject([]) do |arr, field|
@@ -52,7 +50,7 @@ describe "PUT sensit/feeds#update" do
 	               :values => values
 	            }
 	         }
-			status = process_request(@node, params)
+			status = process_request(@topic, params)
 			status.should == 200
 		end
 
@@ -70,8 +68,8 @@ describe "PUT sensit/feeds#update" do
 	            }
 	         }
 
-			process_request(@node, params)
-			# updated_field = Sensit::Node::Topic::Feed.find(:index => @feed.index, :index => @feed.type, :id => @feed.id)
+			process_request(@topic, params)
+			# updated_field = Sensit::Topic::Feed.find(:index => @feed.index, :index => @feed.type, :id => @feed.id)
 			# updated_field.at.utc.to_f.should == params[:feed][:at]
 		end
 	end		

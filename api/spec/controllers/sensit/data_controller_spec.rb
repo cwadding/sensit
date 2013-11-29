@@ -25,7 +25,7 @@ module Sensit
         {:use_route => :sensit_api, :format => "json", :api_version => 1}.merge!(h)
       end
       # This should return the minimal set of attributes required to create a valid
-      # ::Sensit::Node::Topic::Feed. As you add validations to ::Sensit::Node::Topic::Feed, be sure to
+      # ::Sensit::Topic::Feed. As you add validations to ::Sensit::Topic::Feed, be sure to
       # update the return value of this method accordingly.
       def valid_attributes
         { key: "my_key", value: "123"}
@@ -33,14 +33,14 @@ module Sensit
 
       # This should return the minimal set of values that should be in the session
       # in order to pass any filters (e.g. authentication) defined in
-      # ::Sensit::Node::Topic::FeedsController. Be sure to keep this updated too.
+      # ::Sensit::Topic::FeedsController. Be sure to keep this updated too.
       def valid_session
         {}
       end
 
     # describe "GET index" do
     #   it "assigns all data as @data" do
-    #     datum = ::Sensit::Node::Topic::Feed.create valid_attributes
+    #     datum = ::Sensit::Topic::Feed.create valid_attributes
     #     get :index, valid_request, valid_session
     #     assigns(:data).should eq([datum])
     #   end
@@ -48,7 +48,7 @@ module Sensit
 
     # describe "GET show" do
     #   it "assigns the requested data as @data" do
-    #     datum = ::Sensit::Node::Topic::Feed.create valid_attributes
+    #     datum = ::Sensit::Topic::Feed.create valid_attributes
     #     get :show, valid_request({:id => datum.to_param}), valid_session
     #     assigns(:data).should eq(datum)
     #   end
@@ -56,18 +56,18 @@ module Sensit
 
     # describe "POST create" do
     #   before(:each) do
-    #     Node::Topic::Feed.any_instance.stub(:find).with(1).and_return(FactoryGirl.create(:feed))
+    #     Topic::Feed.any_instance.stub(:find).with(1).and_return(FactoryGirl.create(:feed))
     #   end
     #   describe "with valid params" do
-    #     it "creates a new Node::Topic::Feed::DataRow" do
+    #     it "creates a new Topic::Feed::DataRow" do
     #       expect {
     #         post :create, valid_request({feed_id:1, :values => valid_attributes}), valid_session
-    #       }.to change(::Sensit::Node::Topic::Feed, :count).by(1)
+    #       }.to change(::Sensit::Topic::Feed, :count).by(1)
     #     end
 
     #     it "assigns a newly created data as @data" do
     #       post :create, valid_request({feed_id:1, :values => valid_attributes}), valid_session
-    #       assigns(:data).should be_a(::Sensit::Node::Topic::Feed)
+    #       assigns(:data).should be_a(::Sensit::Topic::Feed)
     #       assigns(:data).should be_persisted
     #     end
 
@@ -80,14 +80,14 @@ module Sensit
     #   describe "with invalid params" do
     #     it "assigns a newly created but unsaved data as @data" do
     #       # Trigger the behavior that occurs when invalid params are submitted
-    #       ::Sensit::Node::Topic::Feed.any_instance.stub(:save).and_return(false)
+    #       ::Sensit::Topic::Feed.any_instance.stub(:save).and_return(false)
     #       post :create, valid_request({feed_id:1, :values => { "value" => "456" }}), valid_session
-    #       assigns(:data).should be_a_new(::Sensit::Node::Topic::Feed::DataRow)
+    #       assigns(:data).should be_a_new(::Sensit::Topic::Feed::DataRow)
     #     end
 
     #     it "re-renders the 'new' template" do
     #       # Trigger the behavior that occurs when invalid params are submitted
-    #       ::Sensit::Node::Topic::Feed.any_instance.stub(:save).and_return(false)
+    #       ::Sensit::Topic::Feed.any_instance.stub(:save).and_return(false)
     #       post :create, valid_request({feed_id:1, :values => { feed_id:1, "value" => "456" }}), valid_session
     #       response.should render_template("sensit/data/show")
     #     end
@@ -97,23 +97,23 @@ module Sensit
     # describe "PUT update" do
     #   describe "with valid params" do
     #     it "updates the requested data" do
-    #       datum = ::Sensit::Node::Topic::Feed.create valid_attributes
+    #       datum = ::Sensit::Topic::Feed.create valid_attributes
     #       # Assuming there are no other data in the database, this
-    #       # specifies that the Node::Topic::Feed::DataRow created on the previous line
+    #       # specifies that the Topic::Feed::DataRow created on the previous line
     #       # receives the :update_attributes message with whatever params are
     #       # submitted in the request.
-    #       ::Sensit::Node::Topic::Feed.any_instance.should_receive(:update).with({ "value" => "456" })
+    #       ::Sensit::Topic::Feed.any_instance.should_receive(:update).with({ "value" => "456" })
     #       put :update, valid_request({:id => datum.to_param, :values => { "value" => "456" }}), valid_session
     #     end
 
     #     it "assigns the requested data as @data" do
-    #       datum = ::Sensit::Node::Topic::Feed.create valid_attributes
+    #       datum = ::Sensit::Topic::Feed.create valid_attributes
     #       put :update, valid_request({:id => datum.to_param, :values => valid_attributes}), valid_session
     #       assigns(:data).should eq(datum)
     #     end
 
     #     it "redirects to the data" do
-    #       datum = ::Sensit::Node::Topic::Feed.create valid_attributes
+    #       datum = ::Sensit::Topic::Feed.create valid_attributes
     #       put :update, valid_request({:id => datum.to_param, :values => valid_attributes}), valid_session
     #       response.should render_template("sensit/data/show")
     #     end
@@ -121,17 +121,17 @@ module Sensit
 
     #   describe "with invalid params" do
     #     it "assigns the data as @data" do
-    #       datum = ::Sensit::Node::Topic::Feed.create valid_attributes
+    #       datum = ::Sensit::Topic::Feed.create valid_attributes
     #       # Trigger the behavior that occurs when invalid params are submitted
-    #       ::Sensit::Node::Topic::Feed::DataRow.any_instance.stub(:save).and_return(false)
+    #       ::Sensit::Topic::Feed::DataRow.any_instance.stub(:save).and_return(false)
     #       put :update, valid_request({:id => datum.to_param, :values => { "value" => "456" }}), valid_session
     #       assigns(:data).should eq(datum)
     #     end
 
     #     it "re-renders the 'edit' template" do
-    #       datum = ::Sensit::Node::Topic::Feed::DataRow.create! valid_attributes
+    #       datum = ::Sensit::Topic::Feed::DataRow.create! valid_attributes
     #       # Trigger the behavior that occurs when invalid params are submitted
-    #       ::Sensit::Node::Topic::Feed.any_instance.stub(:save).and_return(false)
+    #       ::Sensit::Topic::Feed.any_instance.stub(:save).and_return(false)
     #       put :update, valid_request({:id => datum.to_param, :values => { "value" => "456"  }}), valid_session
     #       response.should render_template("sensit/data/show")
     #     end
@@ -140,14 +140,14 @@ module Sensit
 
     # describe "DELETE destroy" do
     #   it "destroys the requested data" do
-    #     datum = ::Sensit::Node::Topic::Feed::DataRow.create! valid_attributes
+    #     datum = ::Sensit::Topic::Feed::DataRow.create! valid_attributes
     #     expect {
     #       delete :destroy, valid_request({:id => datum.to_param}), valid_session
-    #     }.to change(::Sensit::Node::Topic, :count).by(-1)
+    #     }.to change(::Sensit::Topic, :count).by(-1)
     #   end
 
     #   it "redirects to the data list" do
-    #     datum = ::Sensit::Node::Topic::Feed.create valid_attributes
+    #     datum = ::Sensit::Topic::Feed.create valid_attributes
     #     delete :destroy, valid_request({:id => datum.to_param}), valid_session
     #     response.status.should == 204
     #   end

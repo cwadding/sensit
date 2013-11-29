@@ -12,13 +12,11 @@ describe "POST sensit/feeds#create"  do
    # }
 
    before(:each) do
-      @node = FactoryGirl.create(:complete_node) 
-      @topic = @node.topics.first
+      @topic = FactoryGirl.create(:topic_with_feeds_and_fields) 
    end
 
-   def process_request(node, params)
-      topic = @node.topics.first
-      post "/api/nodes/#{node.id}/topics/#{topic.id}/feeds", valid_request(params), valid_session
+   def process_request(topic, params)
+      post "/api/topics/#{topic.id}/feeds", valid_request(params), valid_session
    end
 
    context "with correct attributes" do
@@ -35,11 +33,11 @@ describe "POST sensit/feeds#create"  do
                :values => values
             }
          }
-         status = process_request(@node, params)
+         status = process_request(@topic, params)
          status.should == 200
       end
 
-      it "returns the expected json", :current => true do
+      it "returns the expected json" do
          fields = @topic.fields.map(&:key)
          values = {}
          fields.each_with_index do |field, i|
@@ -51,7 +49,7 @@ describe "POST sensit/feeds#create"  do
                :values => values
             }
          }
-         process_request(@node, params)
+         process_request(@topic, params)
          expect(response).to render_template(:show)
          
          field_arr = @topic.fields.inject([]) do |arr, field|
@@ -62,8 +60,8 @@ describe "POST sensit/feeds#create"  do
 
       # it "creates a new Feed" do
       #     expect {
-      #       process_request(@node, @params)
-      #     }.to change(Sensit::Node::Topic::Feed, :count).by(1)
+      #       process_request(@topic, @params)
+      #     }.to change(Sensit::Topic::Feed, :count).by(1)
       #   end
    end
 
@@ -77,12 +75,12 @@ describe "POST sensit/feeds#create"  do
       end
 
       it "is an unprocessable entity" do
-         status = process_request(@node, @params)
+         status = process_request(@topic, @params)
          status.should == 422
       end
 
       it "returns the expected json" do
-         process_request(@node, @params)
+         process_request(@topic, @params)
          response.body.should be_json_eql("{\"errors\":{\"at\":[\"can't be blank\"]}}")
       end
    end

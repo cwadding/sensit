@@ -1,5 +1,5 @@
 module Sensit
-  class Node::Percolator
+  class Percolator
   	include ::ActiveModel::Model
   	    #  extend  ActiveModel::Naming
         # extend  ActiveModel::Translation

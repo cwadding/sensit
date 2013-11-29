@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 module Sensit
-  describe Node::Percolator do
+  describe Percolator do
     it { should validate_presence_of(:id) }
     it { should validate_presence_of(:body) }
     it { should validate_presence_of(:type) }
@@ -13,14 +13,14 @@ module Sensit
     describe ".count" do
         context "when the index exists" do
             it "executes the elastic count query" do                
-                @client.should_receive(:count).with({index: "_percolator", type: "atm"}).and_return({"count"=>4, "_shards"=>{"total"=>1, "successful"=>1, "failed"=>0}})
-                Node::Percolator.stub(:elastic_client).and_return(@client)
-                total = Node::Percolator.count({type: "atm"})
+                @client.should_receive(:count).with({index: ELASTIC_SEARCH_INDEX_NAME, type: "atm"}).and_return({"count"=>4, "_shards"=>{"total"=>1, "successful"=>1, "failed"=>0}})
+                Percolator.stub(:elastic_client).and_return(@client)
+                total = Percolator.count({type: "atm"})
             end
             it "returns the number of rows" do
-                @client.stub(:count).with({index: "_percolator", type: "atm"}).and_return({"count"=>36, "_shards"=>{"total"=>5, "successful"=>5, "failed"=>0}})
-                Node::Percolator.stub(:elastic_client).and_return(@client)
-                total = Node::Percolator.count({type: "atm"})
+                @client.stub(:count).with({index: ELASTIC_SEARCH_INDEX_NAME, type: "atm"}).and_return({"count"=>36, "_shards"=>{"total"=>5, "successful"=>5, "failed"=>0}})
+                Percolator.stub(:elastic_client).and_return(@client)
+                total = Percolator.count({type: "atm"})
                 total.should == 36
             end
         end
@@ -31,19 +31,19 @@ module Sensit
             context "when the record exists" do
                 before(:each) do
                     @params = {type: "atm", id: "myrule", body: { query: { query_string: { query: 'foo' } } } }
-                    @result1 = {"_index"=>"_percolator", "_type"=>"atm", "_id"=>"myrule", "_score"=>1.0, "_source"=>{"query"=>{"query_string"=>{"query"=>"foo"}}}}
+                    @result1 = {"_index"=>ELASTIC_SEARCH_INDEX_NAME, "_type"=>"atm", "_id"=>"myrule", "_score"=>1.0, "_source"=>{"query"=>{"query_string"=>{"query"=>"foo"}}}}
                 end
                 it "executes the elastic get query" do
-                    @client.should_receive(:get).with(@params.merge!(index: "_percolator")).and_return(@result1)
+                    @client.should_receive(:get).with(@params.merge!(index: ELASTIC_SEARCH_INDEX_NAME)).and_return(@result1)
 
-                    Node::Percolator.stub(:elastic_client).and_return(@client)
-                    percolator = Node::Percolator.find(@params.merge!(index: "_percolator"))
+                    Percolator.stub(:elastic_client).and_return(@client)
+                    percolator = Percolator.find(@params.merge!(index: ELASTIC_SEARCH_INDEX_NAME))
                 end
                 it "returns the percolator" do
                     @client.stub(:get).and_return(@result1)
-                    Node::Percolator.stub(:elastic_client).and_return(@client)
-                    percolator = Node::Percolator.find(@params)
-                    percolator.should be_an_instance_of Node::Percolator
+                    Percolator.stub(:elastic_client).and_return(@client)
+                    percolator = Percolator.find(@params)
+                    percolator.should be_an_instance_of Percolator
                 end
             end
             context "when the record doesn't exist" do
@@ -52,9 +52,9 @@ module Sensit
                     @client.stub(:get).and_raise(::Elasticsearch::Transport::Transport::Errors::NotFound)
                 end
                 it "throws an exception that it is not found" do
-                    Node::Percolator.stub(:elastic_client).and_return(@client)
+                    Percolator.stub(:elastic_client).and_return(@client)
                     expect{
-                        Node::Percolator.find(@params)
+                        Percolator.find(@params)
                     }.to raise_error(::Elasticsearch::Transport::Transport::Errors::NotFound)
                 end
             end
@@ -65,9 +65,9 @@ module Sensit
                 @client.stub(:get).and_raise(::Elasticsearch::Transport::Transport::Errors::NotFound)
             end
             it "throws an exception that it is not found" do
-                Node::Percolator.stub(:elastic_client).and_return(@client)
+                Percolator.stub(:elastic_client).and_return(@client)
                 expect{
-                    Node::Percolator.find(@params)
+                    Percolator.find(@params)
                 }.to raise_error(::Elasticsearch::Transport::Transport::Errors::NotFound)
             end             
         end
@@ -76,18 +76,18 @@ module Sensit
     describe ".create" do
         before(:each) do
             @params = {type: 'mytype', id: "myrule", body: { query: { query_string: { query: 'foo' } } } }
-            @percolator = Node::Percolator.new(@params)
+            @percolator = Percolator.new(@params)
         end
         it "executes the create instance" do
             @percolator.should_receive(:create).and_return(true)
-            Node::Percolator.should_receive(:new).with(@params.merge!(index: "_percolator")).and_return(@percolator)
-            percolator = Node::Percolator.create(@params)
+            Percolator.should_receive(:new).with(@params.merge!(index: ELASTIC_SEARCH_INDEX_NAME)).and_return(@percolator)
+            percolator = Percolator.create(@params)
         end
 
         it "returns a Percolator" do
             @percolator.stub(:create).and_return(true)
-            Node::Percolator.stub(:new).with(@params.merge!(index: "_percolator")).and_return(@percolator)
-            percolator = Node::Percolator.create(@params)
+            Percolator.stub(:new).with(@params.merge!(index: ELASTIC_SEARCH_INDEX_NAME)).and_return(@percolator)
+            percolator = Percolator.create(@params)
             percolator.should be(@percolator)
         end
     end
@@ -95,28 +95,28 @@ module Sensit
     describe ".search" do
         before(:each) do
             @params =  {type: 'mytype' }
-            @result1 = {"_index"=>"_percolator","_type"=>"mytype","_id"=>"vVHkzUTuThOTpl-tstkzhg","_score"=>1.0, "_source" => { "query" => { "query_string" => { "query" => 'foo' } } }}
-            @result2 = {"_index"=>"_percolator","_type"=>"mytype","_id"=>"1ZiRp7VHSHK_-3NmoJjusQ","_score"=>1.0, "_source" => { "query" => { "query_string" => { "query" => 'foo' } } }}
+            @result1 = {"_index"=>ELASTIC_SEARCH_INDEX_NAME,"_type"=>"mytype","_id"=>"vVHkzUTuThOTpl-tstkzhg","_score"=>1.0, "_source" => { "query" => { "query_string" => { "query" => 'foo' } } }}
+            @result2 = {"_index"=>ELASTIC_SEARCH_INDEX_NAME,"_type"=>"mytype","_id"=>"1ZiRp7VHSHK_-3NmoJjusQ","_score"=>1.0, "_source" => { "query" => { "query_string" => { "query" => 'foo' } } }}
             @results = {"took" => 2,"timed_out" => false, "_shards" => {"total" => 5,"successful" => 5,"failed" => 0},"hits" => {"total"=>2,"max_score"=>1.0,"hits"=>[@result1,@result2]}}
         end
         it "executes the elastic search query" do
-            @client.should_receive(:search).with(@params.merge!(index: "_percolator")).and_return(@results)
-            Node::Percolator.stub(:elastic_client).and_return(@client)
-            percolators = Node::Percolator.search(@params)
+            @client.should_receive(:search).with(@params.merge!(index: ELASTIC_SEARCH_INDEX_NAME)).and_return(@results)
+            Percolator.stub(:elastic_client).and_return(@client)
+            percolators = Percolator.search(@params)
         end
 
         it "returns an array of Feeds" do
             @client.stub(:search).and_return(@results)
-            Node::Percolator.should_receive(:map_results).with(@result1).and_return(Node::Percolator.new)
-            Node::Percolator.should_receive(:map_results).with(@result2).and_return(Node::Percolator.new)
+            Percolator.should_receive(:map_results).with(@result1).and_return(Percolator.new)
+            Percolator.should_receive(:map_results).with(@result2).and_return(Percolator.new)
 
-            Node::Percolator.stub(:elastic_client).and_return(@client)
+            Percolator.stub(:elastic_client).and_return(@client)
 
-            percolators = Node::Percolator.search(@params)
+            percolators = Percolator.search(@params)
 
             percolators.should be_an_instance_of Array
             percolators.each do |percolator|
-                percolator.should be_an_instance_of Node::Percolator
+                percolator.should be_an_instance_of Percolator
             end
         end
     end
@@ -127,17 +127,17 @@ module Sensit
         end
         context "when the record exists" do
             it "executes the elastic delete" do
-                @client.should_receive(:delete).with(@params.merge!(index: "_percolator")).and_return({"ok"=>true, "found"=>true, "_index"=>"transactions", "_type"=>"atm", "_id"=>"8eI2kKfwSymCrhqkjnGYiA", "_version"=>4})
-                Node::Percolator.stub(:elastic_client).and_return(@client)
-                Node::Percolator.destroy(@params)
+                @client.should_receive(:delete).with(@params.merge!(index: ELASTIC_SEARCH_INDEX_NAME)).and_return({"ok"=>true, "found"=>true, "_index"=>"transactions", "_type"=>"atm", "_id"=>"8eI2kKfwSymCrhqkjnGYiA", "_version"=>4})
+                Percolator.stub(:elastic_client).and_return(@client)
+                Percolator.destroy(@params)
             end
         end
         context "when the record does not exist" do
             it "throws an exception that it is not found" do
-                @client.stub(:delete).with(@params.merge!(index: "_percolator")).and_raise(::Elasticsearch::Transport::Transport::Errors::NotFound)
-                Node::Percolator.stub(:elastic_client).and_return(@client)
+                @client.stub(:delete).with(@params.merge!(index: ELASTIC_SEARCH_INDEX_NAME)).and_raise(::Elasticsearch::Transport::Transport::Errors::NotFound)
+                Percolator.stub(:elastic_client).and_return(@client)
                 expect{
-                    Node::Percolator.destroy(@params)
+                    Percolator.destroy(@params)
                 }.to raise_error(::Elasticsearch::Transport::Transport::Errors::NotFound)
             end
         end
@@ -150,19 +150,19 @@ module Sensit
         end
         context "when the index exists" do
             it "executes the elastic index delete" do
-                @indices_client.should_receive(:delete).with({index: "_percolator", :type => "my_type"}).and_return({"ok"=>true, "acknowledged"=>true})
+                @indices_client.should_receive(:delete).with({index: ELASTIC_SEARCH_INDEX_NAME, :type => "my_type"}).and_return({"ok"=>true, "acknowledged"=>true})
                 @client.stub(:indices).and_return(@indices_client)
-                Node::Percolator.stub(:elastic_client).and_return(@client)
-                Node::Percolator.destroy_all({:type => "my_type"})
+                Percolator.stub(:elastic_client).and_return(@client)
+                Percolator.destroy_all({:type => "my_type"})
             end
         end
         context "when the index does not exist" do
             it "throws an exception that it is not found" do
-                @indices_client.should_receive(:delete).with({index: "_percolator", :type => "my_type"}).and_raise(::Elasticsearch::Transport::Transport::Errors::NotFound)
+                @indices_client.should_receive(:delete).with({index: ELASTIC_SEARCH_INDEX_NAME, :type => "my_type"}).and_raise(::Elasticsearch::Transport::Transport::Errors::NotFound)
                 @client.stub(:indices).and_return(@indices_client)
-                Node::Percolator.stub(:elastic_client).and_return(@client)
+                Percolator.stub(:elastic_client).and_return(@client)
                 expect{
-                    Node::Percolator.destroy_all({index: "_percolator", :type => "my_type"})
+                    Percolator.destroy_all({index: ELASTIC_SEARCH_INDEX_NAME, :type => "my_type"})
                 }.to raise_error(Elasticsearch::Transport::Transport::Errors::NotFound)
             end
         end
@@ -174,7 +174,7 @@ module Sensit
 
         before(:each) do
             @indices_client = Elasticsearch::API::Indices::IndicesClient.new(@client)
-            @percolator = Node::Percolator.new({type: 'mytype', id: 'myrule', body: { query: { query_string: { query: 'foo' } } } })
+            @percolator = Percolator.new({type: 'mytype', id: 'myrule', body: { query: { query_string: { query: 'foo' } } } })
             # @params = {index: 'myindex', type: 'mytype', topic_id: 3, at: Time.now, values: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}}
             # {index: 'myindex',type: 'mytype', body: {title: 'Test 1',tags: ['y', 'z'], published: true, published_at: Time.now.utc.iso8601, counter: 1}}
         end
@@ -185,8 +185,8 @@ module Sensit
         #   it "creates the index" do
         #       @indices_client.should_receive(:create)
         #       @client.stub(:indices).and_return(@indices_client)
-        #       Node::Percolator.stub(:elastic_client).and_return(@client)
-        #       percolator = Node::Percolator.create(@params)
+        #       Percolator.stub(:elastic_client).and_return(@client)
+        #       percolator = Percolator.create(@params)
         #   end
 
         # end
@@ -196,14 +196,14 @@ module Sensit
             end
             context "with valid response" do
                 it "executes the elastic create action" do
-                    @client.should_receive(:create).with({index: "_percolator", :type=>"mytype", id: 'myrule', :body=>{ query: { query_string: { query: 'foo' } } }}).and_return({"ok"=>true, "_index"=>'_percolator', "_type"=>'mytype', "_id"=>"myrule", "_version"=>1})
-                    Node::Percolator.stub(:elastic_client).and_return(@client)
+                    @client.should_receive(:create).with({index: ELASTIC_SEARCH_INDEX_NAME, :type=>"mytype", id: 'myrule', :body=>{ query: { query_string: { query: 'foo' } } }}).and_return({"ok"=>true, "_index"=>'_percolator', "_type"=>'mytype', "_id"=>"myrule", "_version"=>1})
+                    Percolator.stub(:elastic_client).and_return(@client)
                     @percolator.send(:create)
                 end
                 context "" do
                     before(:each) do
                         @client.stub(:create).and_return({"ok"=>true, "_index"=>'_percolator', "_type"=>'mytype', "_id"=>"myrule", "_version"=>1})
-                        Node::Percolator.stub(:elastic_client).and_return(@client)
+                        Percolator.stub(:elastic_client).and_return(@client)
                     end
 
                     it "returns whether it was successful" do
@@ -222,18 +222,18 @@ module Sensit
 
     describe "#update" do
         before(:each) do
-            @percolator = Node::Percolator.new({type: 'mytype', id: 3, body: {query: { query_string: { query: 'foo' } } }})
+            @percolator = Percolator.new({type: 'mytype', id: 3, body: {query: { query_string: { query: 'foo' } } }})
             @percolator.stub(:id).and_return(3)
             @percolator.stub(:new_record?).and_return(false)
         end
         it "executes the update class action" do
-            @client.should_receive(:update).with({index: "_percolator", type: 'mytype', id: 3, body:{ doc:{ query: { query_string: { query: 'foo' } }}}}).and_return({"ok"=>true, "_index"=>'_percolator', "_type"=>'mytype', "_id"=>"myrule", "_version"=>1})
+            @client.should_receive(:update).with({index: ELASTIC_SEARCH_INDEX_NAME, type: 'mytype', id: 3, body:{ doc:{ query: { query_string: { query: 'foo' } }}}}).and_return({"ok"=>true, "_index"=>'_percolator', "_type"=>'mytype', "_id"=>"myrule", "_version"=>1})
             @percolator.stub(:elastic_client).and_return(@client)
             success = @percolator.send(:update)
         end
 
         it "returns true when update is successful" do
-            @client.stub(:update).and_return({"ok"=>true, "_index"=>"_percolator", "_type"=>"atm", "_id"=>"myrule", "_version"=>3})
+            @client.stub(:update).and_return({"ok"=>true, "_index"=>ELASTIC_SEARCH_INDEX_NAME, "_type"=>"atm", "_id"=>"myrule", "_version"=>3})
             @percolator.stub(:elastic_client).and_return(@client)
             success = @percolator.send(:update)
             success.should be_true
@@ -244,14 +244,14 @@ module Sensit
 
     describe "#destroy" do
         before(:each) do
-            @percolator = Node::Percolator.new({type: 'mytype',  id: 3, body: {query: { query_string: { query: 'foo' } } }})
+            @percolator = Percolator.new({type: 'mytype',  id: 3, body: {query: { query_string: { query: 'foo' } } }})
         end
         context "when the record is not a new record" do
             before(:each) do
                 @percolator.stub(:new_record?).and_return(false)
             end
             it "executes the elastic delete" do
-                Node::Percolator.should_receive(:destroy).with({index: "_percolator", type: 'mytype', id: 3}).and_return(true)
+                Percolator.should_receive(:destroy).with({index: ELASTIC_SEARCH_INDEX_NAME, type: 'mytype', id: 3}).and_return(true)
                 @percolator.destroy.should be_true
             end
         end
@@ -266,7 +266,7 @@ module Sensit
 
     describe "#save" do
         before(:each) do
-            @percolator = Node::Percolator.new({type: 'mytype',  id: 3, body: {query: { query_string: { query: 'foo' } } } })
+            @percolator = Percolator.new({type: 'mytype',  id: 3, body: {query: { query_string: { query: 'foo' } } } })
         end
         context "when the record is not a new record" do
             before(:each) do

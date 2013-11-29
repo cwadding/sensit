@@ -1,25 +1,24 @@
 require 'spec_helper'
 describe "DELETE sensit/fields#destroy" do
 
-	def process_request(node)
-		topic = @node.topics.first
+	def process_request(topic)
 		field = topic.fields.first
-		delete "/api/nodes/#{node.id}/topics/#{topic.id}/fields/#{field.id}", valid_request, valid_session
+		delete "/api/topics/#{topic.id}/fields/#{field.id}", valid_request, valid_session
 	end
 
 	context "when the field exists" do
 		before(:each) do
-			@node = FactoryGirl.create(:complete_node)
+			@topic = FactoryGirl.create(:topic_with_feeds_and_fields)
 		end
 		it "is successful" do
-			status = process_request(@node)
+			status = process_request(@topic)
 			status.should == 204
 		end
 
 		it "deletes the Field" do
           expect {
-            process_request(@node)
-          }.to change(Sensit::Node::Topic::Field, :count).by(-1)
+            process_request(@topic)
+          }.to change(Sensit::Topic::Field, :count).by(-1)
         end
 
         it "removes that field from the elastic_search index"
@@ -29,7 +28,7 @@ describe "DELETE sensit/fields#destroy" do
 	context "when the field does not exist" do
 		it "is unsuccessful" do
 			expect{
-				status = delete "/api/nodes/1/topics/1/fields/1", valid_request, valid_session
+				status = delete "/api/topics/1/fields/1", valid_request, valid_session
 			}.to raise_error(ActiveRecord::RecordNotFound)
 			#status.should == 404
 		end

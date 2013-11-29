@@ -1,5 +1,5 @@
 module Sensit
-  class Node::Topic::Feed
+  class Topic::Feed
   	include ::ActiveModel::Model
   	    #  extend  ActiveModel::Naming
         # extend  ActiveModel::Translation
@@ -89,11 +89,11 @@ module Sensit
 	end
 
 	def topic
-		@topic ||= Node::Topic.find(self.topic_id)
+		@topic ||= Topic.find(self.topic_id)
 	end
 
 	def topic=(record)
-		raise ::TypeError.new("Not a Node::Topic") unless record.instance_of? Node::Topic
+		raise ::TypeError.new("Not a Topic") unless record.instance_of? Topic
 		self.topic_id = record.id
 	end
 

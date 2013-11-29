@@ -1,26 +1,23 @@
 require 'spec_helper'
 describe "GET sensit/fields#show" do
 
-	def process_request(node)
-		topic = @node.topics.first
-		field = topic.fields.first
-		get "/api/nodes/#{node.id}/topics/#{topic.id}/fields/#{field.id}", valid_request, valid_session
+	def process_request(topic)
+		field = @topic.fields.first
+		get "/api/topics/#{topic.id}/fields/#{field.id}", valid_request, valid_session
 	end
 
 	context "when the field exists" do
 		before(:each) do
-			@node = FactoryGirl.create(:complete_node)
+			@topic = FactoryGirl.create(:topic_with_feeds_and_fields)
 		end
 		it "is successful" do
-			status = process_request(@node)
+			status = process_request(@topic)
 			status.should == 200
 		end
 
 		it "returns the expected json" do
-			process_request(@node)
-
-			topic = @node.topics.first
-			field = topic.fields.first
+			process_request(@topic)
+			field = @topic.fields.first
 			response.body.should be_json_eql("{\"key\": \"#{field.key}\",\"name\": \"#{field.name}\"}")
 		end
 	end
@@ -28,7 +25,7 @@ describe "GET sensit/fields#show" do
 	context "when the field does not exist" do
 		it "is unsuccessful" do
 			expect{
-				status = get "/api/nodes/1/topics/1/fields/1", valid_request, valid_session
+				status = get "/api/topics/1/fields/1", valid_request, valid_session
 			}.to raise_error(ActiveRecord::RecordNotFound)
 			
 			#status.should == 404
@@ -36,7 +33,7 @@ describe "GET sensit/fields#show" do
 
 		it "returns the expected json" do
 			expect{
-				get "/api/nodes/1/topics/1/fields/1", valid_request, valid_session
+				get "/api/topics/1/fields/1", valid_request, valid_session
 			}.to raise_error(ActiveRecord::RecordNotFound)
 			#response.body.should be_json_eql("{\"id\":1,\"name\":\"Test node\",\"description\":\"A description of my node\",\"topics\":[]}")
 		end

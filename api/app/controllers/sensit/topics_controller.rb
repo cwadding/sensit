@@ -1,26 +1,25 @@
-require_dependency "sensit/base_controller"
+require_dependency "sensit/api_controller"
 
 module Sensit
   class TopicsController < ApiController
     before_action :set_topic, only: [:show, :edit, :update, :destroy]
     respond_to :json
-    # GET /nodes/1/topics
+    # GET 1/topics
     def index
-      @topics = Node::Topic.where(node_id: params[:node_id])
+      # scope all to the api key that is being used
+      @topics = Topic.all
       respond_with(@topics)
     end
 
-    # GET /nodes/1/topics/1
+    # GET 1/topics/1
     def show
         @body = params.delete(:body)
         respond_with({topic: @topic, query: @body})
     end
 
-    # POST /nodes/1/topics
+    # POST 1/topics
     def create
-      node = Node.find(params[:node_id])
-      @topic = Node::Topic.new(topic_params)
-      @topic.node = node
+      @topic = Topic.new(topic_params)
       if @topic.save
         
       else
@@ -29,7 +28,7 @@ module Sensit
       respond_with(@topic,:status => 200, :template => "sensit/topics/show")
     end
 
-    # PATCH/PUT /nodes/1/topics/1
+    # PATCH/PUT 1/topics/1
     def update
       if @topic.update(topic_params)
 
@@ -39,7 +38,7 @@ module Sensit
       respond_with(@topic,:status => 200, :template => "sensit/topics/show")
     end
 
-    # DELETE /nodes/1/topics/1
+    # DELETE 1/topics/1
     def destroy
       @topic.destroy
       respond_with(@topic, :status => 204)
@@ -48,7 +47,7 @@ module Sensit
     private
       # Use callbacks to share common setup or constraints between actions.
       def set_topic
-        @topic = Node::Topic.find(params[:id])
+        @topic = Topic.find(params[:id])
       end
 
       # Only allow a trusted parameter "white list" through.
