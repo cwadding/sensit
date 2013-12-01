@@ -4,6 +4,7 @@ module Sensit
   describe Topic do
     # it {should have_many(:feeds).dependent(:destroy)}
     it {should have_many(:fields).dependent(:destroy)}
+    it {should have_many(:subscriptions).dependent(:destroy)}
 
     it { should validate_presence_of(:name) }
     it { should validate_uniqueness_of(:name) }

@@ -18,9 +18,10 @@ module Sensit
 
     # POST /subscriptions
     def create
-      @subscription = Topic::Subscription.new(subscription_params)
-      SubscriptionsWorker.perform_async(@subscription.id)
+      topic = Topic.find(params[:topic_id])
+      @subscription = topic.subscriptions.build(subscription_params)
       if @subscription.save
+        SubscriptionsWorker.perform_async(@subscription.id)
         respond_with(@subscription,:status => 200, :template => "sensit/subscriptions/show")
       else
         render(:json => "{\"errors\":#{@subscription.errors.to_json}}", :status => :unprocessable_entity)

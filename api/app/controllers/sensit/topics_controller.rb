@@ -23,27 +23,27 @@ module Sensit
       if @topic.save
         # create the elasticsearch index
         client = ::Elasticsearch::Client.new
-        client.indices.create({:index => @topic.id, :type => @topic.id})
+        client.indices.create({:index => @topic.id, :type => @topic.id}) unless (client.indices.exists index: @topic.id)
+        respond_with(@topic,:status => 200, :template => "sensit/topics/show")
       else
-
+        render(:json => "{\"errors\":#{@topic.errors.to_json}}", :status => :unprocessable_entity)
       end
-      respond_with(@topic,:status => 200, :template => "sensit/topics/show")
     end
 
     # PATCH/PUT 1/topics/1
     def update
       if @topic.update(topic_params)
-
+        respond_with(@topic,:status => 200, :template => "sensit/topics/show")
       else
-        
+        render(:json => "{\"errors\":#{@topic.errors.to_json}}", :status => :unprocessable_entity)
       end
-      respond_with(@topic,:status => 200, :template => "sensit/topics/show")
+      
     end
 
     # DELETE 1/topics/1
     def destroy
       @topic.destroy
-      respond_with(@topic, :status => 204)
+      head :status => 204
     end
 
     private

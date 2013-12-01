@@ -1,5 +1,5 @@
 require 'SocketIO'
-# require 'sidekiq'
+require 'sidekiq'
 
 module Sensit
 	class SubscriptionsWorker

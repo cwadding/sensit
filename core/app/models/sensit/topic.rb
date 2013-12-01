@@ -5,6 +5,7 @@ module Sensit
 
   	# has_many :feeds, dependent: :destroy
   	has_many :fields, dependent: :destroy
+  	has_many :subscriptions, dependent: :destroy
 	
 
 	belongs_to :api_key
