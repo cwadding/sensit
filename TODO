@@ -1,26 +1,32 @@
-Finish Api Request Specs
+API
+	- create api for different units
+	- seed the database with different unit types and analyzers for the different datatypes
+	-strong_parameters mass assignment of elasticsearch reports and percolator querys
+	- Resource to add subscribers to certain feeds of data
+	- Add support for various Pub/Sub providers
+		MQTT
+		ZeroMQ
+		Socket.io
+		Faye
+		ROS
+	- Respond to a percolate by publishing to the stream
+	- Securing the API with API KEYS
+	- Possibly add Multi-tennantcy
+	- storage of various reports
+	- be able to generate a report
+// UI
+Form for creating an Elastic Search query (used also to create percolate queries)
+Form for creating facet like reports from queries
 
-Socket.io subscribe to feeds to import data
-Faye subscribe to feeds to import data
-ROS subscribe to feeds to import data
+// Modules
 
-// Match rules
-The Rule Api Backend for Elastic Search Percolate
-Elastic Search Percolate Frontend
-
-//Different Handlers that may run when a rule is fired
-	Download an Image from a camera
-	Send an email/text message
-
-// Reporting
-Backend to generate specific facet like reports from queries and to persist queries
-frontend to create facet reports from the ui
-frontent to view reports frmo the ui
-
-// possible clients to easily consume the API
-
-// Ways to publish data into the database
-	// Through json api
-		1) watcher for a file drop and then send the batch to the service (csv,sqlite, etc)
-		2) an application with a database connection which polls the database for changes periodically looking for changes tha may have occured since the last time it check (like solrs dataimport)
-		3)
+	// Inputs
+		// various website API's (twitter)
+		- watcher for a file drop and then send the batch to the service (csv,sqlite, etc)
+		- an application with a database connection which polls the database for changes periodically looking for changes tha may have occured since the last time it check (like solrs dataimport)
+	// Analysis
+		// Machine leanring or other rule processing based api
+		// Pattern rules
+	// Actions
+		// Downloading an image from a camera
+			// Module to manage connections to various NAS's
