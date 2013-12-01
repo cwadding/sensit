@@ -78,7 +78,7 @@ module Sensit
 
 	def save
 		# run_callbacks :save do
-		valid? ? (new_record? ? create : update) : false
+		faye_broadcast if (valid? ? (new_record? ? create : update) : false)
 		# end
 	end	
 
@@ -164,6 +164,14 @@ private
 		end
 		# end
 		response["ok"]
+	end
+
+	def faye_broadcast
+		body = self.values.clone
+		body.merge!({at:self.at.utc.to_f})
+		message = {:channel => self.name, :data => body, :ext => {:auth_token => FAYE_TOKEN}}
+		uri = URI.parse("http://localhost:9292/faye")
+		Net::HTTP.post_form(uri, :message => message.to_json)
 	end
   end
 end
