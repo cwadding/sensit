@@ -1,4 +1,9 @@
 API
+	- In feeds allow specifiying timezone
+	- ability to create fields when creating a topic
+	- for topics, set the id rather than using database id
+	- Creating field keys on initial feed request
+	- Adding many fields with single request
 	- create api for different units
 	- seed the database with different unit types and analyzers for the different datatypes
 	-strong_parameters mass assignment of elasticsearch reports and percolator querys

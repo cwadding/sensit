@@ -21,7 +21,9 @@ module Sensit
     def create
       @topic = Topic.new(topic_params)
       if @topic.save
-        
+        # create the elasticsearch index
+        client = ::Elasticsearch::Client.new
+        client.indices.create({:index => @topic.id, :type => @topic.id})
       else
 
       end

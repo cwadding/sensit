@@ -1,4 +1,4 @@
-require_dependency "sensit/application_controller"
+require_dependency "sensit/api_controller"
 
 module Sensit
   class PercolatorsController < ApiController
