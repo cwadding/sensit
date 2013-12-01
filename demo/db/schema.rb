@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131201163818) do
+ActiveRecord::Schema.define(version: 20131201181246) do
 
   create_table "sensit_api_key_permission_restrictions", force: true do |t|
     t.integer  "api_key_permission_id"
@@ -59,6 +59,16 @@ ActiveRecord::Schema.define(version: 20131201163818) do
     t.string   "name"
     t.string   "key"
     t.integer  "unit_id"
+    t.integer  "topic_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "sensit_topic_subscriptions", force: true do |t|
+    t.string   "name"
+    t.string   "host"
+    t.string   "auth_token"
+    t.string   "protocol"
     t.integer  "topic_id"
     t.datetime "created_at"
     t.datetime "updated_at"

@@ -2,6 +2,13 @@
 
 FactoryGirl.define do
 
+  factory :subscription, :class => Sensit::Topic::Subscription do
+    sequence :name do |n|
+      "Subscription#{n}"
+    end
+    host "127.0.0.1"
+  end
+
   factory :api_key, :class => Sensit::ApiKey do
     user_id 1
     name "my_api_key"

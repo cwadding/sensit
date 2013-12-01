@@ -21,27 +21,25 @@ module Sensit
       @field = Topic::Field.new(field_params)
       @field.topic = topic
       if @field.save
-
+        respond_with(@field,:status => 200, :template => "sensit/fields/show")
       else
-
+        render(:json => "{\"errors\":#{@field.errors.to_json}}", :status => :unprocessable_entity)
       end
-      respond_with(@field,:status => 200, :template => "sensit/fields/show")
     end
 
     # PATCH/PUT /topics/1/fields/1
     def update
       if @field.update(field_params)
-
+        respond_with(@field,:status => 200, :template => "sensit/fields/show")
       else
-
+        render(:json => "{\"errors\":#{@field.errors.to_json}}", :status => :unprocessable_entity)
       end
-      respond_with(@field,:status => 200, :template => "sensit/fields/show")
     end
 
     # DELETE topics/1/fields/1
     def destroy
       @field.destroy
-      respond_with(@field, :status => 204)
+      head :status => 204
     end
 
     private

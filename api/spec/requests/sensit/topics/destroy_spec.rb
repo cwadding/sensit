@@ -28,7 +28,7 @@ describe "DELETE sensit/topics#destroy" do
           }.to change(Sensit::Topic::Field, :count).by(-1*number_of_fields)
         end
 
-        it "deletes its feeds", :current => true do
+        it "deletes its feeds" do
         	client = ::Elasticsearch::Client.new
 			number_of_feeds = @topic.feeds.count
 			number_of_feeds.should > 0
