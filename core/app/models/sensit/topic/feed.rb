@@ -78,7 +78,7 @@ module Sensit
 
 	def save
 		# run_callbacks :save do
-		faye_broadcast if (valid? ? (new_record? ? create : update) : false)
+		valid? ? (new_record? ? create : update) : false
 		# end
 	end	
 
@@ -139,14 +139,44 @@ private
 
 	def attributes_to_create
 		body = self.values.clone
-		body.merge!({at:self.at.utc.to_f, topic_id:self.topic_id})
+		at_f = 0
+		if (self.at.kind_of?(Numeric))
+    		at_f = self.at
+    	elsif (self.at.kind_of?(Time) || self.at.kind_of?(DateTime))
+    		at_f = self.at.utc.to_f
+    	elsif (self.at.is_a?(String) && /^[\d]+(\.[\d]+){0,1}$/ === self.at)
+    		at_f = self.at.to_f
+    	end
+		body.merge!({at:at_f, topic_id:self.topic_id})
 		{index: index, type: type, body: body}
 	end
 
 	def attributes_to_update
+		at_f = 0
+		if (self.at.kind_of?(Numeric))
+    		at_f = self.at
+    	elsif (self.at.kind_of?(Time) || self.at.kind_of?(DateTime))
+    		at_f = self.at.utc.to_f
+    	elsif (self.at.is_a?(String) && /^[\d]+(\.[\d]+){0,1}$/ === self.at)
+    		at_f = self.at.to_f
+    	end
 		body = self.values.clone
-		body.merge!({at:self.at.utc.to_f, topic_id:self.topic_id})
+		body.merge!({at:at_f, topic_id:self.topic_id})
 		{index: index, type: type, id: id, body: {doc: body} }
+	end
+
+	def attributes_for_percolate
+		at_f = 0
+		if (self.at.kind_of?(Numeric))
+    		at_f = self.at
+    	elsif (self.at.kind_of?(Time) || self.at.kind_of?(DateTime))
+    		at_f = self.at.utc.to_f
+    	elsif (self.at.is_a?(String) && /^[\d]+(\.[\d]+){0,1}$/ === self.at)
+    		at_f = self.at.to_f
+    	end
+		body = self.values.clone
+		body.merge!({at:at_f, topic_id:self.topic_id})
+		{index: index, type: type, body: {doc: body} }
 	end
 
 
@@ -155,10 +185,22 @@ private
 		response["ok"] || false
 	end
 
+	def percolate
+		elastic_client.percolate attributes_for_percolate
+	end
+
 	def create
 		# run_callbacks :create do
+		response = percolate
+		if (response["ok"])
+			response["matches"].each do |match|
+				faye_broadcast(match)
+			end
+		end
+
 		response = elastic_client.create attributes_to_create
 		if (response["ok"])
+			faye_broadcast
 			@new_record = false
 			@id = response["_id"]
 		end
@@ -166,11 +208,19 @@ private
 		response["ok"]
 	end
 
-	def faye_broadcast
-		body = self.values.clone
-		body.merge!({at:self.at.utc.to_f})
-		message = {:channel => self.name, :data => body, :ext => {:auth_token => FAYE_TOKEN}}
+	def faye_broadcast(channel = nil)
+		channel = self.topic_id if channel.nil?
+		at_f = 0
+		if (self.at.kind_of?(Numeric))
+    		at_f = self.at
+    	elsif (self.at.kind_of?(Time) || self.at.kind_of?(DateTime))
+    		at_f = self.at.utc.to_f
+    	elsif (self.at.is_a?(String) && /^[\d]+(\.[\d]+){0,1}$/ === self.at)
+    		at_f = self.at.to_f
+    	end
+		message = {:channel => channel, :data => {:at => at_f, :data => self.values}, :ext => {:auth_token => FAYE_TOKEN}}
 		uri = URI.parse("http://localhost:9292/faye")
+		puts "Faye Out: #{uri} - #{message.to_json}"
 		Net::HTTP.post_form(uri, :message => message.to_json)
 	end
   end
