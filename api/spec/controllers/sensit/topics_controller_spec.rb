@@ -23,7 +23,7 @@ module Sensit
 
 
       def valid_request(h = {})
-        h.merge!({:topic_id => "1", :use_route => :sensit_api, :format => "json", :api_version => 1})
+        h.merge!({:use_route => :sensit_api, :format => "json", :api_version => 1})
       end
       # This should return the minimal set of attributes required to create a valid
       # Topic. As you add validations to Topic, be sure to
@@ -87,7 +87,7 @@ module Sensit
             # Trigger the behavior that occurs when invalid params are submitted
             Topic.any_instance.stub(:save).and_return(false)
             post :create, valid_request({:topic => { "name" => "invalid value" }}), valid_session
-            response.should render_template("sensit/topics/show")
+            response.status.should == 422
           end
         end
       end
@@ -131,7 +131,7 @@ module Sensit
             # Trigger the behavior that occurs when invalid params are submitted
             Topic.any_instance.stub(:save).and_return(false)
             put :update, valid_request({:id => topic.to_param, :topic => { "name" => "invalid value" }}), valid_session
-            response.should render_template("sensit/topics/show")
+            response.status.should == 422
           end
         end
       end

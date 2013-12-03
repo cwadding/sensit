@@ -21,14 +21,18 @@ require 'spec_helper'
 module Sensit
   describe ReportsController do
 
+    before(:each) do
+      @topic = Topic.create(:name => "MyTopic")
+    end
+
     def valid_request(h = {})
-      h.merge!({topic_id: 3, :use_route => :sensit_api, :format => "json", :api_version => 1})
+      h.merge!({:use_route => :sensit_api, :format => "json", :api_version => 1})
     end
     # This should return the minimal set of attributes required to create a valid
     # ::Sensit::Topic::Feed. As you add validations to ::Sensit::Topic::Feed, be sure to
     # update the return value of this method accordingly.
     def valid_attributes
-      { :name => "my Topic::Report"}
+      { :name => "My Report", :query => { "statistical" => { "field" => "num1"}}}
     end
 
     # This should return the minimal set of values that should be in the session
@@ -40,16 +44,18 @@ module Sensit
 
     describe "GET index" do
       it "assigns all reports as @reports" do
-        report = ::Sensit::Topic::Report.create! valid_attributes
-        get :index, {}, valid_session
+        report = @topic.reports.build(valid_attributes)
+        report.save
+        get :index, valid_request({:topic_id => @topic.id}), valid_session
         assigns(:reports).should eq([report])
       end
     end
 
     describe "GET show" do
       it "assigns the requested report as @report" do
-        report = ::Sensit::Topic::Report.create! valid_attributes
-        get :show, {:id => report.to_param}, valid_session
+        report = @topic.reports.build(valid_attributes)
+        report.save
+        get :show, valid_request({:topic_id => @topic.id, :id => report.to_param}), valid_session
         assigns(:report).should eq(report)
       end
     end
@@ -58,19 +64,19 @@ module Sensit
       describe "with valid params" do
         it "creates a new Topic::Report" do
           expect {
-            post :create, {:report => valid_attributes}, valid_session
+            post :create, valid_request({:topic_id => @topic.id, :report => valid_attributes}), valid_session
           }.to change(Topic::Report, :count).by(1)
         end
 
         it "assigns a newly created report as @report" do
-          post :create, {:report => valid_attributes}, valid_session
+          post :create, valid_request({:topic_id => @topic.id, :report => valid_attributes}), valid_session
           assigns(:report).should be_a(Topic::Report)
           assigns(:report).should be_persisted
         end
 
         it "redirects to the created report" do
-          post :create, {:report => valid_attributes}, valid_session
-          response.should render_template("sensit/feeds/show")
+          post :create, valid_request({:topic_id => @topic.id, :report => valid_attributes}), valid_session
+          response.should render_template("sensit/reports/show")
         end
       end
 
@@ -78,14 +84,14 @@ module Sensit
         it "assigns a newly created but unsaved report as @report" do
           # Trigger the behavior that occurs when invalid params are submitted
           ::Sensit::Topic::Report.any_instance.stub(:save).and_return(false)
-          post :create, {:report => { "name" => "invalid value" }}, valid_session
+          post :create, valid_request({:topic_id => @topic.id, :report => { "name" => "invalid value", :query => { "statistical" => { "field" => "num1"}} }}), valid_session
           assigns(:report).should be_a_new(::Sensit::Topic::Report)
         end
 
         it "re-renders the 'new' template" do
           # Trigger the behavior that occurs when invalid params are submitted
           Topic::Report.any_instance.stub(:save).and_return(false)
-          post :create, {:report => { "name" => "invalid value" }}, valid_session
+          post :create, valid_request({:topic_id => @topic.id, :report => { "name" => "invalid value", :query => { "statistical" => { "field" => "num1"}} }}), valid_session
           response.status.should == 422
         end
       end
@@ -94,42 +100,47 @@ module Sensit
     describe "PUT update" do
       describe "with valid params" do
         it "updates the requested report" do
-          report = ::Sensit::Topic::Report.create! valid_attributes
+          report = @topic.reports.build(valid_attributes)
+          report.save
           # Assuming there are no other reports in the database, this
           # specifies that the Topic::Report created on the previous line
           # receives the :update_attributes message with whatever params are
           # submitted in the request.
-          ::Sensit::Topic::Report.any_instance.should_receive(:update).with({ "name" => "MyString" })
-          put :update, {:id => report.to_param, :report => { "name" => "MyString" }}, valid_session
+          ::Sensit::Topic::Report.any_instance.should_receive(:update).with({ "name" => "MyString", "query" => { "statistical" => { "field" => "num1"}} })
+          put :update, valid_request({:id => report.to_param, :topic_id => @topic.id, :report => { "name" => "MyString", :query => { "statistical" => { "field" => "num1"}} }}), valid_session
         end
 
         it "assigns the requested report as @report" do
-          report = ::Sensit::Topic::Report.create! valid_attributes
-          put :update, {:id => report.to_param, :report => valid_attributes}, valid_session
+          report = @topic.reports.build(valid_attributes)
+          report.save
+          put :update, valid_request({:id => report.to_param, :topic_id => @topic.id, :report => valid_attributes}), valid_session
           assigns(:report).should eq(report)
         end
 
         it "redirects to the report" do
-          report = ::Sensit::Topic::Report.create! valid_attributes
-          put :update, {:id => report.to_param, :report => valid_attributes}, valid_session
+          report = @topic.reports.build(valid_attributes)
+          report.save
+          put :update, valid_request({:id => report.to_param, :topic_id => @topic.id, :report => valid_attributes}), valid_session
           response.should render_template("sensit/reports/show")
         end
       end
 
       describe "with invalid params" do
         it "assigns the report as @report" do
-          report = ::Sensit::Topic::Report.create! valid_attributes
+          report = @topic.reports.build(valid_attributes)
+          report.save
           # Trigger the behavior that occurs when invalid params are submitted
           ::Sensit::Topic::Report.any_instance.stub(:save).and_return(false)
-          put :update, {:id => report.to_param, :report => { "name" => "invalid value" }}, valid_session
+          put :update, valid_request({:id => report.to_param, :topic_id => @topic.id, :report => { "name" => "invalid value", :query => { "statistical" => { "field" => "num1"}} }}), valid_session
           assigns(:report).should eq(report)
         end
 
         it "re-renders the 'edit' template" do
-          report = ::Sensit::Topic::Report.create! valid_attributes
+          report = @topic.reports.build(valid_attributes)
+          report.save
           # Trigger the behavior that occurs when invalid params are submitted
           ::Sensit::Topic::Report.any_instance.stub(:save).and_return(false)
-          put :update, {:id => report.to_param, :report => { "name" => "invalid value" }}, valid_session
+          put :update, valid_request({:id => report.to_param, :topic_id => @topic.id, :report => { "name" => "invalid value", :query => { "statistical" => { "field" => "num1"}} }}), valid_session
           response.status.should == 422
         end
       end
@@ -137,15 +148,17 @@ module Sensit
 
     describe "DELETE destroy" do
       it "destroys the requested report" do
-        report = ::Sensit::Topic::Report.create! valid_attributes
+        report = @topic.reports.build(valid_attributes)
+        report.save
         expect {
-          delete :destroy, {:id => report.to_param}, valid_session
+          delete :destroy, valid_request({:topic_id => @topic.id, :id => report.to_param}), valid_session
         }.to change(Topic::Report, :count).by(-1)
       end
 
       it "redirects to the reports list" do
-        report = ::Sensit::Topic::Report.create! valid_attributes
-        delete :destroy, {:id => report.to_param}, valid_session
+        report = @topic.reports.build(valid_attributes)
+        report.save
+        delete :destroy, valid_request({:topic_id => @topic.id, :id => report.to_param}), valid_session
         response.status.should == 204
       end
     end

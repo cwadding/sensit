@@ -1,5 +1,6 @@
 module Sensit
   class Topic::Report < ActiveRecord::Base
+  	serialize :query, Hash
   	belongs_to :topic
 
 	validates_associated :topic

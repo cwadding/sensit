@@ -1,7 +1,7 @@
 require "spec_helper"
 
 module Sensit
-  describe SubscriptionsController, :current => true do
+  describe SubscriptionsController do
     routes { Sensit::Api::Engine.routes }
     describe "routing" do
 

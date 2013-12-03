@@ -23,6 +23,7 @@ module Sensit
     def create
       topic = Topic.find(params[:topic_id])
       @report = topic.reports.build(report_params)
+
       if @report.save
         respond_with(@report,:status => 200, :template => "sensit/reports/show")
       else
@@ -32,7 +33,7 @@ module Sensit
 
     # PATCH/PUT /reports/1
     def update
-      if @report.update_attributes(report_params)
+      if @report.update(report_params)
         respond_with(@report,:status => 200, :template => "sensit/reports/show")
       else
         render(:json => "{\"errors\":#{@report.errors.to_json}}", :status => :unprocessable_entity)
@@ -53,7 +54,8 @@ module Sensit
 
       # Only allow a trusted parameter "white list" through.
       def report_params
-        params.require(:report).permit(:name, :query)
+
+        params.require(:report).permit(:name, :query => {:statistical => [:field, :fields, :script, :params], :terms => [:field, :size, :order], :histogram => [:field, :interval, :time_interval, :key_field, :value_field, :key_script, :value_script, :params]})
       end
   end
 end

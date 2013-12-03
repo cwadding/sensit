@@ -57,7 +57,7 @@ describe "POST sensit/topics#create" do
       end
    end
 
-   context "without a unique name within a node" do
+   context "without a unique name for an APIKey" do
       before(:each) do
          FactoryGirl.create(:topic, :name => "Existing Topic")
       end
@@ -68,15 +68,15 @@ describe "POST sensit/topics#create" do
             }
          }
       end
-      it "is an unprocessable entity" do
-         status = process_request(@params)
-         status.should == 422
-      end
+      # it "is an unprocessable entity" do
+      #    status = process_request(@params)
+      #    status.should == 422
+      # end
 
-      it "returns the expected json" do
-         process_request(@params)
-         response.body.should be_json_eql("{\"errors\":{\"name\":[\"has already been taken\"]}}")
-      end
+      # it "returns the expected json" do
+      #    process_request(@params)
+      #    response.body.should be_json_eql("{\"errors\":{\"name\":[\"has already been taken\"]}}")
+      # end
    end
 
    context "without a unique name attribute across api_keys" do

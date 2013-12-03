@@ -18,8 +18,7 @@ module Sensit
     # POST /topics/1/fields
     def create
       topic = Topic.find(params[:topic_id])
-      @field = Topic::Field.new(field_params)
-      @field.topic = topic
+      @field = topic.fields.build(field_params)
       if @field.save
         respond_with(@field,:status => 200, :template => "sensit/fields/show")
       else

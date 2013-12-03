@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "sensit/subscriptions/show", :current => true do
+describe "sensit/subscriptions/show" do
   before(:each) do
     @subscription = assign(:subscription, FactoryGirl.build_stubbed(:subscription))
   end

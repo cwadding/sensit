@@ -94,7 +94,7 @@ module Sensit
           # Trigger the behavior that occurs when invalid params are submitted
           ::Sensit::Topic::Field.any_instance.stub(:save).and_return(false)
           post :create, valid_request({ "topic_id" => "1", :field => { "topic_id" => "1", :key => "asd" }}), valid_session
-          response.should render_template("sensit/fields/show")
+          response.status.should == 422
         end
       end
     end
@@ -138,7 +138,7 @@ module Sensit
           # Trigger the behavior that occurs when invalid params are submitted
           ::Sensit::Topic::Field.any_instance.stub(:save).and_return(false)
           put :update, valid_request({:id => field.to_param, :field => { "key" => "asd" }}), valid_session
-          response.should render_template("sensit/fields/show")
+          response.status.should == 422
         end
       end
     end

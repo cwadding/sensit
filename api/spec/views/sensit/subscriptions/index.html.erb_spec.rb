@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe "sensit/subscriptions/index", :current => true do
+describe "sensit/subscriptions/index" do
   context "when subscription is incomplete" do
     before(:each) do
       @subscriptions = [
