@@ -6,7 +6,7 @@ FactoryGirl.define do
     sequence :name do |n|
       "Report#{n}"
     end
-    query { statistical: { field: "num1"}}
+    query ({ :statistical => { :field => "num1"}})
   end
 
   factory :subscription, :class => Sensit::Topic::Subscription do

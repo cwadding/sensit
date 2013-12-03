@@ -19,7 +19,7 @@ require 'spec_helper'
 # that an instance is receiving a specific message.
 
 module Sensit
-    describe FeedsController do
+    describe FeedsController, :current => true do
 
       before(:each) do
         Topic::Field.create(:topic_id => 3, :key => "assf", :name => "Assf" )
@@ -52,6 +52,9 @@ module Sensit
 
       describe "POST create" do
         describe "with valid params" do
+          before(:each) do
+            Topic::Feed.any_instance.should_receive(:save).and_return(true)
+          end
           it "creates a new ::Sensit::Topic::Feed" do
             client = ::Elasticsearch::Client.new
             expect {
@@ -73,16 +76,17 @@ module Sensit
         end
 
         describe "with invalid params" do
+          before(:each) do
+            Topic::Feed.any_instance.should_receive(:save).and_return(false)
+          end
           it "assigns a newly created but unsaved feed as @feed" do
             # Trigger the behavior that occurs when invalid params are submitted
-            ::Sensit::Topic::Feed.any_instance.stub(:save).and_return(false)
             post :create, valid_request(:feed => { :at => Time.now, :values => {"assf" => "fssa"} }), valid_session
             assigns(:feed).should be_a_new(::Sensit::Topic::Feed)
           end
 
           it "re-renders the 'new' template" do
             # Trigger the behavior that occurs when invalid params are submitted
-            ::Sensit::Topic::Feed.any_instance.stub(:save).and_return(false)
             post :create, valid_request(:feed => { :at => Time.now, :values => {"assf" => "fssa"} }), valid_session
             response.status.should == 422
           end
