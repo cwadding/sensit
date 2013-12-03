@@ -218,7 +218,7 @@ private
     	elsif (self.at.is_a?(String) && /^[\d]+(\.[\d]+){0,1}$/ === self.at)
     		at_f = self.at.to_f
     	end
-		message = {:channel => channel, :data => {:at => at_f, :data => self.values}, :ext => {:auth_token => FAYE_TOKEN}}
+		message = {:channel => channel, :data => {:at => at_f, :data => self.values}, :ext => {:auth_token => ::FAYE_TOKEN}}
 		uri = URI.parse("http://localhost:9292/faye")
 		puts "Faye Out: #{uri} - #{message.to_json}"
 		Net::HTTP.post_form(uri, :message => message.to_json)

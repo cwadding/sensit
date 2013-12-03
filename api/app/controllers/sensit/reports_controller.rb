@@ -8,7 +8,7 @@ module Sensit
     # returns the name and query along with the results of the query
     # accepts additional parameters which will be merged into each report
     def index
-      @reports = Report.all
+      @reports = Topic::Report.where(:topic_id => params[:topic_id])
       respond_with(@reports)
     end
 
@@ -21,7 +21,8 @@ module Sensit
 
     # POST /reports
     def create
-      @report = Report.new(report_params)
+      topic = Topic.find(params[:topic_id])
+      @report = topic.reports.build(report_params)
       if @report.save
         respond_with(@report,:status => 200, :template => "sensit/reports/show")
       else
@@ -47,7 +48,7 @@ module Sensit
     private
       # Use callbacks to share common setup or constraints between actions.
       def set_report
-        @report = Report.find(params[:id])
+        @report = Topic::Report.find(params[:id])
       end
 
       # Only allow a trusted parameter "white list" through.

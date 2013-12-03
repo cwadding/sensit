@@ -6,7 +6,7 @@ module Sensit
 
     # GET /reports
     def index
-      @reports = Report.all
+      @reports = Topic::Report.all
     end
 
     # GET /reports/1
@@ -15,7 +15,7 @@ module Sensit
 
     # GET /reports/new
     def new
-      @report = Report.new
+      @report = Topic::Report.new
     end
 
     # GET /reports/1/edit
@@ -24,7 +24,7 @@ module Sensit
 
     # POST /reports
     def create
-      @report = Report.new(report_params)
+      @report = Topic::Report.new(report_params)
 
       if @report.save
         redirect_to @report, notice: 'Report was successfully created.'
@@ -51,12 +51,12 @@ module Sensit
     private
       # Use callbacks to share common setup or constraints between actions.
       def set_report
-        @report = Report.find(params[:id])
+        @report = Topic::Report.find(params[:id])
       end
 
       # Only allow a trusted parameter "white list" through.
       def report_params
-        params[:report]
+        params.require(:report).permit(:name, :query)
       end
   end
 end

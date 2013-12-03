@@ -5,19 +5,19 @@ module Sensit
     respond_to :json
     # GET /percolators
     def index
-      @percolators = Percolator.search(type: elastic_type_name, body: query_params)
+      @percolators = Topic::Percolator.search(type: elastic_type_name, body: query_params)
       respond_with(@percolators)
     end
 
     # GET /percolators/1
     def show
-      @percolator = Percolator.find(type: elastic_type_name, id: params[:id])
+      @percolator = Topic::Percolator.find(type: elastic_type_name, id: params[:id])
       respond_with(@percolator)
     end
 
     # POST /percolators
     def create
-      @percolator = Percolator.new(percolator_params.merge!(type: elastic_type_name))
+      @percolator = Topic::Percolator.new(percolator_params.merge!(type: elastic_type_name))
       if @percolator.save
         respond_with(@percolator,:status => 200, :template => "sensit/percolators/show")
       else
@@ -27,7 +27,7 @@ module Sensit
 
     # PATCH/PUT /percolators/1
     def update
-      @percolator = Percolator.update(percolator_params.merge!(type: elastic_type_name,:id => params[:id]))
+      @percolator = Topic::Percolator.update(percolator_params.merge!(type: elastic_type_name,:id => params[:id]))
       if @percolator.present? && @percolator.valid?
         respond_with(@percolator,:status => 200, :template => "sensit/percolators/show")
       else

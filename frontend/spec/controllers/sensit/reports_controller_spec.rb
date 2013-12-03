@@ -22,7 +22,7 @@ module Sensit
   describe ReportsController do
 
     # This should return the minimal set of attributes required to create a valid
-    # Report. As you add validations to Report, be sure to
+    # Topic::Report. As you add validations to Topic::Report, be sure to
     # adjust the attributes here as well.
     let(:valid_attributes) { {  } }
 
@@ -33,7 +33,7 @@ module Sensit
 
     describe "GET index" do
       it "assigns all reports as @reports" do
-        report = Report.create! valid_attributes
+        report = Topic::Report.create! valid_attributes
         get :index, {}, valid_session
         assigns(:reports).should eq([report])
       end
@@ -41,7 +41,7 @@ module Sensit
 
     describe "GET show" do
       it "assigns the requested report as @report" do
-        report = Report.create! valid_attributes
+        report = Topic::Report.create! valid_attributes
         get :show, {:id => report.to_param}, valid_session
         assigns(:report).should eq(report)
       end
@@ -50,13 +50,13 @@ module Sensit
     describe "GET new" do
       it "assigns a new report as @report" do
         get :new, {}, valid_session
-        assigns(:report).should be_a_new(Report)
+        assigns(:report).should be_a_new(Topic::Report)
       end
     end
 
     describe "GET edit" do
       it "assigns the requested report as @report" do
-        report = Report.create! valid_attributes
+        report = Topic::Report.create! valid_attributes
         get :edit, {:id => report.to_param}, valid_session
         assigns(:report).should eq(report)
       end
@@ -64,35 +64,35 @@ module Sensit
 
     describe "POST create" do
       describe "with valid params" do
-        it "creates a new Report" do
+        it "creates a new Topic::Report" do
           expect {
             post :create, {:report => valid_attributes}, valid_session
-          }.to change(Report, :count).by(1)
+          }.to change(Topic::Report, :count).by(1)
         end
 
         it "assigns a newly created report as @report" do
           post :create, {:report => valid_attributes}, valid_session
-          assigns(:report).should be_a(Report)
+          assigns(:report).should be_a(Topic::Report)
           assigns(:report).should be_persisted
         end
 
         it "redirects to the created report" do
           post :create, {:report => valid_attributes}, valid_session
-          response.should redirect_to(Report.last)
+          response.should redirect_to(Topic::Report.last)
         end
       end
 
       describe "with invalid params" do
         it "assigns a newly created but unsaved report as @report" do
           # Trigger the behavior that occurs when invalid params are submitted
-          Report.any_instance.stub(:save).and_return(false)
+          Topic::Report.any_instance.stub(:save).and_return(false)
           post :create, {:report => {  }}, valid_session
-          assigns(:report).should be_a_new(Report)
+          assigns(:report).should be_a_new(Topic::Report)
         end
 
         it "re-renders the 'new' template" do
           # Trigger the behavior that occurs when invalid params are submitted
-          Report.any_instance.stub(:save).and_return(false)
+          Topic::Report.any_instance.stub(:save).and_return(false)
           post :create, {:report => {  }}, valid_session
           response.should render_template("new")
         end
@@ -102,23 +102,23 @@ module Sensit
     describe "PUT update" do
       describe "with valid params" do
         it "updates the requested report" do
-          report = Report.create! valid_attributes
+          report = Topic::Report.create! valid_attributes
           # Assuming there are no other reports in the database, this
-          # specifies that the Report created on the previous line
+          # specifies that the Topic::Report created on the previous line
           # receives the :update_attributes message with whatever params are
           # submitted in the request.
-          Report.any_instance.should_receive(:update).with({ "these" => "params" })
+          Topic::Report.any_instance.should_receive(:update).with({ "these" => "params" })
           put :update, {:id => report.to_param, :report => { "these" => "params" }}, valid_session
         end
 
         it "assigns the requested report as @report" do
-          report = Report.create! valid_attributes
+          report = Topic::Report.create! valid_attributes
           put :update, {:id => report.to_param, :report => valid_attributes}, valid_session
           assigns(:report).should eq(report)
         end
 
         it "redirects to the report" do
-          report = Report.create! valid_attributes
+          report = Topic::Report.create! valid_attributes
           put :update, {:id => report.to_param, :report => valid_attributes}, valid_session
           response.should redirect_to(report)
         end
@@ -126,17 +126,17 @@ module Sensit
 
       describe "with invalid params" do
         it "assigns the report as @report" do
-          report = Report.create! valid_attributes
+          report = Topic::Report.create! valid_attributes
           # Trigger the behavior that occurs when invalid params are submitted
-          Report.any_instance.stub(:save).and_return(false)
+          Topic::Report.any_instance.stub(:save).and_return(false)
           put :update, {:id => report.to_param, :report => {  }}, valid_session
           assigns(:report).should eq(report)
         end
 
         it "re-renders the 'edit' template" do
-          report = Report.create! valid_attributes
+          report = Topic::Report.create! valid_attributes
           # Trigger the behavior that occurs when invalid params are submitted
-          Report.any_instance.stub(:save).and_return(false)
+          Topic::Report.any_instance.stub(:save).and_return(false)
           put :update, {:id => report.to_param, :report => {  }}, valid_session
           response.should render_template("edit")
         end
@@ -145,14 +145,14 @@ module Sensit
 
     describe "DELETE destroy" do
       it "destroys the requested report" do
-        report = Report.create! valid_attributes
+        report = Topic::Report.create! valid_attributes
         expect {
           delete :destroy, {:id => report.to_param}, valid_session
-        }.to change(Report, :count).by(-1)
+        }.to change(Topic::Report, :count).by(-1)
       end
 
       it "redirects to the reports list" do
-        report = Report.create! valid_attributes
+        report = Topic::Report.create! valid_attributes
         delete :destroy, {:id => report.to_param}, valid_session
         response.should redirect_to(reports_url)
       end

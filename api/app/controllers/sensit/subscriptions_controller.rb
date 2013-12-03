@@ -7,7 +7,6 @@ module Sensit
 
     # GET /subscriptions
     def index
-      # grab only the associated subecriptions on the topic
       @subscriptions = Topic::Subscription.where(:topic_id => params[:topic_id])
     end
 

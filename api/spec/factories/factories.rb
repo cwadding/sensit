@@ -2,6 +2,13 @@
 
 FactoryGirl.define do
 
+  factory :report, :class => Sensit::Topic::Report do
+    sequence :name do |n|
+      "Report#{n}"
+    end
+    query { statistical: { field: "num1"}}
+  end
+
   factory :subscription, :class => Sensit::Topic::Subscription do
     sequence :name do |n|
       "Subscription#{n}"

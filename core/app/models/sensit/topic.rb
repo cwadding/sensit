@@ -5,6 +5,7 @@ module Sensit
 
   	# has_many :feeds, dependent: :destroy
   	has_many :fields, dependent: :destroy
+  	has_many :reports, dependent: :destroy
   	has_many :subscriptions, dependent: :destroy
 	
 
@@ -22,6 +23,10 @@ module Sensit
 		params.deep_merge!({ query: { term: { topic_id: self.id } } })
         Topic::Feed.search({index: elastic_index_name, type: elastic_type_name, body: params})
       end
+	end
+
+	def percolations
+        Topic::Precolator.search({type: elastic_type_name})
 	end
 
 	def create_index
@@ -84,6 +89,16 @@ private
 		feeds.each do |feed|
 			feed.destroy
 		end
+		# client.delete_by_query({index: elastic_index_name, type: elastic_type_name, body: { query: { term: { topic_id: self.id } } }})
+	end
+
+	def destroy_perclations
+		client = ::Elasticsearch::Client.new
+
+		# TODO change to delete_by_query when it works properly
+		# feeds.each do |feed|
+		# 	feed.destroy
+		# end
 		# client.delete_by_query({index: elastic_index_name, type: elastic_type_name, body: { query: { term: { topic_id: self.id } } }})
 	end
 

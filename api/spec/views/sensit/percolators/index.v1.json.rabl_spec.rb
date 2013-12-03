@@ -3,8 +3,8 @@ require 'spec_helper'
 describe "sensit/percolators/index" do
   before(:each) do
     assign(:percolators, [
-      stub_model(Sensit::Percolator),
-      stub_model(Sensit::Percolator)
+      stub_model(Sensit::Topic::Percolator),
+      stub_model(Sensit::Topic::Percolator)
     ])
   end
 
