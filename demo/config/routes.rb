@@ -1,10 +1,11 @@
 Demo::Application.routes.draw do
 
   devise_for :users
-  mount Sensit::Api::Engine => "/"
-  mount Sensit::Frontend::Engine => "/"
-
-  resources :nodes
+  mount Sensit::Percolator::Api::Engine => "/"
+  mount Sensit::Reports::Api::Engine => "/"
+  mount Sensit::Subscriptions::Api::Engine => "/"
+  mount Sensit::Schema::Api::Engine => "/"
+  # mount Sensit::Frontend::Engine => "/"
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

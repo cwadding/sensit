@@ -19,7 +19,10 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "sensit_core", Sensit::VERSION
-  spec.add_dependency "sensit_api", Sensit::VERSION
+  spec.add_dependency "sensit_schema_api", Sensit::VERSION
+  spec.add_dependency "sensit_percolator_api", Sensit::VERSION
+  spec.add_dependency "sensit_reports_api", Sensit::VERSION
+  spec.add_dependency "sensit_subscriptions_api", Sensit::VERSION
   spec.add_dependency "sensit_frontend", Sensit::VERSION
 
   spec.add_development_dependency 'rspec-rails'
