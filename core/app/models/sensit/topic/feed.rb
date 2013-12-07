@@ -34,7 +34,7 @@ module Sensit
 	validates :index, presence: true
 	validates :type, presence: true
 	validates :topic_id, presence: true
-	validates :at, presence: true
+	validates :at, presence: true, uniqueness: {scope: [:topic_id]}
 	validates :values, presence: true
 
 	validates :tz, inclusion: { in: ActiveSupport::TimeZone.zones_map.keys}, allow_blank: true

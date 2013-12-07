@@ -3,6 +3,8 @@ require 'spec_helper'
 module Sensit
   describe Topic::Feed do
 	it { should validate_presence_of(:at) }
+	it { should validate_uniqueness_of(:at).scoped_to(:topic_id) }
+
 	it { should validate_presence_of(:values) }
 	
 	it {should ensure_inclusion_of(:tz).in_array(ActiveSupport::TimeZone.zones_map.keys) }
