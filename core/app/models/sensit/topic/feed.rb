@@ -8,8 +8,12 @@ module Sensit
 	extend ::ActiveModel::Callbacks
 	include ::ActiveModel::Dirty
 
-  	attr_accessor :at, :values, :topic_id
+  	define_model_callbacks :create, :update, :save
+
+  	attr_accessor :at, :tz, :values, :topic_id
 	attr_reader :errors, :id, :type, :index
+
+  	before_save :default_tz
 
 	def initialize(params={})
     	@new_record = true
@@ -27,13 +31,13 @@ module Sensit
     	@errors = ActiveModel::Errors.new(self)
   	end
 
-  	# define_model_callbacks :create, :update, :destroy, :save
-
 	validates :index, presence: true
 	validates :type, presence: true
 	validates :topic_id, presence: true
 	validates :at, presence: true
 	validates :values, presence: true
+
+	validates :tz, inclusion: { in: ActiveSupport::TimeZone.zones_map.keys}, allow_blank: true
 
   	def self.find(arguments = {})
 		result = elastic_client.get arguments
@@ -61,15 +65,11 @@ module Sensit
 	end
 
 	def self.destroy(arguments = {})
-		# run_callbacks :destroy do
-			elastic_client.delete arguments
-		# end
+		elastic_client.delete arguments
 	end
 
 	def self.destroy_all(arguments = {})
-		# run_callbacks :destroy do
-			elastic_client.indices.delete arguments
-		# end
+		elastic_client.indices.delete arguments
 	end
 
 	def new_record?
@@ -77,9 +77,9 @@ module Sensit
 	end
 
 	def save
-		# run_callbacks :save do
-		valid? ? (new_record? ? create : update) : false
-		# end
+		run_callbacks :save do
+			valid? ? (new_record? ? create : update) : false
+		end
 	end	
 
 	def destroy
@@ -120,10 +120,11 @@ private
 
 	def self.map_results(result)
 		t = result["_source"].delete("at")
+		tz = result["_source"].delete("tz")
 		at = Time.at(t) unless t.nil?
 		topic_id = result["_source"].delete("topic_id")
 		body = result["_source"]
-		obj = self.new({index: result["_index"], type: result["_type"], at: at, topic_id: topic_id, values: body})
+		obj = self.new({index: result["_index"], type: result["_type"], at: at, tz: tz, topic_id: topic_id, values: body})
 		obj.instance_variable_set(:@id, result["_id"])
 		obj.instance_variable_set(:@new_record, false)
 		obj
@@ -147,7 +148,7 @@ private
     	elsif (self.at.is_a?(String) && /^[\d]+(\.[\d]+){0,1}$/ === self.at)
     		at_f = self.at.to_f
     	end
-		body.merge!({at:at_f, topic_id:self.topic_id})
+		body.merge!({at:at_f, tz: (self.tz || "UTC"), topic_id:self.topic_id})
 		{index: index, type: type, body: body}
 	end
 
@@ -161,7 +162,7 @@ private
     		at_f = self.at.to_f
     	end
 		body = self.values.clone
-		body.merge!({at:at_f, topic_id:self.topic_id})
+		body.merge!({at:at_f, tz: self.tz, topic_id:self.topic_id})
 		{index: index, type: type, id: id, body: {doc: body} }
 	end
 
@@ -175,14 +176,16 @@ private
     		at_f = self.at.to_f
     	end
 		body = self.values.clone
-		body.merge!({at:at_f, topic_id:self.topic_id})
+		body.merge!({at:at_f, tz: self.tz, topic_id:self.topic_id})
 		{index: index, type: type, body: {doc: body} }
 	end
 
 
 	def update
-		response = elastic_client.update attributes_to_update
-		response["ok"] || false
+		run_callbacks :update do
+			response = elastic_client.update attributes_to_update
+			response["ok"] || false
+		end
 	end
 
 	def percolate
@@ -190,23 +193,28 @@ private
 	end
 
 	def create
-		# run_callbacks :create do
-		response = percolate
-		if (response["ok"])
-			response["matches"].each do |match|
-				faye_broadcast(match)
+		run_callbacks :create do
+			response = percolate
+			if (response["ok"])
+				response["matches"].each do |match|
+					faye_broadcast(match)
+				end
 			end
-		end
 
-		response = elastic_client.create attributes_to_create
-		if (response["ok"])
-			faye_broadcast
-			@new_record = false
-			@id = response["_id"]
+			response = elastic_client.create attributes_to_create
+			if (response["ok"])
+				faye_broadcast
+				@new_record = false
+				@id = response["_id"]
+			end
+			response["ok"] || false
 		end
-		# end
-		response["ok"]
 	end
+
+	def default_tz
+		self.tz ||= 'UTC'
+	end
+
 
 	def faye_broadcast(channel = nil)
 		begin

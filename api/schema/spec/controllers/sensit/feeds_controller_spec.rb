@@ -34,7 +34,7 @@ module Sensit
       # ::Sensit::Topic::Feed. As you add validations to ::Sensit::Topic::Feed, be sure to
       # update the return value of this method accordingly.
       def valid_attributes
-        { at: Time.now, index: ELASTIC_SEARCH_INDEX_NAME, type: ELASTIC_SEARCH_INDEX_TYPE, values: {"assf" => "dsdsag"}}
+        { at: Time.now, tz: "Eastern Time (US & Canada)", index: ELASTIC_SEARCH_INDEX_NAME, type: ELASTIC_SEARCH_INDEX_TYPE, values: {"assf" => "dsdsag"}}
       end
 
       # This should return the minimal set of values that should be in the session

@@ -56,7 +56,7 @@ module Sensit
 
       def feed_params
         fields = Topic::Field.where(:topic_id => params[:topic_id]).map(&:key)
-        params.require(:feed).permit(:at, :values => fields)
+        params.require(:feed).permit(:at, :tz, :values => fields)
       end
   end
 end

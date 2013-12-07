@@ -4,10 +4,19 @@ module Sensit
   describe Topic::Feed do
 	it { should validate_presence_of(:at) }
 	it { should validate_presence_of(:values) }
-
+	
+	it {should ensure_inclusion_of(:tz).in_array(ActiveSupport::TimeZone.zones_map.keys) }
+	it { should allow_value('').for(:tz) }
+	# describe "Attribute :tz" do
+	# 	it "defaults to UTC when it is blank or nil" do
+			
+	# 	end
+	# end
 	before(:each) do
 		@client = ::Elasticsearch::Client.new log: true
 	end
+
+
 
 	describe ".count" do
 		context "when the index exists" do

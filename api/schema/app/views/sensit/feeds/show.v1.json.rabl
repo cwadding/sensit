@@ -1,5 +1,5 @@
 object @feed
-attributes :id
+attributes :id, :tz
 
 node :at do |u|
 	u.at.utc.to_f

@@ -55,7 +55,7 @@ describe "POST sensit/feeds#create"  do
          field_arr = @topic.fields.inject([]) do |arr, field|
             arr << "{\"key\": \"#{field.key}\",\"name\": \"#{field.name}\"}"
          end
-         response.body.should be_json_eql("{\"at\": #{params[:feed][:at]},\"data\": #{values.to_json},\"fields\": [#{field_arr.join(",")}]}")
+         response.body.should be_json_eql("{\"at\": #{params[:feed][:at]},\"data\": #{values.to_json},\"fields\": [#{field_arr.join(",")}], \"tz\": \"UTC\"}")
       end
 
       # it "creates a new Feed" do
@@ -84,6 +84,31 @@ describe "POST sensit/feeds#create"  do
          response.body.should be_json_eql("{\"errors\":{\"at\":[\"can't be blank\"]}}")
       end
    end
+
+   context "with a :tz attribute" do
+
+      it "returns the expected json" do
+         fields = @topic.fields.map(&:key)
+         values = {}
+         fields.each_with_index do |field, i|
+            values.merge!(field => i.to_s)
+         end
+         params = {
+            :feed => {
+               :at => Time.now.utc.to_f,#Time.new(2013,11,14,3,56,6, "-00:00").utc.to_f,
+               :tz => "Eastern Time (US & Canada)",
+               :values => values
+            }
+         }
+         process_request(@topic, params)
+         expect(response).to render_template(:show)
+         
+         field_arr = @topic.fields.inject([]) do |arr, field|
+            arr << "{\"key\": \"#{field.key}\",\"name\": \"#{field.name}\"}"
+         end
+         response.body.should be_json_eql("{\"at\": #{params[:feed][:at]},\"data\": #{values.to_json},\"fields\": [#{field_arr.join(",")}], \"tz\": \"Eastern Time (US & Canada)\"}")
+      end
+   end   
 
 
 end

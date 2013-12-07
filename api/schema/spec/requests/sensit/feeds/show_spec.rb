@@ -60,7 +60,7 @@ describe "GET sensit/feeds#show" do
 			data_arr = feed.values.inject([]) do |arr, (key, value)|
 				arr << "{\"#{key}\": #{value}}"
 			end
-			response.body.should be_json_eql("{\"at\": #{feed.at.utc.to_f},\"data\": #{data_arr.join(',')},\"fields\": [#{field_arr.join(',')}]}")
+			response.body.should be_json_eql("{\"at\": #{feed.at.utc.to_f},\"data\": #{data_arr.join(',')},\"fields\": [#{field_arr.join(',')}],\"tz\":\"UTC\"}")
 		end
 
 	end

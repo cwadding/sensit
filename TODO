@@ -1,4 +1,6 @@
 API
+	-prevent duplicate times in a topic
+	- Importing of data in JSON, XML, OR CSV
 	- In feeds allow specifiying timezone
 	- ability to create fields when creating a topic
 	- for topics, set the id rather than using database id
