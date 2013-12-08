@@ -1,8 +1,12 @@
 object @feed
-attributes :id, :tz
+attributes :id
 
 node :at do |u|
 	u.at.utc.to_f
+end
+
+node :tz do |u|
+	u.at.time_zone.name
 end
 
 child :fields do

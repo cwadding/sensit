@@ -1,7 +1,6 @@
 API
-	-prevent duplicate times in a topic
 	- Importing of data in JSON, XML, OR CSV
-	- In feeds allow specifiying timezone
+	- In feeds ensure that :at attribute is a utc time and can be set by a string, object or number and the time is mapped to the correct time zone so there is no tz attribute but still stores the tz attribute
 	- ability to create fields when creating a topic
 	- for topics, set the id rather than using database id
 	- Creating field keys on initial feed request

@@ -7,26 +7,27 @@ module Sensit
         # include ActiveModel::Conversion
 	extend ::ActiveModel::Callbacks
 	include ::ActiveModel::Dirty
-
+	# include ElasticUniquenessValidator
   	define_model_callbacks :create, :update, :save
 
-  	attr_accessor :at, :tz, :values, :topic_id
+  	attr_accessor :at, :values, :topic_id
 	attr_reader :errors, :id, :type, :index
-
-  	before_save :default_tz
 
 	def initialize(params={})
     	@new_record = true
     	@type = params.delete(:type)
     	@index = params.delete(:index)
     	t = params.delete(:at)
-    	if (t.kind_of?(Numeric))
-    		self.at = Time.at(t)
-    	elsif (t.kind_of?(Time) || t.kind_of?(DateTime))
-    		self.at = t
+    	if (t.kind_of?(Numeric) || t.kind_of?(Time) || t.kind_of?(DateTime))
+    		self.at = Time.zone.at(t)
     	elsif (t.is_a?(String) && /^[\d]+(\.[\d]+){0,1}$/ === t)
-    		self.at = Time.at(t.to_f)
+    		self.at = Time.zone.at(t.to_f)
+    	elsif (t.is_a?(String))
+    		self.at = Time.zone.parse(t)
     	end
+    	tz = params.delete(:tz)
+    	self.at = self.at.in_time_zone(tz) if tz.present? && ::ActiveSupport::TimeZone.zones_map.keys.include?(tz)
+
     	super(params)
     	@errors = ActiveModel::Errors.new(self)
   	end
@@ -34,10 +35,8 @@ module Sensit
 	validates :index, presence: true
 	validates :type, presence: true
 	validates :topic_id, presence: true
-	validates :at, presence: true, uniqueness: {scope: [:topic_id]}
+	validates :at, presence: true, elastic_uniqueness: {scope: [:topic_id]}
 	validates :values, presence: true
-
-	validates :tz, inclusion: { in: ActiveSupport::TimeZone.zones_map.keys}, allow_blank: true
 
   	def self.find(arguments = {})
 		result = elastic_client.get arguments
@@ -148,7 +147,7 @@ private
     	elsif (self.at.is_a?(String) && /^[\d]+(\.[\d]+){0,1}$/ === self.at)
     		at_f = self.at.to_f
     	end
-		body.merge!({at:at_f, tz: (self.tz || "UTC"), topic_id:self.topic_id})
+		body.merge!({at:at_f, tz: (self.at.time_zone.name || "UTC"), topic_id:self.topic_id})
 		{index: index, type: type, body: body}
 	end
 
@@ -162,7 +161,7 @@ private
     		at_f = self.at.to_f
     	end
 		body = self.values.clone
-		body.merge!({at:at_f, tz: self.tz, topic_id:self.topic_id})
+		body.merge!({at:at_f, tz: self.at.time_zone.name, topic_id:self.topic_id})
 		{index: index, type: type, id: id, body: {doc: body} }
 	end
 
@@ -176,7 +175,7 @@ private
     		at_f = self.at.to_f
     	end
 		body = self.values.clone
-		body.merge!({at:at_f, tz: self.tz, topic_id:self.topic_id})
+		body.merge!({at:at_f, tz: self.at.time_zone.name, topic_id:self.topic_id})
 		{index: index, type: type, body: {doc: body} }
 	end
 
@@ -210,11 +209,6 @@ private
 			response["ok"] || false
 		end
 	end
-
-	def default_tz
-		self.tz ||= 'UTC'
-	end
-
 
 	def faye_broadcast(channel = nil)
 		begin
