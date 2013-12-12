@@ -1,0 +1,17 @@
+  <!-- Term Facets -->
+<span id="termsField" class="nested">
+<div class="form-group">
+	<%= label_tag "facets[#{name}][terms][fields][]", "Field name" %>
+    <%= select_tag "facets[#{name}][terms][fields][]", options_from_collection_for_select(@fields, :key, :name) %>
+    <%= link_to "Remove", "#", class => "btn btn-remove remove-field" %>
+</div>
+</span>
+<%= link_to "Add", "#", class => "btn btn-add add-field", :data => {:target => "termsField"} %>
+<div class="form-group">
+    <%= label_tag "facets[#{name}][terms][size]", "Size" %>
+    <%= text_field_tag "facets[#{name}][terms][size]" %>
+</div>
+<div class="form-group">
+	<%= label_tag "facets[#{name}][terms][order]", "Order" %>
+    <%= select_tag "facets[#{name}][terms][order]", options_for_select(["count","term", "reverse_count", "reverse_term"], "count") %>
+</div>

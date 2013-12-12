@@ -1,0 +1,10 @@
+<!-- TODO: Filter the key field to include only string fields -->
+<div class="form-group">
+	<%= label_tag "facets[#{name}][terms_stats][key_field]", "Field name" %>
+	<%= select_tag "facets[#{name}][terms_stats][key_field]", options_from_collection_for_select(@fields, :key, :name) %>
+</div>
+<!-- TODO: Filter the value field to not include any fields which are not a number -->
+<div class="form-group">
+	<%= label_tag "facets[#{name}][terms_stats][value_field]", "Field value" %>
+	<%= text_field_tag "facets[#{name}][terms_stats][value_field]" %>
+</div>

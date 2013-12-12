@@ -1,4 +1,4 @@
-module SensitFrontend
+module Sensit
   class ApplicationController < ActionController::Base
   end
 end

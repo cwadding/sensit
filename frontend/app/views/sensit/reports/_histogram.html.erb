@@ -1,0 +1,9 @@
+  <!-- Histogram -->
+<div class="form-group">
+	<%= label_tag "facets[#{name}][histogram][field]", "Field name" %>
+	<%= select_tag "facets[#{name}][histogram][field]", options_from_collection_for_select(@fields, :key, :name) %>
+</div>
+<div class="form-group">
+  <%= label_tag "facets[#{name}][histogram][interval]", "Interval" %>
+  <%= text_field_tag "facets[#{name}][histogram][interval]" %>
+</div>

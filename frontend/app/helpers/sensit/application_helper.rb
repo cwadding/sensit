@@ -1,4 +1,4 @@
-module SensitFrontend
+module Sensit
   module ApplicationHelper
   end
 end

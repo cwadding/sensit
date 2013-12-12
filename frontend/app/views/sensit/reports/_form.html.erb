@@ -4,60 +4,64 @@
 
 // on change of the facet type render the fields in the form. But we should keep track of the state for each of the different reports if the user decides to change the form
 
+$(function(){
+  // Changes to the name
+  $("#report_name").blur(function(){
+    var new_name = $(this).val();
+    $(".field").each(function(){
+      var name = $(this).attr('name');
+        n1 = name.indexOf("[");
+        n2 = name.indexOf("]", n1);
+      $(this).attr("name", name.substr(0,n1+1) + new_name + name.substr(n2,name.length));
+    });
+  });
+  // Changes to the select
+  $("#report_type").change(function(){
+    var fieldtype = $(this).val();
+    var name = $("#facet_name").val();
+    // remove the 
+    switch (fieldtype) {
+      <% ["statistical", "terms_stats", "terms", "range", "histogram"].each do |type| %>
+      case "<%= type %>":
+        $('#currentFields').html("<%= escape_javascript(render :partial => "#{type}") %>");
+        break;
+      <% end %>
+    }
+    // $("#currentFields").
+    // $(".field").each(function(){
+    //   var name = $(this).attr('name');
+    //     n1 = name.indexOf("[",name.indexOf("[")+1)
+    //     n2 = name.indexOf("]", n1);
+    //   $(this).attr("name", name.substr(0,n1+1) + new_name + name.substr(n2,name.length));
+    // });
+  });
+
+  $(".currentFields .add-field").live("click", function(e){
+    e.preventDefault();
+  });
+
+
+});
+
 </script>
 
 
-<%= form_for(@report) do |f| %>
-  <% if @report.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@report.errors.count, "error") %> prohibited this report from being saved:</h2>
+<%= form_tag "/reports", {:role => "form"} do |f| %>
 
-      <ul>
-      <% @report.errors.full_messages.each do |msg| %>
-        <li><%= msg %></li>
-      <% end %>
-      </ul>
+  <%= fields_for :facets do |facets| %>
+    
+    <div class="form-group">
+      <%= label_tag :report_name, "Report name" %>
+      <%= text_field_tag :report_name %>
+    </div>
+    <div class="form-group">
+      <%= label_tag :report_type, "Report type" %>
+      <%= select_tag :report_type, options_for_select([["Terms", 'terms'],['Range', 'range'],['Histogram', 'histogram'],["Statistical", 'statistical'],["Term Statistics", 'terms_stats'],['Filter', 'filter']]) %>
+    </div>
+
+    <div id="currentFields"></div>
+    <div class="actions">
+      <%= submit_tag "Submit", :class => "btn btn-default" %>
     </div>
   <% end %>
-
-
-<%= fields_for :facets do |facets| %>
-  <%= text_field_tag :facet_name %>
-  <%= select_tag :facet_type options_for_select([['statistical', "Statistical"],['terms_stats', "Term Statistics"],['terms', "Terms"],['range', 'Range'],['histogram','Histogram'],['filter', 'Filter']]) %>
-
-  <!-- Statistical -->
-    <%= select_tag :statistical_type options_for_select([['fields','Fields'],['script', 'Script']]) %>
-    <!-- Field -->
-    <%= facets.select_tag "[name][statistical][field]",options_from_collection_for_select(@fields, :key, :name) %>
-    <%= facets.select_tag "[name][statistical][fields][]",options_from_collection_for_select(@fields, :key, :name) %>
-    <!-- Script -->
-    <%= text_area_tag "facets[name][statistical][script]" %>
-    <!-- to add a variable -->
-    <%= text_field_tag "facets[stat1][statistical][params][factor]" %>
-  <!-- Term Statistics -->
-  <!-- Filter the key field to include only string fields -->
-    <%= select_tag "facets[name][terms_stats][key_field]", options_from_collection_for_select(@fields, :key, :name) %>
-    <!-- Filter the value field to not include any fields which are not a number -->
-    <%= select_tag "facets[name][terms_stats][value_field]", options_from_collection_for_select(@fields, :key, :name) %>
-  <!-- Term Facets -->
-    <%= select_tag 'facets[name][terms][field]', options_from_collection_for_select(@fields, :key, :name) %>
-    <%= text_field_tag 'facets[name][terms][size]' %>
-    <%= select_tag 'facets[name][terms][order]' options_for_select(["count","term", "reverse_count", "reverse_term"], "count") %>
-  <!-- Range Facets -->
-    <%= text_field_tag "facets[range1][range][field]" %>
-    <%= fields_for "facets[range1][range][ranges][]", time do |f| %>
-        <%= f.select_tag "key_field", options_from_collection_for_select(@fields, :key, :name) %>
-    <!-- Filter the value field to not include any fields which are not a number -->
-    <%= f.select_tag "value_field", options_from_collection_for_select(@fields, :key, :name) %>
-
-      <%= f.text_field "from" %>
-      <%= f.text_field "to" %>
-    <% end %>
-  <!-- Histogram -->
-  <%= text_field_tag "facets[name][histogram][field]" %>
-  <%= text_field_tag "facets[name][histogram][interval]" %>
-
-  <div class="actions">
-    <%= f.submit %>
-  </div>
 <% end %>
