@@ -9,8 +9,8 @@ describe "POST sensit/reports#create"  do
 		before(:each) do
 			@params = {
 				:report => {
-					:id => "foobar"
-					:body => { query: { query_string: { query: 'foo' } } }
+					:name => "My Report",
+					:query => { "statistical" => { "field" => "num1"}}
 				}
 			}
 		end
@@ -22,7 +22,7 @@ describe "POST sensit/reports#create"  do
 		it "returns the expected json" do
 			process_request(@params)
 			expect(response).to render_template(:show)
-			response.body.should be_json_eql("{\"id\": #{params[:report][:id]},\"body\": #{params[:report][:body].to_json}}")
+			response.body.should be_json_eql("{\"name\": #{params[:report][:name]},\"query\": #{params[:report][:query].to_json}}")
 		end
 	end
 

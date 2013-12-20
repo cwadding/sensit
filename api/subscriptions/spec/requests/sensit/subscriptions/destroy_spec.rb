@@ -2,24 +2,22 @@ require 'spec_helper'
 describe "DELETE sensit/subscriptions#destroy" do
 
 	def process_request(subscription)
-		delete "/api/topics/#{subscription.type}/subscriptions/#{subscription.id}", valid_request, valid_session
+		delete "/api/topics/#{subscription.topic_id}/subscriptions/#{subscription.id}", valid_request, valid_session
 	end
 
 	context "when the subscription exists" do
 		before(:each) do
-          @subscription = ::Sensit::Topic::Percolator.create({ type: ELASTIC_SEARCH_INDEX_TYPE, id: "3", body: { query: { query_string: { query: 'foo' } } } })
+          @subscription = ::Sensit::Topic::Subscription.create({ :name => "MyString", :host => "127.0.0.1", :topic_id => 1})
 		end
 		it "is successful" do
 			status = process_request(@subscription)
 			status.should == 204
 		end
 
-		it "deletes the Percolator" do
-			client = ::Elasticsearch::Client.new
+		it "deletes the Subscription" do
 			expect {
 				process_request(@subscription)
-				client.indices.refresh(:index => ELASTIC_SEARCH_INDEX_NAME)
-			}.to change(Sensit::Topic::Percolator, :count).by(-1)
+			}.to change(Sensit::Topic::Subscription, :count).by(-1)
         end
 
  #        it "removes that feed from the elastic_search index"
