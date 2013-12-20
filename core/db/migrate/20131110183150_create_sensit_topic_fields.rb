@@ -5,7 +5,7 @@ class CreateSensitTopicFields < ActiveRecord::Migration
       t.string :key
       t.integer :unit_id
       t.integer :topic_id
-
+  	  t.string :datatype
       t.timestamps
     end
   end

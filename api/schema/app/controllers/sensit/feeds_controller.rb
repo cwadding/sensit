@@ -12,13 +12,23 @@ module Sensit
 
     # POST /topic/1/feeds
     def create
-      @feed = Topic::Feed.new(feed_params.merge!({index: elastic_index_name, type: elastic_type_name, :topic_id => params[:topic_id]})) 
-      if @feed.save
-        respond_with(@feed,:status => 200, :template => "sensit/feeds/show")
+      if params.has_key?(:feeds)
+        @fields = Topic::Field.where(:topic_id => params[:topic_id]).load
+        importer = Topic::Feed::Importer.new({index: elastic_index_name, type: elastic_type_name, :topic_id => params[:topic_id], :fields => @fields, :feeds => feeds_params(@fields.map(&:key))})
+        @feeds = importer.feeds
+        if importer.save
+          respond_with(@feeds,:status => 200, :template => "sensit/feeds/index")
+        else
+          render(:json => "{\"errors\":#{importer.errors.to_json}}", :status => :unprocessable_entity)
+        end
       else
-        render(:json => "{\"errors\":#{@feed.errors.to_json}}", :status => :unprocessable_entity)
+        @feed = Topic::Feed.new(feed_params.merge!({index: elastic_index_name, type: elastic_type_name, :topic_id => params[:topic_id]})) 
+        if @feed.save
+          respond_with(@feed,:status => 200, :template => "sensit/feeds/show")
+        else
+          render(:json => "{\"errors\":#{@feed.errors.to_json}}", :status => :unprocessable_entity)
+        end
       end
-      
     end
 
     # PATCH/PUT /topics/1/feeds/1
@@ -54,9 +64,21 @@ module Sensit
         params.require(:feed).require(:values).permit!
       end
 
+
       def feed_params
         fields = Topic::Field.where(:topic_id => params[:topic_id]).map(&:key)
         params.require(:feed).permit(:at, :tz, :values => fields)
       end
+
+      def feeds_params(values)
+        if params[:feeds] && params[:feeds].is_a?(Hash)
+          params.require(:feeds).map do |p|
+            ActionController::Parameters.new(p.to_hash).permit(:at, :tz, :values => values)
+          end
+        else
+          params.require(:feeds)
+        end
+      end
+
   end
 end

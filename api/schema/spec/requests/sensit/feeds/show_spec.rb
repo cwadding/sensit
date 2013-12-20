@@ -1,38 +1,5 @@
 require 'spec_helper'
 describe "GET sensit/feeds#show" do
-# {
-#    "feed":{
-#       "id": 3,
-#       "fields":[
-#          {
-#             "field":{
-#                "name":"col3",
-#                "key":"c3",
-#                "unit":"mm",
-#                "datatype":"integer"
-#             },
-#             "field":{
-#                "name":"col5",
-#                "key":"c5",
-#                "unit":"filename",
-#                "datatype":"string"
-#             },
-#             "field":{
-#                "name":"col4",
-#                "key":"c4",
-#                "unit":"s",
-#                "datatype":"float"
-#             }
-#          }
-#       ],
-#       "timestamp":1383794969.654,
-#       "data":{
-#          "c3":0,
-#          "c4":"val",
-#          "c5":23
-#       }
-#    }
-# }
 
 	def process_request(topic)
 		feed = topic.feeds.first

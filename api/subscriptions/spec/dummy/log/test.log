@@ -1215,3 +1215,321 @@ Completed 204 No Content in 1ms (ActiveRecord: 0.2ms)
   [1m[36m (0.0ms)[0m  [1mSAVEPOINT active_record_1[0m
   [1m[35m (0.1ms)[0m  ROLLBACK TO SAVEPOINT active_record_1
   [1m[36m (0.1ms)[0m  [1mrollback transaction[0m
+  [1m[36m (0.3ms)[0m  [1mCREATE TABLE "sensit_api_key_permission_restrictions" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "api_key_permission_id" integer, "resource_type" varchar(255), "resource_id" integer, "created_at" datetime, "updated_at" datetime) [0m
+  [1m[35m (0.1ms)[0m  CREATE TABLE "sensit_api_key_permissions" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "api_key_id" integer, "access_methods_bitmask" integer, "source_ip" varchar(255), "referer" varchar(255), "minimum_interval" integer, "name" varchar(255), "created_at" datetime, "updated_at" datetime) 
+  [1m[36m (0.1ms)[0m  [1mCREATE TABLE "sensit_api_keys" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "user_id" integer, "name" varchar(255), "access_token" varchar(255), "expires_at" datetime, "access_bitmask" integer, "created_at" datetime, "updated_at" datetime) [0m
+  [1m[35m (0.1ms)[0m  CREATE TABLE "sensit_datatypes" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar(255), "created_at" datetime, "updated_at" datetime) 
+  [1m[36m (0.1ms)[0m  [1mCREATE TABLE "sensit_topic_fields" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar(255), "key" varchar(255), "unit_id" integer, "topic_id" integer, "created_at" datetime, "updated_at" datetime) [0m
+  [1m[35m (0.1ms)[0m  CREATE TABLE "sensit_topic_reports" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar(255), "query" text, "topic_id" integer, "created_at" datetime, "updated_at" datetime) 
+  [1m[36m (0.1ms)[0m  [1mCREATE TABLE "sensit_topic_subscriptions" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar(255), "host" varchar(255), "auth_token" varchar(255), "protocol" varchar(255), "topic_id" integer, "created_at" datetime, "updated_at" datetime) [0m
+  [1m[35m (0.1ms)[0m  CREATE TABLE "sensit_topics" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "api_key_id" integer, "name" varchar(255), "description" varchar(255), "created_at" datetime, "updated_at" datetime) 
+  [1m[36m (0.1ms)[0m  [1mCREATE TABLE "sensit_unit_groups" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar(255), "created_at" datetime, "updated_at" datetime) [0m
+  [1m[35m (0.1ms)[0m  CREATE TABLE "sensit_units" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar(255), "abbr" varchar(255), "datatype_id" integer, "group_id" integer, "created_at" datetime, "updated_at" datetime) 
+  [1m[36m (0.1ms)[0m  [1mCREATE TABLE "schema_migrations" ("version" varchar(255) NOT NULL) [0m
+  [1m[35m (0.1ms)[0m  CREATE UNIQUE INDEX "unique_schema_migrations" ON "schema_migrations" ("version")
+  [1m[36m (0.0ms)[0m  [1mSELECT version FROM "schema_migrations"[0m
+  [1m[35m (0.1ms)[0m  INSERT INTO "schema_migrations" (version) VALUES ('20131207182415')
+  [1m[36m (0.0ms)[0m  [1mINSERT INTO "schema_migrations" (version) VALUES ('20130425045656')[0m
+  [1m[35m (0.1ms)[0m  INSERT INTO "schema_migrations" (version) VALUES ('20130425045919')
+  [1m[36m (0.0ms)[0m  [1mINSERT INTO "schema_migrations" (version) VALUES ('20130425050226')[0m
+  [1m[35m (0.1ms)[0m  begin transaction
+  [1m[36m (0.0ms)[0m  [1mSAVEPOINT active_record_1[0m
+  [1m[35m (0.1ms)[0m  SAVEPOINT active_record_2
+  [1m[36mSensit::Topic Exists (0.1ms)[0m  [1mSELECT 1 AS one FROM "sensit_topics" WHERE ("sensit_topics"."name" = 'MyTopic' AND "sensit_topics"."api_key_id" IS NULL) LIMIT 1[0m
+  [1m[35mSQL (2.9ms)[0m  INSERT INTO "sensit_topics" ("created_at", "name", "updated_at") VALUES (?, ?, ?)  [["created_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00], ["name", "MyTopic"], ["updated_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00]]
+  [1m[36m (0.1ms)[0m  [1mRELEASE SAVEPOINT active_record_2[0m
+  [1m[35m (0.1ms)[0m  SAVEPOINT active_record_2
+  [1m[36mSensit::Topic Load (0.2ms)[0m  [1mSELECT "sensit_topics".* FROM "sensit_topics" WHERE "sensit_topics"."id" = ? ORDER BY "sensit_topics"."id" ASC LIMIT 1[0m  [["id", 1]]
+  [1m[35mSensit::Topic Exists (0.1ms)[0m  SELECT 1 AS one FROM "sensit_topics" WHERE ("sensit_topics"."name" = 'MyTopic' AND "sensit_topics"."id" != 1 AND "sensit_topics"."api_key_id" IS NULL) LIMIT 1
+  [1m[36mSensit::Topic::Subscription Exists (0.1ms)[0m  [1mSELECT 1 AS one FROM "sensit_topic_subscriptions" WHERE ("sensit_topic_subscriptions"."name" = 'MyString' AND "sensit_topic_subscriptions"."topic_id" = 1) LIMIT 1[0m
+  [1m[35mSQL (0.2ms)[0m  INSERT INTO "sensit_topic_subscriptions" ("created_at", "host", "name", "topic_id", "updated_at") VALUES (?, ?, ?, ?, ?)  [["created_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00], ["host", "127.0.0.1"], ["name", "MyString"], ["topic_id", 1], ["updated_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00]]
+  [1m[36m (0.0ms)[0m  [1mRELEASE SAVEPOINT active_record_2[0m
+Processing by Sensit::SubscriptionsController#index as JSON
+  Parameters: {"topic_id"=>1, "api_version"=>1}
+  Rendered /Volumes/Media/cwadding/Repositories/sensit/api/subscriptions/app/views/sensit/subscriptions/index.v1.json.rabl (0.2ms)
+Completed 200 OK in 15ms (Views: 13.7ms | ActiveRecord: 0.0ms)
+  [1m[35mSensit::Topic::Subscription Load (0.1ms)[0m  SELECT "sensit_topic_subscriptions".* FROM "sensit_topic_subscriptions" WHERE "sensit_topic_subscriptions"."topic_id" = 1
+  [1m[36m (0.1ms)[0m  [1mROLLBACK TO SAVEPOINT active_record_1[0m
+  [1m[35m (0.1ms)[0m  rollback transaction
+  [1m[36m (0.1ms)[0m  [1mbegin transaction[0m
+  [1m[35m (0.1ms)[0m  SAVEPOINT active_record_1
+  [1m[36m (0.1ms)[0m  [1mSAVEPOINT active_record_2[0m
+  [1m[35mSensit::Topic Exists (0.1ms)[0m  SELECT 1 AS one FROM "sensit_topics" WHERE ("sensit_topics"."name" = 'MyTopic' AND "sensit_topics"."api_key_id" IS NULL) LIMIT 1
+  [1m[36mSQL (0.2ms)[0m  [1mINSERT INTO "sensit_topics" ("created_at", "name", "updated_at") VALUES (?, ?, ?)[0m  [["created_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00], ["name", "MyTopic"], ["updated_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00]]
+  [1m[35m (0.0ms)[0m  RELEASE SAVEPOINT active_record_2
+  [1m[36m (0.0ms)[0m  [1mSAVEPOINT active_record_2[0m
+  [1m[35mSensit::Topic Load (0.1ms)[0m  SELECT "sensit_topics".* FROM "sensit_topics" WHERE "sensit_topics"."id" = ? ORDER BY "sensit_topics"."id" ASC LIMIT 1  [["id", 1]]
+  [1m[36mSensit::Topic Exists (0.1ms)[0m  [1mSELECT 1 AS one FROM "sensit_topics" WHERE ("sensit_topics"."name" = 'MyTopic' AND "sensit_topics"."id" != 1 AND "sensit_topics"."api_key_id" IS NULL) LIMIT 1[0m
+  [1m[35mSensit::Topic::Subscription Exists (0.1ms)[0m  SELECT 1 AS one FROM "sensit_topic_subscriptions" WHERE ("sensit_topic_subscriptions"."name" = 'MyString' AND "sensit_topic_subscriptions"."topic_id" = 1) LIMIT 1
+  [1m[36mSQL (0.2ms)[0m  [1mINSERT INTO "sensit_topic_subscriptions" ("created_at", "host", "name", "topic_id", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["created_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00], ["host", "127.0.0.1"], ["name", "MyString"], ["topic_id", 1], ["updated_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00]]
+  [1m[35m (0.1ms)[0m  RELEASE SAVEPOINT active_record_2
+Processing by Sensit::SubscriptionsController#show as JSON
+  Parameters: {"id"=>"1", "api_version"=>1}
+  [1m[36mSensit::Topic::Subscription Load (0.1ms)[0m  [1mSELECT "sensit_topic_subscriptions".* FROM "sensit_topic_subscriptions" WHERE "sensit_topic_subscriptions"."id" = ? LIMIT 1[0m  [["id", "1"]]
+Completed 200 OK in 3ms (Views: 2.4ms | ActiveRecord: 0.1ms)
+  [1m[35m (0.1ms)[0m  ROLLBACK TO SAVEPOINT active_record_1
+  [1m[36m (0.0ms)[0m  [1mrollback transaction[0m
+  [1m[35m (0.1ms)[0m  begin transaction
+  [1m[36m (0.0ms)[0m  [1mSAVEPOINT active_record_1[0m
+  [1m[35m (0.0ms)[0m  SAVEPOINT active_record_2
+  [1m[36mSensit::Topic Exists (0.1ms)[0m  [1mSELECT 1 AS one FROM "sensit_topics" WHERE ("sensit_topics"."name" = 'MyTopic' AND "sensit_topics"."api_key_id" IS NULL) LIMIT 1[0m
+  [1m[35mSQL (0.2ms)[0m  INSERT INTO "sensit_topics" ("created_at", "name", "updated_at") VALUES (?, ?, ?)  [["created_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00], ["name", "MyTopic"], ["updated_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00]]
+  [1m[36m (0.0ms)[0m  [1mRELEASE SAVEPOINT active_record_2[0m
+  [1m[35m (0.1ms)[0m  SELECT COUNT(*) FROM "sensit_topic_subscriptions"
+Processing by Sensit::SubscriptionsController#create as JSON
+  Parameters: {"topic_id"=>1, "subscription"=>{"name"=>"MyString", "host"=>"127.0.0.1"}, "api_version"=>1}
+  [1m[36mSensit::Topic Load (0.1ms)[0m  [1mSELECT "sensit_topics".* FROM "sensit_topics" WHERE "sensit_topics"."id" = ? LIMIT 1[0m  [["id", 1]]
+  [1m[35m (0.1ms)[0m  SAVEPOINT active_record_2
+  [1m[36mSensit::Topic Load (0.1ms)[0m  [1mSELECT "sensit_topics".* FROM "sensit_topics" WHERE "sensit_topics"."id" = ? ORDER BY "sensit_topics"."id" ASC LIMIT 1[0m  [["id", 1]]
+  [1m[35mSensit::Topic Exists (0.1ms)[0m  SELECT 1 AS one FROM "sensit_topics" WHERE ("sensit_topics"."name" = 'MyTopic' AND "sensit_topics"."id" != 1 AND "sensit_topics"."api_key_id" IS NULL) LIMIT 1
+  [1m[36mSensit::Topic::Subscription Exists (0.1ms)[0m  [1mSELECT 1 AS one FROM "sensit_topic_subscriptions" WHERE ("sensit_topic_subscriptions"."name" = 'MyString' AND "sensit_topic_subscriptions"."topic_id" = 1) LIMIT 1[0m
+  [1m[35mSQL (0.2ms)[0m  INSERT INTO "sensit_topic_subscriptions" ("created_at", "host", "name", "topic_id", "updated_at") VALUES (?, ?, ?, ?, ?)  [["created_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00], ["host", "127.0.0.1"], ["name", "MyString"], ["topic_id", 1], ["updated_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00]]
+  [1m[36m (0.0ms)[0m  [1mRELEASE SAVEPOINT active_record_2[0m
+Completed 200 OK in 109ms (Views: 0.7ms | ActiveRecord: 0.6ms)
+  [1m[35m (0.1ms)[0m  SELECT COUNT(*) FROM "sensit_topic_subscriptions"
+  [1m[36m (0.1ms)[0m  [1mROLLBACK TO SAVEPOINT active_record_1[0m
+  [1m[35m (0.0ms)[0m  rollback transaction
+  [1m[36m (0.1ms)[0m  [1mbegin transaction[0m
+  [1m[35m (0.0ms)[0m  SAVEPOINT active_record_1
+  [1m[36m (0.0ms)[0m  [1mSAVEPOINT active_record_2[0m
+  [1m[35mSensit::Topic Exists (0.1ms)[0m  SELECT 1 AS one FROM "sensit_topics" WHERE ("sensit_topics"."name" = 'MyTopic' AND "sensit_topics"."api_key_id" IS NULL) LIMIT 1
+  [1m[36mSQL (0.2ms)[0m  [1mINSERT INTO "sensit_topics" ("created_at", "name", "updated_at") VALUES (?, ?, ?)[0m  [["created_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00], ["name", "MyTopic"], ["updated_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00]]
+  [1m[35m (0.0ms)[0m  RELEASE SAVEPOINT active_record_2
+Processing by Sensit::SubscriptionsController#create as JSON
+  Parameters: {"topic_id"=>1, "subscription"=>{"name"=>"MyString", "host"=>"127.0.0.1"}, "api_version"=>1}
+  [1m[36mSensit::Topic Load (0.1ms)[0m  [1mSELECT "sensit_topics".* FROM "sensit_topics" WHERE "sensit_topics"."id" = ? LIMIT 1[0m  [["id", 1]]
+  [1m[35m (0.1ms)[0m  SAVEPOINT active_record_2
+  [1m[36mSensit::Topic Load (0.0ms)[0m  [1mSELECT "sensit_topics".* FROM "sensit_topics" WHERE "sensit_topics"."id" = ? ORDER BY "sensit_topics"."id" ASC LIMIT 1[0m  [["id", 1]]
+  [1m[35mSensit::Topic Exists (0.1ms)[0m  SELECT 1 AS one FROM "sensit_topics" WHERE ("sensit_topics"."name" = 'MyTopic' AND "sensit_topics"."id" != 1 AND "sensit_topics"."api_key_id" IS NULL) LIMIT 1
+  [1m[36mSensit::Topic::Subscription Exists (0.1ms)[0m  [1mSELECT 1 AS one FROM "sensit_topic_subscriptions" WHERE ("sensit_topic_subscriptions"."name" = 'MyString' AND "sensit_topic_subscriptions"."topic_id" = 1) LIMIT 1[0m
+  [1m[35mSQL (0.1ms)[0m  INSERT INTO "sensit_topic_subscriptions" ("created_at", "host", "name", "topic_id", "updated_at") VALUES (?, ?, ?, ?, ?)  [["created_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00], ["host", "127.0.0.1"], ["name", "MyString"], ["topic_id", 1], ["updated_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00]]
+  [1m[36m (0.0ms)[0m  [1mRELEASE SAVEPOINT active_record_2[0m
+Completed 200 OK in 6ms (Views: 0.7ms | ActiveRecord: 0.5ms)
+  [1m[35m (0.1ms)[0m  ROLLBACK TO SAVEPOINT active_record_1
+  [1m[36m (0.1ms)[0m  [1mrollback transaction[0m
+  [1m[35m (0.1ms)[0m  begin transaction
+  [1m[36m (0.1ms)[0m  [1mSAVEPOINT active_record_1[0m
+  [1m[35m (0.1ms)[0m  SAVEPOINT active_record_2
+  [1m[36mSensit::Topic Exists (0.1ms)[0m  [1mSELECT 1 AS one FROM "sensit_topics" WHERE ("sensit_topics"."name" = 'MyTopic' AND "sensit_topics"."api_key_id" IS NULL) LIMIT 1[0m
+  [1m[35mSQL (0.2ms)[0m  INSERT INTO "sensit_topics" ("created_at", "name", "updated_at") VALUES (?, ?, ?)  [["created_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00], ["name", "MyTopic"], ["updated_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00]]
+  [1m[36m (0.1ms)[0m  [1mRELEASE SAVEPOINT active_record_2[0m
+Processing by Sensit::SubscriptionsController#create as JSON
+  Parameters: {"topic_id"=>1, "subscription"=>{"name"=>"MyString", "host"=>"127.0.0.1"}, "api_version"=>1}
+  [1m[35mSensit::Topic Load (0.1ms)[0m  SELECT "sensit_topics".* FROM "sensit_topics" WHERE "sensit_topics"."id" = ? LIMIT 1  [["id", 1]]
+  [1m[36m (0.1ms)[0m  [1mSAVEPOINT active_record_2[0m
+  [1m[35mSensit::Topic Load (0.0ms)[0m  SELECT "sensit_topics".* FROM "sensit_topics" WHERE "sensit_topics"."id" = ? ORDER BY "sensit_topics"."id" ASC LIMIT 1  [["id", 1]]
+  [1m[36mSensit::Topic Exists (0.1ms)[0m  [1mSELECT 1 AS one FROM "sensit_topics" WHERE ("sensit_topics"."name" = 'MyTopic' AND "sensit_topics"."id" != 1 AND "sensit_topics"."api_key_id" IS NULL) LIMIT 1[0m
+  [1m[35mSensit::Topic::Subscription Exists (0.1ms)[0m  SELECT 1 AS one FROM "sensit_topic_subscriptions" WHERE ("sensit_topic_subscriptions"."name" = 'MyString' AND "sensit_topic_subscriptions"."topic_id" = 1) LIMIT 1
+  [1m[36mSQL (0.2ms)[0m  [1mINSERT INTO "sensit_topic_subscriptions" ("created_at", "host", "name", "topic_id", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["created_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00], ["host", "127.0.0.1"], ["name", "MyString"], ["topic_id", 1], ["updated_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00]]
+  [1m[35m (0.0ms)[0m  RELEASE SAVEPOINT active_record_2
+Completed 200 OK in 6ms (Views: 0.7ms | ActiveRecord: 0.5ms)
+  [1m[36m (0.1ms)[0m  [1mROLLBACK TO SAVEPOINT active_record_1[0m
+  [1m[35m (0.0ms)[0m  rollback transaction
+  [1m[36m (0.1ms)[0m  [1mbegin transaction[0m
+  [1m[35m (0.0ms)[0m  SAVEPOINT active_record_1
+  [1m[36m (0.1ms)[0m  [1mSAVEPOINT active_record_2[0m
+  [1m[35mSensit::Topic Exists (0.1ms)[0m  SELECT 1 AS one FROM "sensit_topics" WHERE ("sensit_topics"."name" = 'MyTopic' AND "sensit_topics"."api_key_id" IS NULL) LIMIT 1
+  [1m[36mSQL (0.2ms)[0m  [1mINSERT INTO "sensit_topics" ("created_at", "name", "updated_at") VALUES (?, ?, ?)[0m  [["created_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00], ["name", "MyTopic"], ["updated_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00]]
+  [1m[35m (0.0ms)[0m  RELEASE SAVEPOINT active_record_2
+Processing by Sensit::SubscriptionsController#create as JSON
+  Parameters: {"topic_id"=>1, "subscription"=>{"name"=>"invalid value"}, "api_version"=>1}
+  [1m[36mSensit::Topic Load (0.1ms)[0m  [1mSELECT "sensit_topics".* FROM "sensit_topics" WHERE "sensit_topics"."id" = ? LIMIT 1[0m  [["id", 1]]
+Completed 422 Unprocessable Entity in 2ms (Views: 0.1ms | ActiveRecord: 0.1ms)
+  [1m[35m (0.1ms)[0m  ROLLBACK TO SAVEPOINT active_record_1
+  [1m[36m (0.0ms)[0m  [1mrollback transaction[0m
+  [1m[35m (0.1ms)[0m  begin transaction
+  [1m[36m (0.0ms)[0m  [1mSAVEPOINT active_record_1[0m
+  [1m[35m (0.0ms)[0m  SAVEPOINT active_record_2
+  [1m[36mSensit::Topic Exists (0.1ms)[0m  [1mSELECT 1 AS one FROM "sensit_topics" WHERE ("sensit_topics"."name" = 'MyTopic' AND "sensit_topics"."api_key_id" IS NULL) LIMIT 1[0m
+  [1m[35mSQL (0.2ms)[0m  INSERT INTO "sensit_topics" ("created_at", "name", "updated_at") VALUES (?, ?, ?)  [["created_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00], ["name", "MyTopic"], ["updated_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00]]
+  [1m[36m (0.0ms)[0m  [1mRELEASE SAVEPOINT active_record_2[0m
+Processing by Sensit::SubscriptionsController#create as JSON
+  Parameters: {"topic_id"=>1, "subscription"=>{"name"=>"invalid value"}, "api_version"=>1}
+  [1m[35mSensit::Topic Load (0.1ms)[0m  SELECT "sensit_topics".* FROM "sensit_topics" WHERE "sensit_topics"."id" = ? LIMIT 1  [["id", 1]]
+Completed 422 Unprocessable Entity in 2ms (Views: 0.1ms | ActiveRecord: 0.1ms)
+  [1m[36m (0.1ms)[0m  [1mROLLBACK TO SAVEPOINT active_record_1[0m
+  [1m[35m (0.0ms)[0m  rollback transaction
+  [1m[36m (0.1ms)[0m  [1mbegin transaction[0m
+  [1m[35m (0.0ms)[0m  SAVEPOINT active_record_1
+  [1m[36m (0.0ms)[0m  [1mSAVEPOINT active_record_2[0m
+  [1m[35mSensit::Topic Exists (0.1ms)[0m  SELECT 1 AS one FROM "sensit_topics" WHERE ("sensit_topics"."name" = 'MyTopic' AND "sensit_topics"."api_key_id" IS NULL) LIMIT 1
+  [1m[36mSQL (0.2ms)[0m  [1mINSERT INTO "sensit_topics" ("created_at", "name", "updated_at") VALUES (?, ?, ?)[0m  [["created_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00], ["name", "MyTopic"], ["updated_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00]]
+  [1m[35m (0.0ms)[0m  RELEASE SAVEPOINT active_record_2
+  [1m[36m (0.0ms)[0m  [1mSAVEPOINT active_record_2[0m
+  [1m[35mSensit::Topic Load (0.0ms)[0m  SELECT "sensit_topics".* FROM "sensit_topics" WHERE "sensit_topics"."id" = ? ORDER BY "sensit_topics"."id" ASC LIMIT 1  [["id", 1]]
+  [1m[36mSensit::Topic Exists (0.1ms)[0m  [1mSELECT 1 AS one FROM "sensit_topics" WHERE ("sensit_topics"."name" = 'MyTopic' AND "sensit_topics"."id" != 1 AND "sensit_topics"."api_key_id" IS NULL) LIMIT 1[0m
+  [1m[35mSensit::Topic::Subscription Exists (0.1ms)[0m  SELECT 1 AS one FROM "sensit_topic_subscriptions" WHERE ("sensit_topic_subscriptions"."name" = 'MyString' AND "sensit_topic_subscriptions"."topic_id" = 1) LIMIT 1
+  [1m[36mSQL (0.1ms)[0m  [1mINSERT INTO "sensit_topic_subscriptions" ("created_at", "host", "name", "topic_id", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["created_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00], ["host", "127.0.0.1"], ["name", "MyString"], ["topic_id", 1], ["updated_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00]]
+  [1m[35m (0.0ms)[0m  RELEASE SAVEPOINT active_record_2
+Processing by Sensit::SubscriptionsController#update as JSON
+  Parameters: {"id"=>"1", "topic_id"=>1, "subscription"=>{"name"=>"MyString"}, "api_version"=>1}
+  [1m[36mSensit::Topic::Subscription Load (0.1ms)[0m  [1mSELECT "sensit_topic_subscriptions".* FROM "sensit_topic_subscriptions" WHERE "sensit_topic_subscriptions"."id" = ? LIMIT 1[0m  [["id", "1"]]
+Completed 422 Unprocessable Entity in 2ms (Views: 0.1ms | ActiveRecord: 0.1ms)
+  [1m[35m (0.1ms)[0m  ROLLBACK TO SAVEPOINT active_record_1
+  [1m[36m (0.0ms)[0m  [1mrollback transaction[0m
+  [1m[35m (0.1ms)[0m  begin transaction
+  [1m[36m (0.0ms)[0m  [1mSAVEPOINT active_record_1[0m
+  [1m[35m (0.0ms)[0m  SAVEPOINT active_record_2
+  [1m[36mSensit::Topic Exists (0.1ms)[0m  [1mSELECT 1 AS one FROM "sensit_topics" WHERE ("sensit_topics"."name" = 'MyTopic' AND "sensit_topics"."api_key_id" IS NULL) LIMIT 1[0m
+  [1m[35mSQL (0.2ms)[0m  INSERT INTO "sensit_topics" ("created_at", "name", "updated_at") VALUES (?, ?, ?)  [["created_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00], ["name", "MyTopic"], ["updated_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00]]
+  [1m[36m (0.0ms)[0m  [1mRELEASE SAVEPOINT active_record_2[0m
+  [1m[35m (0.0ms)[0m  SAVEPOINT active_record_2
+  [1m[36mSensit::Topic Load (0.0ms)[0m  [1mSELECT "sensit_topics".* FROM "sensit_topics" WHERE "sensit_topics"."id" = ? ORDER BY "sensit_topics"."id" ASC LIMIT 1[0m  [["id", 1]]
+  [1m[35mSensit::Topic Exists (0.1ms)[0m  SELECT 1 AS one FROM "sensit_topics" WHERE ("sensit_topics"."name" = 'MyTopic' AND "sensit_topics"."id" != 1 AND "sensit_topics"."api_key_id" IS NULL) LIMIT 1
+  [1m[36mSensit::Topic::Subscription Exists (0.1ms)[0m  [1mSELECT 1 AS one FROM "sensit_topic_subscriptions" WHERE ("sensit_topic_subscriptions"."name" = 'MyString' AND "sensit_topic_subscriptions"."topic_id" = 1) LIMIT 1[0m
+  [1m[35mSQL (0.1ms)[0m  INSERT INTO "sensit_topic_subscriptions" ("created_at", "host", "name", "topic_id", "updated_at") VALUES (?, ?, ?, ?, ?)  [["created_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00], ["host", "127.0.0.1"], ["name", "MyString"], ["topic_id", 1], ["updated_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00]]
+  [1m[36m (0.0ms)[0m  [1mRELEASE SAVEPOINT active_record_2[0m
+Processing by Sensit::SubscriptionsController#update as JSON
+  Parameters: {"id"=>"1", "topic_id"=>1, "subscription"=>{"name"=>"MyString", "host"=>"127.0.0.1"}, "api_version"=>1}
+  [1m[35mSensit::Topic::Subscription Load (0.1ms)[0m  SELECT "sensit_topic_subscriptions".* FROM "sensit_topic_subscriptions" WHERE "sensit_topic_subscriptions"."id" = ? LIMIT 1  [["id", "1"]]
+  [1m[36m (0.0ms)[0m  [1mSAVEPOINT active_record_2[0m
+  [1m[35mSensit::Topic Load (0.1ms)[0m  SELECT "sensit_topics".* FROM "sensit_topics" WHERE "sensit_topics"."id" = ? ORDER BY "sensit_topics"."id" ASC LIMIT 1  [["id", 1]]
+  [1m[36mSensit::Topic Exists (0.1ms)[0m  [1mSELECT 1 AS one FROM "sensit_topics" WHERE ("sensit_topics"."name" = 'MyTopic' AND "sensit_topics"."id" != 1 AND "sensit_topics"."api_key_id" IS NULL) LIMIT 1[0m
+  [1m[35mSensit::Topic::Subscription Exists (0.1ms)[0m  SELECT 1 AS one FROM "sensit_topic_subscriptions" WHERE ("sensit_topic_subscriptions"."name" = 'MyString' AND "sensit_topic_subscriptions"."id" != 1 AND "sensit_topic_subscriptions"."topic_id" = 1) LIMIT 1
+  [1m[36m (0.1ms)[0m  [1mRELEASE SAVEPOINT active_record_2[0m
+Completed 200 OK in 5ms (Views: 0.7ms | ActiveRecord: 0.4ms)
+  [1m[35m (0.1ms)[0m  ROLLBACK TO SAVEPOINT active_record_1
+  [1m[36m (0.1ms)[0m  [1mrollback transaction[0m
+  [1m[35m (0.1ms)[0m  begin transaction
+  [1m[36m (0.0ms)[0m  [1mSAVEPOINT active_record_1[0m
+  [1m[35m (0.1ms)[0m  SAVEPOINT active_record_2
+  [1m[36mSensit::Topic Exists (0.1ms)[0m  [1mSELECT 1 AS one FROM "sensit_topics" WHERE ("sensit_topics"."name" = 'MyTopic' AND "sensit_topics"."api_key_id" IS NULL) LIMIT 1[0m
+  [1m[35mSQL (0.2ms)[0m  INSERT INTO "sensit_topics" ("created_at", "name", "updated_at") VALUES (?, ?, ?)  [["created_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00], ["name", "MyTopic"], ["updated_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00]]
+  [1m[36m (0.0ms)[0m  [1mRELEASE SAVEPOINT active_record_2[0m
+  [1m[35m (0.0ms)[0m  SAVEPOINT active_record_2
+  [1m[36mSensit::Topic Load (0.0ms)[0m  [1mSELECT "sensit_topics".* FROM "sensit_topics" WHERE "sensit_topics"."id" = ? ORDER BY "sensit_topics"."id" ASC LIMIT 1[0m  [["id", 1]]
+  [1m[35mSensit::Topic Exists (0.1ms)[0m  SELECT 1 AS one FROM "sensit_topics" WHERE ("sensit_topics"."name" = 'MyTopic' AND "sensit_topics"."id" != 1 AND "sensit_topics"."api_key_id" IS NULL) LIMIT 1
+  [1m[36mSensit::Topic::Subscription Exists (0.1ms)[0m  [1mSELECT 1 AS one FROM "sensit_topic_subscriptions" WHERE ("sensit_topic_subscriptions"."name" = 'MyString' AND "sensit_topic_subscriptions"."topic_id" = 1) LIMIT 1[0m
+  [1m[35mSQL (0.1ms)[0m  INSERT INTO "sensit_topic_subscriptions" ("created_at", "host", "name", "topic_id", "updated_at") VALUES (?, ?, ?, ?, ?)  [["created_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00], ["host", "127.0.0.1"], ["name", "MyString"], ["topic_id", 1], ["updated_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00]]
+  [1m[36m (0.0ms)[0m  [1mRELEASE SAVEPOINT active_record_2[0m
+Processing by Sensit::SubscriptionsController#update as JSON
+  Parameters: {"id"=>"1", "topic_id"=>1, "subscription"=>{"name"=>"MyString", "host"=>"127.0.0.1"}, "api_version"=>1}
+  [1m[35mSensit::Topic::Subscription Load (0.1ms)[0m  SELECT "sensit_topic_subscriptions".* FROM "sensit_topic_subscriptions" WHERE "sensit_topic_subscriptions"."id" = ? LIMIT 1  [["id", "1"]]
+  [1m[36m (0.1ms)[0m  [1mSAVEPOINT active_record_2[0m
+  [1m[35mSensit::Topic Load (0.1ms)[0m  SELECT "sensit_topics".* FROM "sensit_topics" WHERE "sensit_topics"."id" = ? ORDER BY "sensit_topics"."id" ASC LIMIT 1  [["id", 1]]
+  [1m[36mSensit::Topic Exists (0.1ms)[0m  [1mSELECT 1 AS one FROM "sensit_topics" WHERE ("sensit_topics"."name" = 'MyTopic' AND "sensit_topics"."id" != 1 AND "sensit_topics"."api_key_id" IS NULL) LIMIT 1[0m
+  [1m[35mSensit::Topic::Subscription Exists (0.1ms)[0m  SELECT 1 AS one FROM "sensit_topic_subscriptions" WHERE ("sensit_topic_subscriptions"."name" = 'MyString' AND "sensit_topic_subscriptions"."id" != 1 AND "sensit_topic_subscriptions"."topic_id" = 1) LIMIT 1
+  [1m[36m (0.0ms)[0m  [1mRELEASE SAVEPOINT active_record_2[0m
+Completed 200 OK in 4ms (Views: 0.7ms | ActiveRecord: 0.4ms)
+  [1m[35m (0.1ms)[0m  ROLLBACK TO SAVEPOINT active_record_1
+  [1m[36m (0.0ms)[0m  [1mrollback transaction[0m
+  [1m[35m (0.1ms)[0m  begin transaction
+  [1m[36m (0.0ms)[0m  [1mSAVEPOINT active_record_1[0m
+  [1m[35m (0.1ms)[0m  SAVEPOINT active_record_2
+  [1m[36mSensit::Topic Exists (0.1ms)[0m  [1mSELECT 1 AS one FROM "sensit_topics" WHERE ("sensit_topics"."name" = 'MyTopic' AND "sensit_topics"."api_key_id" IS NULL) LIMIT 1[0m
+  [1m[35mSQL (0.2ms)[0m  INSERT INTO "sensit_topics" ("created_at", "name", "updated_at") VALUES (?, ?, ?)  [["created_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00], ["name", "MyTopic"], ["updated_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00]]
+  [1m[36m (0.0ms)[0m  [1mRELEASE SAVEPOINT active_record_2[0m
+  [1m[35m (0.0ms)[0m  SAVEPOINT active_record_2
+  [1m[36mSensit::Topic Load (0.0ms)[0m  [1mSELECT "sensit_topics".* FROM "sensit_topics" WHERE "sensit_topics"."id" = ? ORDER BY "sensit_topics"."id" ASC LIMIT 1[0m  [["id", 1]]
+  [1m[35mSensit::Topic Exists (0.1ms)[0m  SELECT 1 AS one FROM "sensit_topics" WHERE ("sensit_topics"."name" = 'MyTopic' AND "sensit_topics"."id" != 1 AND "sensit_topics"."api_key_id" IS NULL) LIMIT 1
+  [1m[36mSensit::Topic::Subscription Exists (0.1ms)[0m  [1mSELECT 1 AS one FROM "sensit_topic_subscriptions" WHERE ("sensit_topic_subscriptions"."name" = 'MyString' AND "sensit_topic_subscriptions"."topic_id" = 1) LIMIT 1[0m
+  [1m[35mSQL (0.1ms)[0m  INSERT INTO "sensit_topic_subscriptions" ("created_at", "host", "name", "topic_id", "updated_at") VALUES (?, ?, ?, ?, ?)  [["created_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00], ["host", "127.0.0.1"], ["name", "MyString"], ["topic_id", 1], ["updated_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00]]
+  [1m[36m (0.0ms)[0m  [1mRELEASE SAVEPOINT active_record_2[0m
+Processing by Sensit::SubscriptionsController#update as JSON
+  Parameters: {"id"=>"1", "topic_id"=>1, "subscription"=>{"name"=>"invalid value"}, "api_version"=>1}
+  [1m[35mSensit::Topic::Subscription Load (0.1ms)[0m  SELECT "sensit_topic_subscriptions".* FROM "sensit_topic_subscriptions" WHERE "sensit_topic_subscriptions"."id" = ? LIMIT 1  [["id", "1"]]
+  [1m[36m (0.1ms)[0m  [1mSAVEPOINT active_record_2[0m
+  [1m[35m (0.1ms)[0m  ROLLBACK TO SAVEPOINT active_record_2
+Completed 422 Unprocessable Entity in 2ms (Views: 0.1ms | ActiveRecord: 0.2ms)
+  [1m[36m (0.1ms)[0m  [1mROLLBACK TO SAVEPOINT active_record_1[0m
+  [1m[35m (0.0ms)[0m  rollback transaction
+  [1m[36m (0.1ms)[0m  [1mbegin transaction[0m
+  [1m[35m (0.0ms)[0m  SAVEPOINT active_record_1
+  [1m[36m (0.1ms)[0m  [1mSAVEPOINT active_record_2[0m
+  [1m[35mSensit::Topic Exists (0.1ms)[0m  SELECT 1 AS one FROM "sensit_topics" WHERE ("sensit_topics"."name" = 'MyTopic' AND "sensit_topics"."api_key_id" IS NULL) LIMIT 1
+  [1m[36mSQL (0.2ms)[0m  [1mINSERT INTO "sensit_topics" ("created_at", "name", "updated_at") VALUES (?, ?, ?)[0m  [["created_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00], ["name", "MyTopic"], ["updated_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00]]
+  [1m[35m (0.0ms)[0m  RELEASE SAVEPOINT active_record_2
+  [1m[36m (0.0ms)[0m  [1mSAVEPOINT active_record_2[0m
+  [1m[35mSensit::Topic Load (0.1ms)[0m  SELECT "sensit_topics".* FROM "sensit_topics" WHERE "sensit_topics"."id" = ? ORDER BY "sensit_topics"."id" ASC LIMIT 1  [["id", 1]]
+  [1m[36mSensit::Topic Exists (0.1ms)[0m  [1mSELECT 1 AS one FROM "sensit_topics" WHERE ("sensit_topics"."name" = 'MyTopic' AND "sensit_topics"."id" != 1 AND "sensit_topics"."api_key_id" IS NULL) LIMIT 1[0m
+  [1m[35mSensit::Topic::Subscription Exists (0.1ms)[0m  SELECT 1 AS one FROM "sensit_topic_subscriptions" WHERE ("sensit_topic_subscriptions"."name" = 'MyString' AND "sensit_topic_subscriptions"."topic_id" = 1) LIMIT 1
+  [1m[36mSQL (0.1ms)[0m  [1mINSERT INTO "sensit_topic_subscriptions" ("created_at", "host", "name", "topic_id", "updated_at") VALUES (?, ?, ?, ?, ?)[0m  [["created_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00], ["host", "127.0.0.1"], ["name", "MyString"], ["topic_id", 1], ["updated_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00]]
+  [1m[35m (0.0ms)[0m  RELEASE SAVEPOINT active_record_2
+Processing by Sensit::SubscriptionsController#update as JSON
+  Parameters: {"id"=>"1", "topic_id"=>1, "subscription"=>{"name"=>"invalid value"}, "api_version"=>1}
+  [1m[36mSensit::Topic::Subscription Load (0.1ms)[0m  [1mSELECT "sensit_topic_subscriptions".* FROM "sensit_topic_subscriptions" WHERE "sensit_topic_subscriptions"."id" = ? LIMIT 1[0m  [["id", "1"]]
+  [1m[35m (0.1ms)[0m  SAVEPOINT active_record_2
+  [1m[36m (0.1ms)[0m  [1mROLLBACK TO SAVEPOINT active_record_2[0m
+Completed 422 Unprocessable Entity in 3ms (Views: 0.1ms | ActiveRecord: 0.2ms)
+  [1m[35m (0.1ms)[0m  ROLLBACK TO SAVEPOINT active_record_1
+  [1m[36m (0.1ms)[0m  [1mrollback transaction[0m
+  [1m[35m (0.1ms)[0m  begin transaction
+  [1m[36m (0.0ms)[0m  [1mSAVEPOINT active_record_1[0m
+  [1m[35m (0.0ms)[0m  SAVEPOINT active_record_2
+  [1m[36mSensit::Topic Exists (0.1ms)[0m  [1mSELECT 1 AS one FROM "sensit_topics" WHERE ("sensit_topics"."name" = 'MyTopic' AND "sensit_topics"."api_key_id" IS NULL) LIMIT 1[0m
+  [1m[35mSQL (0.2ms)[0m  INSERT INTO "sensit_topics" ("created_at", "name", "updated_at") VALUES (?, ?, ?)  [["created_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00], ["name", "MyTopic"], ["updated_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00]]
+  [1m[36m (0.0ms)[0m  [1mRELEASE SAVEPOINT active_record_2[0m
+  [1m[35m (0.0ms)[0m  SAVEPOINT active_record_2
+  [1m[36mSensit::Topic Load (0.1ms)[0m  [1mSELECT "sensit_topics".* FROM "sensit_topics" WHERE "sensit_topics"."id" = ? ORDER BY "sensit_topics"."id" ASC LIMIT 1[0m  [["id", 1]]
+  [1m[35mSensit::Topic Exists (0.1ms)[0m  SELECT 1 AS one FROM "sensit_topics" WHERE ("sensit_topics"."name" = 'MyTopic' AND "sensit_topics"."id" != 1 AND "sensit_topics"."api_key_id" IS NULL) LIMIT 1
+  [1m[36mSensit::Topic::Subscription Exists (0.1ms)[0m  [1mSELECT 1 AS one FROM "sensit_topic_subscriptions" WHERE ("sensit_topic_subscriptions"."name" = 'MyString' AND "sensit_topic_subscriptions"."topic_id" = 1) LIMIT 1[0m
+  [1m[35mSQL (0.1ms)[0m  INSERT INTO "sensit_topic_subscriptions" ("created_at", "host", "name", "topic_id", "updated_at") VALUES (?, ?, ?, ?, ?)  [["created_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00], ["host", "127.0.0.1"], ["name", "MyString"], ["topic_id", 1], ["updated_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00]]
+  [1m[36m (0.0ms)[0m  [1mRELEASE SAVEPOINT active_record_2[0m
+  [1m[35m (0.0ms)[0m  SELECT COUNT(*) FROM "sensit_topic_subscriptions"
+Processing by Sensit::SubscriptionsController#destroy as JSON
+  Parameters: {"id"=>"1", "topic_id"=>1, "api_version"=>1}
+  [1m[36mSensit::Topic::Subscription Load (0.1ms)[0m  [1mSELECT "sensit_topic_subscriptions".* FROM "sensit_topic_subscriptions" WHERE "sensit_topic_subscriptions"."id" = ? LIMIT 1[0m  [["id", "1"]]
+  [1m[35m (0.0ms)[0m  SAVEPOINT active_record_2
+  [1m[36mSQL (0.1ms)[0m  [1mDELETE FROM "sensit_topic_subscriptions" WHERE "sensit_topic_subscriptions"."id" = ?[0m  [["id", 1]]
+  [1m[35m (0.0ms)[0m  RELEASE SAVEPOINT active_record_2
+Completed 204 No Content in 2ms (ActiveRecord: 0.2ms)
+  [1m[36m (0.1ms)[0m  [1mSELECT COUNT(*) FROM "sensit_topic_subscriptions"[0m
+  [1m[35m (0.1ms)[0m  ROLLBACK TO SAVEPOINT active_record_1
+  [1m[36m (0.0ms)[0m  [1mrollback transaction[0m
+  [1m[35m (0.1ms)[0m  begin transaction
+  [1m[36m (0.0ms)[0m  [1mSAVEPOINT active_record_1[0m
+  [1m[35m (0.0ms)[0m  SAVEPOINT active_record_2
+  [1m[36mSensit::Topic Exists (0.1ms)[0m  [1mSELECT 1 AS one FROM "sensit_topics" WHERE ("sensit_topics"."name" = 'MyTopic' AND "sensit_topics"."api_key_id" IS NULL) LIMIT 1[0m
+  [1m[35mSQL (0.2ms)[0m  INSERT INTO "sensit_topics" ("created_at", "name", "updated_at") VALUES (?, ?, ?)  [["created_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00], ["name", "MyTopic"], ["updated_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00]]
+  [1m[36m (0.0ms)[0m  [1mRELEASE SAVEPOINT active_record_2[0m
+  [1m[35m (0.0ms)[0m  SAVEPOINT active_record_2
+  [1m[36mSensit::Topic Load (0.0ms)[0m  [1mSELECT "sensit_topics".* FROM "sensit_topics" WHERE "sensit_topics"."id" = ? ORDER BY "sensit_topics"."id" ASC LIMIT 1[0m  [["id", 1]]
+  [1m[35mSensit::Topic Exists (0.1ms)[0m  SELECT 1 AS one FROM "sensit_topics" WHERE ("sensit_topics"."name" = 'MyTopic' AND "sensit_topics"."id" != 1 AND "sensit_topics"."api_key_id" IS NULL) LIMIT 1
+  [1m[36mSensit::Topic::Subscription Exists (0.1ms)[0m  [1mSELECT 1 AS one FROM "sensit_topic_subscriptions" WHERE ("sensit_topic_subscriptions"."name" = 'MyString' AND "sensit_topic_subscriptions"."topic_id" = 1) LIMIT 1[0m
+  [1m[35mSQL (0.1ms)[0m  INSERT INTO "sensit_topic_subscriptions" ("created_at", "host", "name", "topic_id", "updated_at") VALUES (?, ?, ?, ?, ?)  [["created_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00], ["host", "127.0.0.1"], ["name", "MyString"], ["topic_id", 1], ["updated_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00]]
+  [1m[36m (0.0ms)[0m  [1mRELEASE SAVEPOINT active_record_2[0m
+Processing by Sensit::SubscriptionsController#destroy as JSON
+  Parameters: {"id"=>"1", "topic_id"=>1, "api_version"=>1}
+  [1m[35mSensit::Topic::Subscription Load (0.1ms)[0m  SELECT "sensit_topic_subscriptions".* FROM "sensit_topic_subscriptions" WHERE "sensit_topic_subscriptions"."id" = ? LIMIT 1  [["id", "1"]]
+  [1m[36m (0.0ms)[0m  [1mSAVEPOINT active_record_2[0m
+  [1m[35mSQL (0.0ms)[0m  DELETE FROM "sensit_topic_subscriptions" WHERE "sensit_topic_subscriptions"."id" = ?  [["id", 1]]
+  [1m[36m (0.0ms)[0m  [1mRELEASE SAVEPOINT active_record_2[0m
+Completed 204 No Content in 1ms (ActiveRecord: 0.2ms)
+  [1m[35m (0.1ms)[0m  ROLLBACK TO SAVEPOINT active_record_1
+  [1m[36m (0.0ms)[0m  [1mrollback transaction[0m
+  [1m[35m (0.1ms)[0m  begin transaction
+  [1m[36m (0.0ms)[0m  [1mSAVEPOINT active_record_1[0m
+  [1m[35m (0.1ms)[0m  ROLLBACK TO SAVEPOINT active_record_1
+  [1m[36m (0.0ms)[0m  [1mrollback transaction[0m
+  [1m[35m (0.1ms)[0m  begin transaction
+  [1m[36m (0.0ms)[0m  [1mSAVEPOINT active_record_1[0m
+  [1m[35m (0.0ms)[0m  ROLLBACK TO SAVEPOINT active_record_1
+  [1m[36m (0.0ms)[0m  [1mrollback transaction[0m
+  [1m[35m (0.1ms)[0m  begin transaction
+  [1m[36m (0.0ms)[0m  [1mSAVEPOINT active_record_1[0m
+  [1m[35m (0.0ms)[0m  ROLLBACK TO SAVEPOINT active_record_1
+  [1m[36m (0.0ms)[0m  [1mrollback transaction[0m
+  [1m[35m (0.0ms)[0m  begin transaction
+  [1m[36m (0.0ms)[0m  [1mSAVEPOINT active_record_1[0m
+  [1m[35m (0.0ms)[0m  ROLLBACK TO SAVEPOINT active_record_1
+  [1m[36m (0.0ms)[0m  [1mrollback transaction[0m
+  [1m[35m (0.1ms)[0m  begin transaction
+  [1m[36m (0.0ms)[0m  [1mSAVEPOINT active_record_1[0m
+  [1m[35m (0.0ms)[0m  ROLLBACK TO SAVEPOINT active_record_1
+  [1m[36m (0.0ms)[0m  [1mrollback transaction[0m
+  [1m[35m (0.1ms)[0m  begin transaction
+  [1m[36m (0.0ms)[0m  [1mSAVEPOINT active_record_1[0m
+  [1m[35m (0.1ms)[0m  SAVEPOINT active_record_2
+  [1m[36mSensit::Topic::Subscription Exists (0.1ms)[0m  [1mSELECT 1 AS one FROM "sensit_topic_subscriptions" WHERE ("sensit_topic_subscriptions"."name" = 'Subscription1' AND "sensit_topic_subscriptions"."topic_id" IS NULL) LIMIT 1[0m
+  [1m[35mSQL (0.2ms)[0m  INSERT INTO "sensit_topic_subscriptions" ("created_at", "host", "name", "updated_at") VALUES (?, ?, ?, ?)  [["created_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00], ["host", "127.0.0.1"], ["name", "Subscription1"], ["updated_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00]]
+  [1m[36m (0.0ms)[0m  [1mRELEASE SAVEPOINT active_record_2[0m
+  [1m[35m (0.0ms)[0m  SAVEPOINT active_record_2
+  [1m[36mSensit::Topic::Subscription Exists (0.1ms)[0m  [1mSELECT 1 AS one FROM "sensit_topic_subscriptions" WHERE ("sensit_topic_subscriptions"."name" = 'Subscription2' AND "sensit_topic_subscriptions"."topic_id" IS NULL) LIMIT 1[0m
+  [1m[35mSQL (0.1ms)[0m  INSERT INTO "sensit_topic_subscriptions" ("created_at", "host", "name", "updated_at") VALUES (?, ?, ?, ?)  [["created_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00], ["host", "127.0.0.1"], ["name", "Subscription2"], ["updated_at", Fri, 20 Dec 2013 01:37:46 UTC +00:00]]
+  [1m[36m (0.0ms)[0m  [1mRELEASE SAVEPOINT active_record_2[0m
+  [1m[35m (0.1ms)[0m  ROLLBACK TO SAVEPOINT active_record_1
+  [1m[36m (0.1ms)[0m  [1mrollback transaction[0m
+  [1m[35m (0.1ms)[0m  begin transaction
+  [1m[36m (0.0ms)[0m  [1mSAVEPOINT active_record_1[0m
+  [1m[35m (0.1ms)[0m  ROLLBACK TO SAVEPOINT active_record_1
+  [1m[36m (0.0ms)[0m  [1mrollback transaction[0m

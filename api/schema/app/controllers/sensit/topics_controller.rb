@@ -19,7 +19,11 @@ module Sensit
 
     # POST 1/topics
     def create
+      field_attribute_sets = topic_params.delete(:fields)
       @topic = Topic.new(topic_params)
+      field_attribute_sets.each do |field_set|
+        @topic.fields.build(field_set)
+      end unless field_attribute_sets.blank?
       if @topic.save
         # create the elasticsearch index
         client = ::Elasticsearch::Client.new
@@ -32,6 +36,13 @@ module Sensit
 
     # PATCH/PUT 1/topics/1
     def update
+      field_attribute_sets = topic_params.delete(:fields)
+      field_attribute_sets.each do |field_set|
+        field = @topic.fields.where(:key => field_set[:key]).first
+        field.name = field_set[:name]
+        field.save
+      end unless field_attribute_sets.blank?
+
       if @topic.update(topic_params)
         respond_with(@topic,:status => 200, :template => "sensit/topics/show")
       else
@@ -54,7 +65,7 @@ module Sensit
 
       # Only allow a trusted parameter "white list" through.
       def topic_params
-        params.require(:topic).permit(:name, :description)
+        @topic_params ||= params.require(:topic).permit(:name, :description, :fields => [:name, :key])
       end
   end
 end

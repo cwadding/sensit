@@ -7,10 +7,6 @@ FactoryGirl.define do
     name "my_api_key"
   end
 
-  factory :datatype, :class => Sensit::Datatype do
-    name "integer"
-  end
-
   factory :unit, :class => Sensit::Unit do
     name "meters"
     abbr "m"
@@ -48,7 +44,7 @@ FactoryGirl.define do
     sequence :key do |n|
       "key#{n}"
     end
-    unit
+    datatype 'string'
   end  
 
 	factory :topic, :class => Sensit::Topic do
@@ -57,10 +53,9 @@ FactoryGirl.define do
 	  end
 
     ignore do
-      fields_count 1
-    end
-
-    ignore do
+      sequence :field_keys do |n|
+        ["key#{n}"]
+      end
       feeds_count 1
     end
 
@@ -69,12 +64,12 @@ FactoryGirl.define do
     factory :topic_with_feeds_and_fields do
       after(:create) do |topic, evaluator|
         key_arr = []
-        evaluator.fields_count.times do |i|
-          field = FactoryGirl.create(:field, topic: topic)
-          key_arr << field.key
+        evaluator.field_keys.each do |key|
+          field = topic.fields.where(key: key).first
+          field = FactoryGirl.create(:field, topic: topic, key: key) if field.blank?
         end
         evaluator.feeds_count.times do |i|
-          values = key_arr.inject({}) {|h, key| h.merge!(key => i)}
+          values = evaluator.field_keys.inject({}) {|h, key| h.merge!(key => i)}
           client = ::Elasticsearch::Client.new
           Sensit::Topic::Feed.create({:topic_id => topic.id, index: ELASTIC_SEARCH_INDEX_NAME, type: ELASTIC_SEARCH_INDEX_TYPE, at: Time.now, :tz => "UTC", values: values})
           client.indices.refresh(:index => ELASTIC_SEARCH_INDEX_NAME)

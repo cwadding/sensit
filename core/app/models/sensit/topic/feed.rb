@@ -18,15 +18,9 @@ module Sensit
     	@type = params.delete(:type)
     	@index = params.delete(:index)
     	t = params.delete(:at)
-    	if (t.kind_of?(Numeric) || t.kind_of?(Time) || t.kind_of?(DateTime))
-    		self.at = Time.zone.at(t)
-    	elsif (t.is_a?(String) && /^[\d]+(\.[\d]+){0,1}$/ === t)
-    		self.at = Time.zone.at(t.to_f)
-    	elsif (t.is_a?(String))
-    		self.at = Time.zone.parse(t)
-    	end
+    	self.at = Topic::Field.convert(t, 'datetime') unless t.blank?
     	tz = params.delete(:tz)
-    	self.at = self.at.in_time_zone(tz) if tz.present? && ::ActiveSupport::TimeZone.zones_map.keys.include?(tz)
+    	self.at = self.at.in_time_zone(tz) if self.at.present? && tz.present? && ::ActiveSupport::TimeZone.zones_map.keys.include?(tz)
 
     	super(params)
     	@errors = ActiveModel::Errors.new(self)
@@ -70,6 +64,8 @@ module Sensit
 	def self.destroy_all(arguments = {})
 		elastic_client.indices.delete arguments
 	end
+
+
 
 	def new_record?
 		@new_record || false
@@ -115,6 +111,11 @@ module Sensit
 		save
 	end
 
+	def to_hash
+		body = self.values.clone
+		body.merge!({at:self.at.to_f, tz: (self.at.time_zone.name || "UTC"), topic_id:self.topic_id})
+	end
+
 private
 
 	def self.map_results(result)
@@ -138,47 +139,16 @@ private
 	end
 
 	def attributes_to_create
-		body = self.values.clone
-		at_f = 0
-		if (self.at.kind_of?(Numeric))
-    		at_f = self.at
-    	elsif (self.at.kind_of?(Time) || self.at.kind_of?(DateTime))
-    		at_f = self.at.utc.to_f
-    	elsif (self.at.is_a?(String) && /^[\d]+(\.[\d]+){0,1}$/ === self.at)
-    		at_f = self.at.to_f
-    	end
-		body.merge!({at:at_f, tz: (self.at.time_zone.name || "UTC"), topic_id:self.topic_id})
-		{index: index, type: type, body: body}
+		{index: index, type: type, body: self.to_hash}
 	end
 
 	def attributes_to_update
-		at_f = 0
-		if (self.at.kind_of?(Numeric))
-    		at_f = self.at
-    	elsif (self.at.kind_of?(Time) || self.at.kind_of?(DateTime))
-    		at_f = self.at.utc.to_f
-    	elsif (self.at.is_a?(String) && /^[\d]+(\.[\d]+){0,1}$/ === self.at)
-    		at_f = self.at.to_f
-    	end
-		body = self.values.clone
-		body.merge!({at:at_f, tz: self.at.time_zone.name, topic_id:self.topic_id})
-		{index: index, type: type, id: id, body: {doc: body} }
+		{index: index, type: type, id: id, body: {doc: self.to_hash} }
 	end
 
 	def attributes_for_percolate
-		at_f = 0
-		if (self.at.kind_of?(Numeric))
-    		at_f = self.at
-    	elsif (self.at.kind_of?(Time) || self.at.kind_of?(DateTime))
-    		at_f = self.at.utc.to_f
-    	elsif (self.at.is_a?(String) && /^[\d]+(\.[\d]+){0,1}$/ === self.at)
-    		at_f = self.at.to_f
-    	end
-		body = self.values.clone
-		body.merge!({at:at_f, tz: self.at.time_zone.name, topic_id:self.topic_id})
-		{index: index, type: type, body: {doc: body} }
+		{index: index, type: type, body: {doc: self.to_hash} }
 	end
-
 
 	def update
 		run_callbacks :update do

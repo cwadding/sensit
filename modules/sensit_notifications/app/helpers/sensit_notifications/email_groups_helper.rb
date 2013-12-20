@@ -1,0 +1,2 @@
+module Settings::EmailGroupsHelper
+end

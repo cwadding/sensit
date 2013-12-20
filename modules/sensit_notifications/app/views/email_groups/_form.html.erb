@@ -1,0 +1,19 @@
+<%= simple_form_for email_group, :validate => true, :remote => true, :url => email_group.id.nil? ? email_groups_path : url_for(params), :html => { :class => "form-horizontal" } do |f| %>
+	<%= f.error_notification %>
+	
+	<div class="form-inputs">
+		<fieldset id="email_group">
+		
+		<%= f.input :name %>
+
+		<%= f.input :addresses_sentence, :as => :text, :input_html => {:rows => 5} %>
+		
+		<%= f.input :phone_numbers_sentence, :as => :text, :input_html => {:rows => 5} %>
+		</fieldset>
+	</div>
+
+  <div class="form-actions">
+    <%= f.button :submit, :class => 'btn btn-default btn-primary'  %>
+	<%= link_to t("global.cancel-btn"), email_groups_path, :class => 'btn btn-default' %>
+  </div>
+<% end %>

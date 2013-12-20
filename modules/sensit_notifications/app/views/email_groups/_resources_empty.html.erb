@@ -1,0 +1,8 @@
+<tr>
+	<td colspan="5" class="none-found-msg">
+		<%= t("global.none-found-msg", :model => lower_plural_human(EmailGroup)) %>
+		<% if can? :create, EmailGroup %>
+		Click <%= link_to "here", new_email_group_path %> to add a <%= EmailGroup.model_name.human.downcase %>
+		<% end %>
+	</td>
+</tr>

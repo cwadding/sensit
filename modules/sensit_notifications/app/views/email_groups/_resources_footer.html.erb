@@ -1,0 +1,7 @@
+<div id="actions" class="form_actions">
+	<div class="buttons">
+			<%= icon_button_tag(t("global.submit-edit"), {:class => "edit-btn btn btn-default first btn-primary", :name => 'edit' }, :icon_options => {:class => "glyphicon glyphicon-pencil glyphicon-white"}) %>
+		<%= icon_button_tag(t("global.submit-remove"), {:class => "remove-btn btn btn-default last btn-danger", :name => 'remove' }, :icon_options => {:class => "glyphicon glyphicon-trash glyphicon-white"}) %>		
+	</div>
+	<%= paginate items, :remote => true %>
+</div>

@@ -12,7 +12,7 @@ module Sensit
 
     describe "#feeds" do
     	it "returns the associated feeds" do
-
+            
     	end
     end
 

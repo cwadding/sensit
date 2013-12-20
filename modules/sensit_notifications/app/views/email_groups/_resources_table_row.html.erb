@@ -1,0 +1,8 @@
+<tr id="<%= "#{item.class.to_s.underscore}_#{item.id}" %>" class="item <%= cycle("odd", "even") -%>">
+	<td><%= check_box_tag "email_group_ids[]", item.id, false, :id => "check-#{item.name.parameterize}"  %></td>
+	<td class="name"><%= link_to_if(can?(:update, item) , item.name, email_group_path(item)) %></td>
+	<td class="addresses"><%= item.addresses_sentence %></td>
+	<td class="phone_numbers"><%= item.phone_numbers_sentence %></td>
+	<td class="created_at"><%= l( item.created_at, :format => :short) unless item.created_at.nil? %></td>
+	<td class="destroy"><%= link_to_if( can?(:destroy, item), "&times;".html_safe, email_group_path(item), remote: true, method: :delete, :class=>"btn btn-default btn-xs btn-danger") %></td>
+</tr>

@@ -10,7 +10,7 @@ describe "PUT sensit/topics#update" do
    end
 
    context "with updated attributes" do
-      before(:all) do
+      before(:each) do
          @params = {
             :topic => {
                :name => "New topic name",
@@ -49,5 +49,33 @@ describe "PUT sensit/topics#update" do
 			updated_topic.name.should == "New topic name"
 			updated_topic.description.should == "new description"
         end
+
+      context "with fields" do
+         before(:each) do
+            fields_arr = []
+            @topic.fields.each do |field|
+               fields_arr << {key: field.key, name: "New#{field.name}"}
+            end
+            @params[:topic].merge!({:fields => fields_arr})
+         end
+         it "returns the expected json" do
+            process_request(@topic, @params)
+            feeds_arr = []
+
+            @topic.feeds.each do |feed|
+               data_arr = []
+               feed.values.each do |key, value|
+                  data_arr << "\"#{key}\": #{value}"
+               end
+               feeds_arr << "{\"at\":#{feed.at.utc.to_f}, \"data\":{#{data_arr.join(',')}}}"
+            end
+            fields_arr = []
+            @topic.fields.each do |field|
+               fields_arr << "{\"key\": \"#{field.key}\",\"name\": \"New#{field.name}\"}"
+            end
+            response.body.should be_json_eql("{\"id\":1,\"description\": \"#{@params[:topic][:description]}\",\"feeds\": [#{feeds_arr.join(',')}],\"fields\": [#{fields_arr.join(',')}],\"name\": \"#{@params[:topic][:name]}\"}")
+
+         end       
+      end
    end
 end

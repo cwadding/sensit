@@ -1,3 +1,9 @@
+require 'elasticsearch'
+require 'csv'
+# require 'iconv'
+require 'roo'
+require 'zip'
+
 module Sensit
 	module Core
 		class Engine < ::Rails::Engine
