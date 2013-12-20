@@ -1,0 +1,41 @@
+require_dependency "sensit/api_controller"
+
+module Sensit
+  class DataController < ApiController
+    respond_to :json
+
+    # GET topics/1/feeds/1/data/:key
+    def show
+      feed = Topic::Feed.find({index: elastic_index_name, type: elastic_type_name, id:  params[:feed_id].to_s})
+      render text: feed.values[params[:id]]
+    end
+
+    # PATCH/PUT topics/1/feeds/1/data/1
+    def update
+      if (data_param.nil?)
+        head :status => :not_found
+      else
+        response = elastic_client.update(index: elastic_index_name, type: elastic_type_name,:id => params[:feed_id], :body => {doc: {params[:id] => data_param}})
+        if response["ok"]
+          head :status => :ok
+        else
+          head :status => :unprocessable_entity
+        end
+      end
+    end
+
+    private
+
+      def elastic_client
+        @client ||= ::Elasticsearch::Client.new
+      end
+      # Only allow a trusted parameter "white list" through.
+      def data_param
+        params.permit(fields)
+      end
+
+      def fields
+        @fields ||= Topic::Field.where(:topic_id => params[:topic_id]).map(&:key)
+      end
+  end
+end

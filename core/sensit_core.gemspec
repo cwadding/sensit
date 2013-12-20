@@ -14,8 +14,9 @@ Gem::Specification.new do |s|
   s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.rdoc"]
 
   s.add_dependency "rails", "~> 4.0.1"
-  s.add_dependency "elasticsearch", "~> 0.4.1"  
-
+  s.add_dependency 'rubyzip', '~> 1.1.0'
+  s.add_dependency "elasticsearch", "~> 0.4.1"
+  s.add_dependency 'roo', "~> 1.13.0"  
   s.add_development_dependency "sqlite3"
   s.add_development_dependency 'rspec-rails'
   s.add_development_dependency 'capybara'#, '~> 2.10.0'

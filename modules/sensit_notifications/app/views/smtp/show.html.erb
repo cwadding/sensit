@@ -1,0 +1,39 @@
+<%= simple_form_for(@smtp, :url => smtp_path, :validate => true, :html => { :class => "form-horizontal" }) do |f| %>
+	<%= f.error_notification %>
+	<div class="form-inputs">
+		<fieldset>
+			<%= f.input :domain %>
+			<%= f.input :address %>
+			<%= f.input :port, :input_html => {:class => "input-mini"} %>			
+		</fieldset>
+
+		<fieldset>
+			<%= f.input :username %>
+			<%= f.input :password %>
+			<%= f.input :password_confirmation %>
+		</fieldset>
+	</div>
+  <div class="form-actions">
+	<%= f.error :base %>
+    <%= f.button(:submit, Smtp.exists? ? t("helpers.submit.update", :model => Smtp.model_name.human) : t("helpers.submit.create", :model => Smtp.model_name.human), :class => "btn btn-default btn-primary" ) %>
+	<%= link_to t("global.link-to-clear", :model => Smtp.model_name.human), smtp_path, confirm: 'Are you sure?', method: :delete, :class => "btn btn-default btn-danger" %>
+  </div>
+<% end %>
+
+<%= content_for(:sidebar) do %>
+	<div class="col-md-3">
+		<div class="well">
+			<div class="test_email">
+				<%= form_tag test_smtp_path, :class => "form-vertical" do %>
+					<div class="control-group">
+					<%= label_tag "to_address", "Email Address", :class =>"control-label" %>
+						<div class="controls">
+							<%= text_field_tag "to_address", nil, :class => "flex" %>
+						</div>
+					</div>
+					<%= submit_tag "Send Test Email", :class => "btn btn-default btn-info" %>
+				<% end %>
+			</div>
+		</div>
+	</div>
+<% end %>

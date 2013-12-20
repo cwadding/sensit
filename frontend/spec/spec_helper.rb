@@ -2,6 +2,9 @@
 ENV["RAILS_ENV"] = "test"
 
 require File.expand_path("../../../demo/config/environment.rb",  __FILE__)
+
+load "#{Rails.root.to_s}/db/schema.rb" unless ENV['from_file']
+
 require "rails/test_help"
 require 'rspec/rails'
 require 'rspec/autorun'

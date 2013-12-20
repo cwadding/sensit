@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131117235324) do
+ActiveRecord::Schema.define(version: 20131203005234) do
 
   create_table "sensit_api_key_permission_restrictions", force: true do |t|
     t.integer  "api_key_permission_id"
@@ -48,7 +48,7 @@ ActiveRecord::Schema.define(version: 20131117235324) do
     t.datetime "updated_at"
   end
 
-  create_table "sensit_node_topic_fields", force: true do |t|
+  create_table "sensit_topic_fields", force: true do |t|
     t.string   "name"
     t.string   "key"
     t.integer  "unit_id"
@@ -57,15 +57,26 @@ ActiveRecord::Schema.define(version: 20131117235324) do
     t.datetime "updated_at"
   end
 
-  create_table "sensit_node_topics", force: true do |t|
-    t.integer  "node_id"
+  create_table "sensit_topic_reports", force: true do |t|
     t.string   "name"
-    t.string   "description"
+    t.text     "query"
+    t.integer  "topic_id"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
 
-  create_table "sensit_nodes", force: true do |t|
+  create_table "sensit_topic_subscriptions", force: true do |t|
+    t.string   "name"
+    t.string   "host"
+    t.string   "auth_token"
+    t.string   "protocol"
+    t.integer  "topic_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "sensit_topics", force: true do |t|
+    t.integer  "api_key_id"
     t.string   "name"
     t.string   "description"
     t.datetime "created_at"

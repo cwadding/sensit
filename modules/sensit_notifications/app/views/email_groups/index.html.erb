@@ -1,0 +1,20 @@
+<%= form_tag multiple_email_groups_path, :method => :put, :remote => true do %>
+	<%= render "resources", :items => @email_groups, :search => @search %>
+<% end %>
+
+
+<%= content_for :sidebar do %>
+<div class="col-md-3">
+	<div class="well">
+	<div class="btn-container"><%= icon_link_to(t("global.new-btn", :model => EmailGroup.model_name.human), new_email_group_path, {:class => "add-btn btn btn-default btn-primary btn-lg"}, {:icon_options => {:class => "glyphicon glyphicon-plus glyphicon-white"}}) %></div>
+	<%= search_form_for @search, :url => url_for(params), :builder => SimpleForm::FormBuilder do |f| %>
+		<div class="form-inputs">
+		<%= f.input :name_cont, :input_html => {:class => "flex"} %>
+		<%= f.input :email_addresses_cont, :input_html => {:class => "flex"} %>
+		</div>
+		<div class="form-actions">
+		<%= f.button :submit, t("global.submit-search") %>
+		</div>
+	<% end %></div>
+</div>
+<% end %>
