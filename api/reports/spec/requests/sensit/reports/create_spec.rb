@@ -9,7 +9,7 @@ describe "POST sensit/reports#create"  do
 		before(:each) do
 			@params = {
 				:report => {
-					:id => "foobar"
+					:id => "foobar",
 					:body => { query: { query_string: { query: 'foo' } } }
 				}
 			}

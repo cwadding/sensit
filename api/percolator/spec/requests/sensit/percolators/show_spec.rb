@@ -7,18 +7,16 @@ describe "GET sensit/percolators#show" do
 
 
 	context "when the percolator exists" do
-		before(:each) do
-			@percolator = ::Sensit::Topic::Percolator.create({ type: ELASTIC_SEARCH_INDEX_TYPE, id: "3", body: { query: { query_string: { query: 'foo' } } } })
-		end
-
 		it "is successful" do
-			status = process_request(@percolator)
+			percolator = ::Sensit::Topic::Percolator.create({ type: ELASTIC_SEARCH_INDEX_TYPE, id: "foo", body: { query: { query_string: { query: 'foo' } } } })
+			status = process_request(percolator)
 			status.should == 200
 		end
 
 		it "returns the expected json" do
-			process_request(@percolator)
-			response.body.should be_json_eql("{\"id\":\"#{@percolator.id}\",\"body\":\"#{@percolator.body.to_json}\"}")
+			percolator = ::Sensit::Topic::Percolator.create({ type: ELASTIC_SEARCH_INDEX_TYPE, id: "bar", body: { query: { query_string: { query: 'bar' } } } })
+			process_request(percolator)
+			response.body.should be_json_eql("{\"id\":\"#{percolator.id}\",\"body\":#{percolator.body.to_json}}")
 		end
 
 	end

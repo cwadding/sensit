@@ -6,23 +6,27 @@ describe "POST sensit/percolators#create"  do
 	end
 
 	context "with correct attributes" do
-		before(:each) do
+		it "returns a 200 status code" do
 			@params = {
 				:percolator => {
-					:id => "foobar"
+					:id => "foo",
 					:body => { query: { query_string: { query: 'foo' } } }
 				}
 			}
-		end
-		it "returns a 200 status code" do
 			status = process_request(@params)
 			status.should == 200
 		end
 
 		it "returns the expected json" do
+			@params = {
+				:percolator => {
+					:id => "bar",
+					:body => { query: { query_string: { query: 'bar' } } }
+				}
+			}
 			process_request(@params)
 			expect(response).to render_template(:show)
-			response.body.should be_json_eql("{\"id\": #{params[:percolator][:id]},\"body\": #{params[:percolator][:body].to_json}}")
+			response.body.should be_json_eql("{\"id\": \"#{@params[:percolator][:id]}\",\"body\": #{@params[:percolator][:body].to_json}}")
 		end
 	end
 
