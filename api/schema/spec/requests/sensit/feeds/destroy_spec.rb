@@ -3,7 +3,7 @@ describe "DELETE sensit/feeds#destroy" do
 
 	def process_request(topic)
 		feed = topic.feeds.first
-		delete "/api/topics/#{topic.id}/feeds/#{feed.id}", valid_request, valid_session
+		delete "/api/topics/#{topic.to_param}/feeds/#{feed.id}", valid_request, valid_session
 	end
 
 	context "when the field exists" do

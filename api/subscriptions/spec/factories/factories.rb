@@ -7,6 +7,13 @@ FactoryGirl.define do
       "Subscription#{n}"
     end
     host "127.0.0.1"
+    topic
   end
+
+	factory :topic, :class => Sensit::Topic do
+		sequence :name do |n|
+			"Topic#{n}"
+		end
+	end
 
 end

@@ -1,9 +1,9 @@
 require "sensit/version"
 require "sensit_core"
-require "sensit_percolator_api"
-require "sensit_subscriptions_api"
-require "sensit_reports_api"
-require "sensit_schema_api"
+require "sensit_percolator"
+require "sensit_subscriptions"
+require "sensit_reports"
+require "sensit_schema"
 require "sensit_frontend"
 
 module Sensit

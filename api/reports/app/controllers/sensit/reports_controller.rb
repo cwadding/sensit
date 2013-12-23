@@ -8,7 +8,8 @@ module Sensit
     # returns the name and query along with the results of the query
     # accepts additional parameters which will be merged into each report
     def index
-      @reports = Topic::Report.where(:topic_id => params[:topic_id])
+      topic = Topic.find(params[:topic_id])
+      @reports = topic.reports
       respond_with(@reports)
     end
 

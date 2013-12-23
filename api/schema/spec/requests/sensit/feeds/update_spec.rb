@@ -9,7 +9,7 @@ describe "PUT sensit/feeds#update" do
 
 	def process_request(topic, params)
 		feed = topic.feeds.first
-		put "/api/topics/#{topic.id}/feeds/#{feed.id}", valid_request(params), valid_session
+		put "/api/topics/#{topic.to_param}/feeds/#{feed.id}", valid_request(params), valid_session
 	end
 
 	context "with correct attributes" do

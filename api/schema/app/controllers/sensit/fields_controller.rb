@@ -6,7 +6,8 @@ module Sensit
     respond_to :json
     # GET /topics/1/fields
     def index
-      @fields = Topic::Field.where(topic_id: params[:topic_id])
+      topic = Topic.find(params[:topic_id])
+      @fields = topic.fields
       respond_with(@fields)
     end
 

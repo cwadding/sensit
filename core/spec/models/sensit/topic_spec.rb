@@ -2,11 +2,6 @@ require 'spec_helper'
 
 module Sensit
   describe Topic do
-    # it {should have_many(:feeds).dependent(:destroy)}
-    it {should have_many(:fields).dependent(:destroy)}
-    it {should have_many(:subscriptions).dependent(:destroy)}
-    it {should have_many(:reports).dependent(:destroy)}
-
     it { should validate_presence_of(:name) }
     it { should validate_uniqueness_of(:name) }
 
@@ -14,12 +9,6 @@ module Sensit
     	it "returns the associated feeds" do
             
     	end
-    end
-
-    describe "#percolations" do
-        it "returns the associated percolations" do
-
-        end
     end
 
     describe "#destroy_feeds" do

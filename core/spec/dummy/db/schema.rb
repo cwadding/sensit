@@ -11,54 +11,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20131218043762) do
-
-  create_table "sensit_topic_fields", force: true do |t|
-    t.string   "name"
-    t.string   "key"
-    t.integer  "unit_id"
-    t.integer  "topic_id"
-    t.string   "datatype"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "sensit_topic_reports", force: true do |t|
-    t.string   "name"
-    t.text     "query"
-    t.integer  "topic_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "sensit_topic_subscriptions", force: true do |t|
-    t.string   "name"
-    t.string   "host"
-    t.string   "auth_token"
-    t.string   "protocol"
-    t.integer  "topic_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
+ActiveRecord::Schema.define(version: 20131223204445) do
 
   create_table "sensit_topics", force: true do |t|
-    t.integer  "api_key_id"
     t.string   "name"
     t.string   "description"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "sensit_unit_groups", force: true do |t|
-    t.string   "name"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
-  create_table "sensit_units", force: true do |t|
-    t.string   "name"
-    t.string   "abbr"
-    t.integer  "group_id"
+    t.string   "slug"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

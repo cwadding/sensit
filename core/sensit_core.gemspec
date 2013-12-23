@@ -14,13 +14,17 @@ Gem::Specification.new do |s|
   s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.rdoc"]
 
   s.add_dependency "rails", "~> 4.0.1"
+  s.add_dependency 'rabl', '0.8.4'
+  s.add_dependency 'versioncake', '1.0.0'
+  
   s.add_dependency 'rubyzip', '~> 1.1.0'
   s.add_dependency "elasticsearch", "~> 0.4.1"
   s.add_dependency 'roo', "~> 1.13.0"
   s.add_dependency 'friendly_id', '~> 5.0.2'
+  
   s.add_development_dependency "sqlite3"
   s.add_development_dependency 'rspec-rails'
-  s.add_development_dependency 'capybara'#, '~> 2.10.0'
   s.add_development_dependency 'shoulda-matchers'#, '~> 2.10.0'
-
+  s.add_development_dependency "factory_girl_rails"
+  s.add_development_dependency "json_spec"
 end

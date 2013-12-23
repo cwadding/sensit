@@ -7,7 +7,8 @@ module Sensit
 
     # GET /subscriptions
     def index
-      @subscriptions = Topic::Subscription.where(:topic_id => params[:topic_id])
+      topic = Topic.find(params[:topic_id])
+      @subscriptions = topic.subscriptions
     end
 
     # GET /subscriptions/1

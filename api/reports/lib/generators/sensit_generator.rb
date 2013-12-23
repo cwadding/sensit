@@ -4,8 +4,4 @@ class SensitGenerator < Rails::Generators::Base
 	def install_core
 		generate "sensit:core:install"
 	end
-
-	def install_api
-		generate "sensit:api:install"
-	end
 end

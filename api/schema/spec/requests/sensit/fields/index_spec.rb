@@ -2,7 +2,7 @@ require 'spec_helper'
 describe "GET sensit/fields#index" do
 
 	def process_request(topic)
-		get "/api/topics/#{topic.id}/fields", valid_request, valid_session
+		get "/api/topics/#{topic.to_param}/fields", valid_request, valid_session
 	end
 
 

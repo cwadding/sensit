@@ -2,7 +2,7 @@ require "spec_helper"
 
 module Sensit
   describe SubscriptionsController do
-    routes { Sensit::Subscriptions::Api::Engine.routes }
+    routes { Sensit::Subscriptions::Engine.routes }
     describe "routing" do
 
       it "routes to #index" do

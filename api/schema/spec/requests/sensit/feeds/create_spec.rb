@@ -16,10 +16,10 @@ describe "POST sensit/feeds#create"  do
    end
 
    def process_request(topic, params)
-      post "/api/topics/#{topic.id}/feeds", valid_request(params), valid_session
+      post "/api/topics/#{topic.to_param}/feeds", valid_request(params), valid_session
    end
 
-   context "multiple feeds"do
+   context "multiple feeds" do
       context "with correct attributes" do
          it "returns a 200 status code" do
             fields = @topic.fields.map(&:key)
@@ -149,7 +149,7 @@ describe "POST sensit/feeds#create"  do
 
       context "with correct attributes" do
          
-         it "returns a 200 status code" do
+         it "returns a 200 status code", :current => true do
             fields = @topic.fields.map(&:key)
             values = {}
             fields.each_with_index do |field, i|
@@ -165,7 +165,7 @@ describe "POST sensit/feeds#create"  do
             status.should == 200
          end
 
-         it "returns the expected json" do
+         it "returns the expected json", :current => true do
             fields = @topic.fields.map(&:key)
             values = {}
             fields.each_with_index do |field, i|
@@ -187,9 +187,7 @@ describe "POST sensit/feeds#create"  do
          end
 
          context "on first commit of fields" do
-            it "creates new fields for the data that don't exist" do
-
-            end
+            it "creates new fields for the data that don't exist"
          end
 
          # it "creates a new Feed" do
@@ -213,7 +211,7 @@ describe "POST sensit/feeds#create"  do
             status.should == 422
          end
 
-         it "returns the expected json" do
+         it "returns the expected json", :current => true do
             process_request(@topic, @params)
             response.body.should be_json_eql("{\"errors\":{\"at\":[\"can't be blank\"]}}")
          end
@@ -221,7 +219,7 @@ describe "POST sensit/feeds#create"  do
 
       context "with a :tz attribute" do
 
-         it "returns the expected json" do
+         it "returns the expected json", :current => true do
             fields = @topic.fields.map(&:key)
             values = {}
             fields.each_with_index do |field, i|

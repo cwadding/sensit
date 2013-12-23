@@ -1,13 +1,13 @@
 API
+	Core
+		- Importing of data in XML, OR CSV
+		- Write tests to ensure that :at attribute is a utc time and can be set by a string, object or number and the time is mapped to the correct time zone so there is no tz attribute but still stores the tz attribute
+		- parent child relationships (ancestry gem)
 	Unit Conversion
 		- seed the database with different unit types and groups for different datatypes to support conversion to the default unit (only stored in the default unit type)
 	Schema
-		- Importing of data in XML, OR CSV
-		- Write tests to ensure that :at attribute is a utc time and can be set by a string, object or number and the time is mapped to the correct time zone so there is no tz attribute but still stores the tz attribute
-		- for topics, set the id rather than using database id
 		- Creating field keys on initial feed request
-		- parent child relationships (ancestry gem)
-		- performance testing
+		
 	Reports
 		- strong_parameters mass assignment of elasticsearch report querys
 	Percolator
@@ -23,14 +23,14 @@ API
 	DataRetention
 		- Amount of time to hold on to data or remove data
 		(On a topic (time in days to hold on to certain data))
-	- Securing the API with API KEYS
-	- foreigner for generating foreign keys
-	- Feed Security (Public (No API Key), Shared (multi-tennant), Private (single api key single user))
+	Security
+		- Securing the API with API KEYS
+		- Feed Security (Public (No API Key), Shared (multi-tennant),	Private (single api key single user))
 		-whitelist or black list of ip's
+		- Authorization based on User or api key?
+	- foreigner for generating foreign keys
 	- Multi-tennantcy
-	- Authorization basedon User or api key?
-
-	-Performance and Profiling Testing
+	- Performance and Profiling Testing
 
 // UI
 	Form for creating an Elastic Search query (used also to create percolate queries)

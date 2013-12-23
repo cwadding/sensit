@@ -2,41 +2,6 @@
 
 FactoryGirl.define do
 
-  factory :api_key, :class => Sensit::ApiKey do
-    user_id 1
-    name "my_api_key"
-  end
-
-  factory :unit, :class => Sensit::Unit do
-    name "meters"
-    abbr "m"
-    datatype
-    group
-  end
-
-  factory :group, :class => Sensit::UnitGroup do
-    name "metric measurement"
-  end
-  
-  # factory :data_row, :class => Sensit::Topic::Feed::DataRow do
-  #   sequence :key do |n|
-  #     "key#{n}"
-  #   end
-  #   sequence :value do |n|
-  #     "Value#{n}"
-  #   end
-  # end
-  
-  # factory :feed, :class => Sensit::Topic::Feed do
-  #   at Time.now
-  #   ignore do
-  #     rows_count 1
-  #   end
-  #   # after(:create) do |feed, evaluator|
-  #     # FactoryGirl.create_list(:data_row, evaluator.rows_count , feed: feed)
-  #   # end
-  # end
-
   factory :field, :class => Sensit::Topic::Field do
     sequence :name do |n|
       "Field#{n}"
@@ -58,8 +23,6 @@ FactoryGirl.define do
       end
       feeds_count 1
     end
-
-    api_key
 
     factory :topic_with_feeds_and_fields do
       after(:create) do |topic, evaluator|

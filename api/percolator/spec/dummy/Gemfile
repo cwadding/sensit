@@ -7,4 +7,4 @@ gem 'rails', '4.0.1'
 gem 'sqlite3'
 
 gem 'sensit_core', :path => "../../../../core"
-gem 'sensit_percolator_api', :path => "../../"
+gem 'sensit_percolator', :path => "../../"

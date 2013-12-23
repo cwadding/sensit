@@ -7,6 +7,13 @@ FactoryGirl.define do
       "Report#{n}"
     end
     query ({ :statistical => { :field => "num1"}})
+    topic
   end
+
+	factory :topic, :class => Sensit::Topic do
+		sequence :name do |n|
+			"Topic#{n}"
+		end
+	end
 
 end

@@ -2,12 +2,12 @@ require 'spec_helper'
 describe "PUT sensit/subscriptions#update" do
 
 	before(:each) do
-		@subscription = ::Sensit::Topic::Subscription.create({ :name => "MyString", :host => "127.0.0.1", :topic_id => 1})
+		@subscription = FactoryGirl.create(:subscription)
 	end
 
 
 	def process_request(subscription, params)
-		put "/api/topics/#{subscription.type}/subscriptions/#{subscription.id}", valid_request(params), valid_session
+		put "/api/topics/#{subscription.topic.to_param}/subscriptions/#{subscription.to_param}", valid_request(params), valid_session
 	end
 
 	context "with correct attributes" do
@@ -28,7 +28,7 @@ describe "PUT sensit/subscriptions#update" do
 		it "returns the expected json" do
 			process_request(@subscription, @params)
 			expect(response).to render_template(:show)
-			response.body.should be_json_eql("{\"id\":\"#{@subscription.id}\",\"name\": \"MyNewString\",\"host\": \"localhost\"")
+			response.body.should be_json_eql("{\"name\": \"MyNewString\",\"host\": \"localhost\"}")
 		end
 	end
 end

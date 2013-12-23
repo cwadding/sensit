@@ -1,18 +1,14 @@
 module Sensit
   class Topic < ActiveRecord::Base
-	extend FriendlyId
+	extend ::FriendlyId
+
 	friendly_id :name, use: [:slugged, :finders]
   	after_destroy :destroy_feeds
 
   	# has_many :feeds, dependent: :destroy
   	has_many :fields, dependent: :destroy
-  	has_many :reports, dependent: :destroy
-  	has_many :subscriptions, dependent: :destroy
 	
-
-	belongs_to :api_key
-	
-	validates :name, presence: true, uniqueness:  {scope: :api_key_id}
+	validates :name, presence: true, uniqueness: true
 
 	delegate :name, :to => :node, :prefix => true
 
@@ -24,10 +20,6 @@ module Sensit
 		params.deep_merge!({ query: { term: { topic_id: self.id } } })
         Topic::Feed.search({index: elastic_index_name, type: elastic_type_name, body: params})
       end
-	end
-
-	def percolations
-        Topic::Precolator.search({type: elastic_type_name})
 	end
 
 	def create_index
@@ -90,16 +82,6 @@ private
 		feeds.each do |feed|
 			feed.destroy
 		end
-		# client.delete_by_query({index: elastic_index_name, type: elastic_type_name, body: { query: { term: { topic_id: self.id } } }})
-	end
-
-	def destroy_perclations
-		client = ::Elasticsearch::Client.new
-
-		# TODO change to delete_by_query when it works properly
-		# feeds.each do |feed|
-		# 	feed.destroy
-		# end
 		# client.delete_by_query({index: elastic_index_name, type: elastic_type_name, body: { query: { term: { topic_id: self.id } } }})
 	end
 

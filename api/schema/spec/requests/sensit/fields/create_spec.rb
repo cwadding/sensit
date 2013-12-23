@@ -7,7 +7,7 @@ describe "POST sensit/fields#create" do
 	end
 
    def process_request(topic, params)
-      post "/api/topics/#{topic.id}/fields", valid_request(params), valid_session
+      post "/api/topics/#{topic.to_param}/fields", valid_request(params), valid_session
    end
 
    context "with correct attributes" do

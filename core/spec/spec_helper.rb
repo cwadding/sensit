@@ -8,12 +8,15 @@ require "rails/test_help"
 require 'rspec/rails'
 require 'rspec/autorun'
 require 'shoulda-matchers'
+require 'factory_girl'
 # require 'database_cleaner'
 
 Rails.backtrace_cleaner.remove_silencers!
 
 # Load support files
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
+
+Dir["#{File.dirname(__FILE__)}/factories/*.rb"].each { |f| require f }
 
 RSpec.configure do |config|
 

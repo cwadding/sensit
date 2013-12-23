@@ -2,13 +2,13 @@ require 'spec_helper'
 describe "GET sensit/subscriptions#show" do
 
 	def process_request(subscription)
-		get "/api/topics/#{subscription.type}/subscriptions/#{subscription.id}", valid_request, valid_session
+		get "/api/topics/#{subscription.topic.to_param}/subscriptions/#{subscription.to_param}", valid_request, valid_session
 	end
 
 
 	context "when the subscription exists" do
 		before(:each) do
-			@subscription = ::Sensit::Topic::Subscription.create({ :name => "MyString", :host => "127.0.0.1", :topic_id => 1})
+			@subscription = FactoryGirl.create(:subscription)
 		end
 
 		it "is successful" do
@@ -18,7 +18,7 @@ describe "GET sensit/subscriptions#show" do
 
 		it "returns the expected json" do
 			process_request(@subscription)
-			response.body.should be_json_eql("{\"id\":\"#{@subscription.id}\",\"name\": \"#{@subscription.name}\",\"host\": \"#{@subscription.host}\"")
+			response.body.should be_json_eql("{\"name\": \"#{@subscription.name}\",\"host\": \"#{@subscription.host}\"}")
 		end
 
 	end

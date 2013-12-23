@@ -3,7 +3,7 @@ describe "GET sensit/fields#show" do
 
 	def process_request(topic)
 		field = @topic.fields.first
-		get "/api/topics/#{topic.id}/fields/#{field.id}", valid_request, valid_session
+		get "/api/topics/#{topic.to_param}/fields/#{field.to_param}", valid_request, valid_session
 	end
 
 	context "when the field exists" do
