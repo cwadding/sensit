@@ -1,8 +1,13 @@
 module Sensit
   class Topic::Field < ActiveRecord::Base
+    extend FriendlyId
+    friendly_id :key, use: [:slugged, :finders]
+
     after_initialize :default_values
   	belongs_to :topic
   	belongs_to :unit
+
+
 
     ## dynamic validations
     # has_many :data_options
