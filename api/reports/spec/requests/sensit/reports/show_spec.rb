@@ -8,7 +8,7 @@ describe "GET sensit/reports#show" do
 
 	context "when the report exists" do
 		before(:each) do
-			@report = ::Sensit::Topic::Report.create({ type: ELASTIC_SEARCH_INDEX_TYPE, id: "3", body: { query: { query_string: { query: 'foo' } } } })
+			@report = ::Sensit::Topic::Report.create({ :name => "My Report", :query => { "statistical" => { "field" => "num1"}}, :topic_id => 1})
 		end
 
 		it "is successful" do
@@ -18,7 +18,7 @@ describe "GET sensit/reports#show" do
 
 		it "returns the expected json" do
 			process_request(@report)
-			response.body.should be_json_eql("{\"id\":\"#{@report.id}\",\"body\":\"#{@report.body.to_json}\"}")
+			response.body.should be_json_eql("{\"name\":\"#{@report.name}\",\"query\":#{@report.query.to_json}}")
 		end
 
 	end
@@ -27,14 +27,14 @@ describe "GET sensit/reports#show" do
 		it "is unsuccessful" do
 			expect{
 			status = get "/api/topics/1/reports/1", valid_request, valid_session
-			}.to raise_error(Elasticsearch::Transport::Transport::Errors::NotFound)
+			}.to raise_error(ActiveRecord::RecordNotFound)
 			#status.should == 404
 		end
 
 		it "returns the expected json" do
 			expect{
 				get "/api/topics/1/reports/1", valid_request, valid_session
-			}.to raise_error(Elasticsearch::Transport::Transport::Errors::NotFound)
+			}.to raise_error(ActiveRecord::RecordNotFound)
 			#response.body.should be_json_eql("{\"id\":1,\"name\":\"Test node\",\"description\":\"A description of my node\",\"topics\":[]}")
 		end
 	end

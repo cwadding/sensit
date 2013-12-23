@@ -1,25 +1,40 @@
 API
-	- Importing of data in XML, OR CSV
-	- filters on whether rows should be added to database or not (like validations on the data)
-	- Write tests to ensure that :at attribute is a utc time and can be set by a string, object or number and the time is mapped to the correct time zone so there is no tz attribute but still stores the tz attribute
-	- for topics, set the id rather than using database id
-	- Creating field keys on initial feed request
-	- seed the database with different unit types and groups for different datatypes to support conversion to the default unit (only stored in the default unit type)
-	- strong_parameters mass assignment of elasticsearch reports and percolator querys
-	- Resource to add subscribers to certain feeds of data
-	- Add support for various Pub/Sub providers
-		MQTT
-		ZeroMQ
-		Socket.io
-		Faye
-		ROS
+	Unit Conversion
+		- seed the database with different unit types and groups for different datatypes to support conversion to the default unit (only stored in the default unit type)
+	Schema
+		- Importing of data in XML, OR CSV
+		- Write tests to ensure that :at attribute is a utc time and can be set by a string, object or number and the time is mapped to the correct time zone so there is no tz attribute but still stores the tz attribute
+		- for topics, set the id rather than using database id
+		- Creating field keys on initial feed request
+		- parent child relationships (ancestry gem)
+		- performance testing
+	Reports
+		- strong_parameters mass assignment of elasticsearch report querys
+	Percolator
+		- filters on whether rows should be added to database or not (like validations on the data) (If query is met then row is not added to the database)
+		- strong_parameters mass assignment of elasticsearch percolator querys
+	Subscriptions
+		- Add support for various Pub/Sub providers
+			MQTT
+			ZeroMQ
+			Socket.io
+			Faye
+			ROS
+	DataRetention
+		- Amount of time to hold on to data or remove data
+		(On a topic (time in days to hold on to certain data))
 	- Securing the API with API KEYS
-	- be able to generate a report
-	- Possibly add Multi-tennantcy
+	- foreigner for generating foreign keys
+	- Feed Security (Public (No API Key), Shared (multi-tennant), Private (single api key single user))
+		-whitelist or black list of ip's
+	- Multi-tennantcy
+	- Authorization basedon User or api key?
+
+	-Performance and Profiling Testing
 
 // UI
-Form for creating an Elastic Search query (used also to create percolate queries)
-Form for creating facet like reports from queries
+	Form for creating an Elastic Search query (used also to create percolate queries)
+	Form for creating facet like reports from queries
 
 // Modules
 
@@ -28,7 +43,7 @@ Form for creating facet like reports from queries
 		- watcher for a file drop and then send the batch to the service (csv,sqlite, etc)
 		- an application with a database connection which polls the database for changes periodically looking for changes tha may have occured since the last time it check (like solrs dataimport)
 	// Analysis
-		// Machine leanring or other rule processing based api
+		// Machine learning or other rule processing based api
 		// Pattern rules
 	// Actions
 		// Downloading an image from a camera

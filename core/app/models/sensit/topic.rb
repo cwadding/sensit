@@ -1,6 +1,7 @@
 module Sensit
   class Topic < ActiveRecord::Base
-
+	extend FriendlyId
+	friendly_id :name, use: [:slugged, :finders]
   	after_destroy :destroy_feeds
 
   	# has_many :feeds, dependent: :destroy

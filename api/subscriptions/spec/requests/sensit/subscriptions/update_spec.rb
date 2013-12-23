@@ -2,7 +2,7 @@ require 'spec_helper'
 describe "PUT sensit/subscriptions#update" do
 
 	before(:each) do
-		@subscription = ::Sensit::Topic::Percolator.create({ type: ELASTIC_SEARCH_INDEX_TYPE, id: "3", body: { query: { query_string: { query: 'foo' } } } })
+		@subscription = ::Sensit::Topic::Subscription.create({ :name => "MyString", :host => "127.0.0.1", :topic_id => 1})
 	end
 
 
@@ -15,8 +15,8 @@ describe "PUT sensit/subscriptions#update" do
 		before(:each) do
 			@params = {
 				:subscription => {
-					:id => "foobar"
-					:body => { query: { query_string: { query: 'bar' } } }
+					:name => "MyNewString",
+					:host => "localhost"
 				}
 			}
 		end
@@ -28,7 +28,7 @@ describe "PUT sensit/subscriptions#update" do
 		it "returns the expected json" do
 			process_request(@subscription, @params)
 			expect(response).to render_template(:show)
-			response.body.should be_json_eql("{\"id\": #{params[:subscription][:id]},\"body\": #{params[:subscription][:body].to_json}}")
+			response.body.should be_json_eql("{\"id\":\"#{@subscription.id}\",\"name\": \"MyNewString\",\"host\": \"localhost\"")
 		end
 	end
 end

@@ -9,8 +9,8 @@ describe "POST sensit/subscriptions#create"  do
 		before(:each) do
 			@params = {
 				:subscription => {
-					:id => "foobar"
-					:body => { query: { query_string: { query: 'foo' } } }
+					:name => "MyString",
+					:host => "127.0.0.1"
 				}
 			}
 		end
@@ -22,7 +22,7 @@ describe "POST sensit/subscriptions#create"  do
 		it "returns the expected json" do
 			process_request(@params)
 			expect(response).to render_template(:show)
-			response.body.should be_json_eql("{\"id\": #{params[:subscription][:id]},\"body\": #{params[:subscription][:body].to_json}}")
+			response.body.should be_json_eql("{\"id\": 1,\"name\": \"#{params[:subscription][:name]}\",\"host\": \"#{params[:subscription][:host]}\"}")
 		end
 	end
 

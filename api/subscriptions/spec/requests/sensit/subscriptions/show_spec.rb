@@ -8,7 +8,7 @@ describe "GET sensit/subscriptions#show" do
 
 	context "when the subscription exists" do
 		before(:each) do
-			@subscription = ::Sensit::Topic::Percolator.create({ type: ELASTIC_SEARCH_INDEX_TYPE, id: "3", body: { query: { query_string: { query: 'foo' } } } })
+			@subscription = ::Sensit::Topic::Subscription.create({ :name => "MyString", :host => "127.0.0.1", :topic_id => 1})
 		end
 
 		it "is successful" do
@@ -18,7 +18,7 @@ describe "GET sensit/subscriptions#show" do
 
 		it "returns the expected json" do
 			process_request(@subscription)
-			response.body.should be_json_eql("{\"id\":\"#{@subscription.id}\",\"body\":\"#{@subscription.body.to_json}\"}")
+			response.body.should be_json_eql("{\"id\":\"#{@subscription.id}\",\"name\": \"#{@subscription.name}\",\"host\": \"#{@subscription.host}\"")
 		end
 
 	end
@@ -27,14 +27,14 @@ describe "GET sensit/subscriptions#show" do
 		it "is unsuccessful" do
 			expect{
 			status = get "/api/topics/1/subscriptions/1", valid_request, valid_session
-			}.to raise_error(Elasticsearch::Transport::Transport::Errors::NotFound)
+			}.to raise_error(ActiveRecord::RecordNotFound)
 			#status.should == 404
 		end
 
 		it "returns the expected json" do
 			expect{
 				get "/api/topics/1/subscriptions/1", valid_request, valid_session
-			}.to raise_error(Elasticsearch::Transport::Transport::Errors::NotFound)
+			}.to raise_error(ActiveRecord::RecordNotFound)
 			#response.body.should be_json_eql("{\"id\":1,\"name\":\"Test node\",\"description\":\"A description of my node\",\"topics\":[]}")
 		end
 	end
