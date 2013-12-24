@@ -1,3 +1,4 @@
+require 'sensit/core'
 module Sensit
 	module Security
 		class Engine < ::Rails::Engine

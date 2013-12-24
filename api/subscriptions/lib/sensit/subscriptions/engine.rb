@@ -1,8 +1,7 @@
+require 'sensit/core'
 require "net/http"
 require 'faye'
 require 'eventmachine'
-require 'rabl'
-require 'versioncake'
 
 module Sensit
 	module Subscriptions

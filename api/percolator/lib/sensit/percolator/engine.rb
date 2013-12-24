@@ -1,3 +1,4 @@
+require 'sensit/core'
 module Sensit
 	module Percolator
 		class Engine < ::Rails::Engine

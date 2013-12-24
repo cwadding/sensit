@@ -1,3 +1,4 @@
+require 'sensit/core'
 module Sensit
 	module Schema
 		class Engine < ::Rails::Engine

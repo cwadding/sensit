@@ -1,3 +1,5 @@
+require 'sensit/core'
+require 'ruby-units'
 module Sensit
 	module UnitConversion
 		class Engine < ::Rails::Engine

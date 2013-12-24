@@ -3,8 +3,6 @@ API
 		- Importing of data in XML, OR CSV
 		- Write tests to ensure that :at attribute is a utc time and can be set by a string, object or number and the time is mapped to the correct time zone so there is no tz attribute but still stores the tz attribute
 		- parent child relationships (ancestry gem)
-	Unit Conversion
-		- seed the database with different unit types and groups for different datatypes to support conversion to the default unit (only stored in the default unit type)
 	Schema
 		- Creating field keys on initial feed request
 	Reports
@@ -26,6 +24,8 @@ API
 		- Feed Security (Public (No API Key), Shared (multi-tennant),	Private (single api key single user))
 		-whitelist or black list of ip's
 		- Authorization based on User or api key?
+	Unit Conversion
+		- seed the database with different unit types and groups for different datatypes to support conversion to the default unit (only stored in the default unit type)		
 	- foreigner for generating foreign keys
 	- Multi-tennantcy
 	- Performance and Profiling Testing

@@ -17,6 +17,7 @@ Gem::Specification.new do |s|
   s.test_files = Dir["spec/**/*"]
 
   s.add_dependency 'sensit_core', Sensit::VERSION
+  s.add_dependency 'ruby-units', "~> 1.4.4"
 
   s.add_development_dependency 'rspec-rails'
   s.add_development_dependency "json_spec"

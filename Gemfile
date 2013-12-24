@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 gemspec
 
 gem 'devise'
-gem 'sensit_core', :path => "core"
+gem 'sensit_core', :path => "api/core"
 gem 'sensit_percolator', :path => "api/percolator"
 gem 'sensit_reports', :path => "api/reports"
 gem 'sensit_subscriptions', :path => "api/subscriptions"
