@@ -2,10 +2,10 @@
 	module Publishable
 		extend ::ActiveSupport::Concern
 		included do
-			before_create :percolate
-			after_create :percolate
+			before_create :broadcast_matches
+			after_create :broadcast_create
 
-			def percolate
+			def broadcast_matches
 				response = percolate
 				if (response["ok"])
 					response["matches"].each do |match|
@@ -14,11 +14,9 @@
 				end
 			end
 
-			def broadcast
-				if (response["ok"])
+			def broadcast_create
+				if (self.id.present?)
 					faye_broadcast
-					@new_record = false
-					@id = response["_id"]
 				end
 			end
 

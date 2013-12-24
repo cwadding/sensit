@@ -15,7 +15,7 @@ describe "PUT sensit/feeds#update" do
 	context "with correct attributes" do
 
 		it "returns the expected json" do
-	         fields = @topic.values.keys
+	         fields = @topic.feeds.first.values.keys
 	         values = {}
 	         fields.each_with_index do |field, i|
 	            values.merge!(field => (i+1).to_s)
@@ -36,7 +36,7 @@ describe "PUT sensit/feeds#update" do
 		end
 
 		it "returns a 200 status code" do
-			 fields = @topic.values.keys
+			 fields = @topic.feeds.first.values.keys
 	         values = {}
 	         fields.each_with_index do |field, i|
 	            values.merge!(field => i)
@@ -53,7 +53,7 @@ describe "PUT sensit/feeds#update" do
 
 		it "updates a Feed" do
 
-	         fields = @topic.values.keys
+	         fields = @topic.feeds.first.values.keys
 	         values = {}
 	         fields.each_with_index do |field, i|
 	            values.merge!(field => (i+1).to_s)

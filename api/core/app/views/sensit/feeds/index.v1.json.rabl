@@ -16,8 +16,3 @@ child @feeds => :feeds do
 		u.values
 	end
 end
-
-child @fields => :fields do
-  collection @fields
-  extends "sensit/fields/show"
-end

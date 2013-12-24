@@ -5,8 +5,6 @@ module Sensit
 	friendly_id :name, use: [:slugged, :finders]
   	after_destroy :destroy_feeds
 
-  	# has_many :feeds, dependent: :destroy
-  	has_many :fields, dependent: :destroy
 	
 	validates :name, presence: true, uniqueness: true
 

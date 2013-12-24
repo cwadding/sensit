@@ -71,8 +71,8 @@ module Sensit
       end
 
       def feeds_params
-        all_keys = params.require(:feeds)[0][:values].keys
         if params[:feeds] && params[:feeds].is_a?(Hash)
+          all_keys = params.require(:feeds)[0][:values].keys
           params.require(:feeds).map do |p|
             ActionController::Parameters.new(p.to_hash).permit(:at, :tz, :values => all_keys)
           end

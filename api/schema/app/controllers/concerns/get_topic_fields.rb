@@ -6,7 +6,7 @@
 	        @fields ||= topic.fields
 	      end
 	      def topic
-	      	@topic ||= Topic.find(params[:topic_id])
+	      	@topic ||= ::Sensit::Topic.find(params[:topic_id])
 	      end
 		end
 	end

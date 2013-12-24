@@ -10,7 +10,8 @@ require 'rspec/autorun'
 require 'shoulda-matchers'
 require 'factory_girl'
 # require 'database_cleaner'
-
+require 'sensit_core'
+require 'json_spec'
 Rails.backtrace_cleaner.remove_silencers!
 
 # Load support files
@@ -19,7 +20,8 @@ Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
 Dir["#{File.dirname(__FILE__)}/factories/*.rb"].each { |f| require f }
 
 RSpec.configure do |config|
-
+  config.include ::Sensit::Core::Engine.routes.url_helpers
+  config.include RequestHelpers, :type => :request
     # == Mock Framework
     #
     # If you prefer to use mocha, flexmock or RR, uncomment the appropriate line:
@@ -30,7 +32,7 @@ RSpec.configure do |config|
     config.mock_with :rspec
 
     # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
-    # config.fixture_path = "#{::Rails.root}/spec/fixtures"
+    config.fixture_path = "#{File.dirname(__FILE__)}/fixtures"
 
     # If you're not using ActiveRecord, or you'd prefer not to run each of your
     # examples within a transaction, remove the following line or assign false

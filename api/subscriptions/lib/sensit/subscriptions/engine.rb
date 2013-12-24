@@ -23,6 +23,7 @@ module Sensit
 
 			config.to_prepare do
 				::Sensit::Topic.send :include, ::Sensit::Subscribable
+				::Sensit::Topic::Feed.send :include, ::Sensit::Publishable
 			end
 
 			config.view_versions = [1]

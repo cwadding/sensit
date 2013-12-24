@@ -100,7 +100,7 @@ describe "POST sensit/feeds#create"  do
       end
    end
 
-   context "zipped csv file", :current => true do
+   context "zipped csv file" do
       before(:each) do
       @topic = FactoryGirl.create(:topic_with_feeds)
       end
@@ -145,7 +145,7 @@ describe "POST sensit/feeds#create"  do
 
       context "with correct attributes" do
          
-         it "returns a 200 status code", :current => true do
+         it "returns a 200 status code" do
             fields = ["field1", "field2", "field3"]
             values = {}
             fields.each_with_index do |field, i|
@@ -161,7 +161,7 @@ describe "POST sensit/feeds#create"  do
             status.should == 200
          end
 
-         it "returns the expected json", :current => true do
+         it "returns the expected json" do
             fields = ["field1", "field2", "field3"]
             values = {}
             fields.each_with_index do |field, i|
@@ -194,7 +194,7 @@ describe "POST sensit/feeds#create"  do
          before(:all) do
             @params = {
                :feed => {
-                  :values => [{"key1" => 'dsfds'}]
+                  :values => {"key1" => 'dsfds'}
                }
             }
          end
@@ -204,7 +204,7 @@ describe "POST sensit/feeds#create"  do
             status.should == 422
          end
 
-         it "returns the expected json", :current => true do
+         it "returns the expected json" do
             process_request(@topic, @params)
             response.body.should be_json_eql("{\"errors\":{\"at\":[\"can't be blank\"]}}")
          end
@@ -212,7 +212,7 @@ describe "POST sensit/feeds#create"  do
 
       context "with a :tz attribute" do
 
-         it "returns the expected json", :current => true do
+         it "returns the expected json" do
             fields = ["field1", "field2", "field3"]
             values = {}
             fields.each_with_index do |field, i|

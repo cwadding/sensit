@@ -5,7 +5,6 @@ module Sensit
     include ActiveModel::Conversion
     include ActiveModel::Validations
     # include Roo
-    attr_accessor :fields
     attr_reader :feeds
     attr_accessor :index
     attr_accessor :type
@@ -51,12 +50,9 @@ private
       spreadsheets = open_spreadsheets(file)
       spreadsheets.each do |spreadsheet|
         header = spreadsheet.shift
-        # filter out any rows that are not in the fields
-        temp_fields = self.fields.clone
-        temp_fields.delete_if {|x| !header.include?(x.key)}
         
         spreadsheet.each do |row|
-          values = temp_fields.inject({}) {|h,field| h.merge!(field.key => field.convert(row[header.index(field.key)]))}
+          values = header.inject({}) {|h,field| h.merge!(field => row[header.index(field)])}
           at = row[header.index("at")]
           tz = row[header.index("tz")]
           feed_arr << Topic::Feed.new({index: self.index, type: self.type, topic_id: self.topic_id, at: at, tz: tz, values: values})

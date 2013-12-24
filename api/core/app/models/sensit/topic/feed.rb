@@ -164,6 +164,10 @@ private
 	def create
 		run_callbacks :create do
 			response = elastic_client.create attributes_to_create
+			if (response["ok"])
+				@new_record = false
+				@id = response["_id"]
+			end
 			response["ok"] || false
 		end
 	end

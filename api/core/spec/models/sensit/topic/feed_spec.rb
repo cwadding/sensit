@@ -250,8 +250,6 @@ module Sensit
 			context "with valid response" do
 				it "executes the elastic create action" do
 					@client.should_receive(:create).with({:index=>"myindex", :type=>"mytype", :body=>{:title=>"Test 1", :tags=>["y", "z"], :published=>true, :counter=>1, :at=>@feed.at.utc.to_f, :tz=>"UTC", :topic_id=>3}}).and_return({"ok"=>true, "_index"=>'myindex', "_type"=>'mytype', "_id"=>"8eI2kKfwSymCrhqkjnGYiA", "_version"=>1})
-					@feed.stub(:faye_broadcast).and_return(true)
-					@feed.stub(:percolate).and_return({"ok" => true, "matches" => []})
 					Topic::Feed.stub(:elastic_client).and_return(@client)
 					@feed.send(:create)
 				end
@@ -261,49 +259,20 @@ module Sensit
 						Topic::Feed.stub(:elastic_client).and_return(@client)
 					end
 
-					it "broacasts that the the feed has been added" do
-						@feed.stub(:percolate).and_return({"ok" => true, "matches" => []})
-						@feed.should_receive(:faye_broadcast).and_return(true)
+					it "sets the id on the instance" do
 						@feed.send(:create)
+						@feed.id.should == "8eI2kKfwSymCrhqkjnGYiA"
 					end
-					context "able to connection to broadcast server" do
-						before(:each) do
-							@feed.stub(:faye_broadcast).and_return(true)
-						end
-						context "with percolation matches" do
-							before(:each) do
-								@feed.stub(:percolate).and_return({"ok" => true, "matches" => ["foobar"]})
-							end
-							it "broadcasts the match" do
-								@feed.should_receive(:faye_broadcast).with("foobar").and_return(true)
-								@feed.send(:create)
-							end
-						end
-						context "with no percolation matches" do
-							before(:each) do
-								@feed.stub(:percolate).and_return({"ok" => true, "matches" => []})
-							end
-							it "sets the id on the instance" do
-								@feed.send(:create)
-								@feed.id.should == "8eI2kKfwSymCrhqkjnGYiA"
-							end
 
-							it "returns whether it was successful" do
-								success = @feed.send(:create)
-								success.should be_true
-							end
+					it "returns whether it was successful" do
+						success = @feed.send(:create)
+						success.should be_true
+					end
 
-							it "is no longer a new record" do
-								@feed.send(:create)
-								@feed.should_not be_a_new_record
-							end	
-						end
-					end
-					context "Unable to connect to broadcast server" do
-						it "throws an exception" do
-							# Errno::ECONNREFUSED
-						end
-					end
+					it "is no longer a new record" do
+						@feed.send(:create)
+						@feed.should_not be_a_new_record
+					end	
 				end
 			end
 		end		
