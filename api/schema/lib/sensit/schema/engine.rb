@@ -20,6 +20,8 @@ module Sensit
 
 			config.to_prepare do
 				::Sensit::Topic.send :include, ::Sensit::Schematic
+				::Sensit::FeedsController.send include ::Sensit::StrongFeedWithFieldParameters
+				::Sensit::DataController.send include ::Sensit::StrongDataWithFieldParameters
 			end
 			
 		end

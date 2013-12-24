@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-gem 'sensit_core', :path => "../../core"
+gem 'sensit_core', :path => "../core"
 gem 'sqlite3'
 # Declare your gem's dependencies in sensit_unit_conversion.gemspec.
 # Bundler will treat runtime dependencies like base dependencies, and

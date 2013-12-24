@@ -54,13 +54,7 @@ module Sensit
     def self.convert(value, type)
       case type
       when "datetime"
-        if (value.kind_of?(Numeric) || value.kind_of?(Time) || value.kind_of?(DateTime))
-          Time.zone.at(value)
-        elsif (value.is_a?(String) && /^[\d]+(\.[\d]+){0,1}$/ === value)
-          Time.zone.at(value.to_f)
-        else
-          Time.zone.parse(value)
-        end
+        Sensit::Feed.convert_to_time(value)
       when "integer"
         value.to_i
       when "decimal"

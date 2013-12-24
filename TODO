@@ -7,11 +7,9 @@ API
 		- seed the database with different unit types and groups for different datatypes to support conversion to the default unit (only stored in the default unit type)
 	Schema
 		- Creating field keys on initial feed request
-		
 	Reports
 		- strong_parameters mass assignment of elasticsearch report querys
 	Percolator
-		- filters on whether rows should be added to database or not (like validations on the data) (If query is met then row is not added to the database)
 		- strong_parameters mass assignment of elasticsearch percolator querys
 	Subscriptions
 		- Add support for various Pub/Sub providers
@@ -32,6 +30,7 @@ API
 	- Multi-tennantcy
 	- Performance and Profiling Testing
 
+	- filters on whether rows should be added to database or not (like validations on the data) (If query is met then row is not added to the database)
 // UI
 	Form for creating an Elastic Search query (used also to create percolate queries)
 	Form for creating facet like reports from queries
