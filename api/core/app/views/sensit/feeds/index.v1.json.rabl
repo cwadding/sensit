@@ -6,7 +6,7 @@ child @feeds => :feeds do
 	attributes :id
 
 	node :at do |u|
-		u.at.utc.to_f
+		u.at.utc.iso8601
 	end
 
 	node :tz do |u|

@@ -149,6 +149,206 @@ module Sensit
         end
       end
 
+      describe ".percolator_params" do
+
+        context "match queries" do
+          context "boolean type" do
+            it "no properties" do
+              controller.params = {percolator: {id: 1, body: {query: {match: {message: "this is a test"}}}}}
+              new_params = controller.send(:percolator_params)
+            end
+            it "with operator and minimum_should_match" do
+              controller.params = {percolator: {id: 1, body: {query: {match: {message: {query: "this is a test", operator: "and", minimum_should_match: 1, zero_terms_query: "all", cutoff_frequency: 0.0001}}}}}
+              new_params = controller.send(:percolator_params)
+            end
+          end
+          context "phrase type" do
+            it "no properties" do
+              controller.params = {percolator: {id: 1, body: {query: {match_phrase: {message: "this is a test"}}}}}
+              new_params = controller.send(:percolator_params)
+            end
+            it "with analyzer" do
+              controller.params = {percolator: {id: 1, body: {query: {match_phrase: {message: {query: "this is a test", analyzer:"my_analyzer"}}}}}
+              new_params = controller.send(:percolator_params)
+            end
+            it "specifying type" do
+              controller.params = {percolator: {id: 1, body: {query: {match: {message: {query: "this is a test", type: "phrase"}}}}}
+              new_params = controller.send(:percolator_params)
+            end
+          end
+          context "match phrase prefix type" do
+            it "no properties" do
+              controller.params = {percolator: {id: 1, body: {query: {match_phrase_prefix: {message: "this is a test"}}}}}
+              new_params = controller.send(:percolator_params)
+            end
+            it "with max_expansions" do
+              controller.params = {percolator: {id: 1, body: {query: {match_phrase: {message: {query: "this is a test", max_expansions:10}}}}}
+              new_params = controller.send(:percolator_params)
+            end
+            it "specifying type" do
+              controller.params = {percolator: {id: 1, body: {query: {match: {message: {query: "this is a test", type: "phrase_prefix"}}}}}
+              new_params = controller.send(:percolator_params)
+            end
+          end   
+        end
+
+        context "multi_match queries" do
+            it "default" do
+              controller.params = {percolator: {id: 1, body: {query: {multi_match: {query: "this is a test", fields: ["subject", "message"]}}}}}
+              new_params = controller.send(:percolator_params)
+            end
+            it "with use_dis_max" do
+              controller.params = {percolator: {id: 1, body: {query: {multi_match: {query: "this is a test", fields: ["subject", "message"], use_dis_max: => true}}}}}
+              new_params = controller.send(:percolator_params)
+            end
+        end
+
+        context "bool queries" do
+            it "default" do
+              controller.params = {percolator: {id: 1, body: {query: {"bool" => { "must" => { "term" => { "user" => "kimchy" } }, "must_not" => { "range" => { "age" => { "from" => 10, "to" => 20 } } }, "should" : [{"term" => { "tag" => "wow" }},{"term" => { "tag" => "elasticsearch" }}],"minimum_should_match" => 1}}}}}
+              new_params = controller.send(:percolator_params)
+            end
+            it "common term alternative" do
+              controller.params = {percolator: {id: 1, body: {query: {"bool"=> { "must"=> [ { "term"=> { "body"=> "nelly"}}, { "term"=> { "body"=> "elephant"}}, { "term"=> { "body"=> "cartoon"}}],"should"=> [{ "term"=> { "body"=> "the"}}, { "term"=> { "body"=> "as"}},{ "term"=> { "body"=> "a"}}], "minimum_should_match"=> 2}}}}}
+              new_params = controller.send(:percolator_params)
+            end
+
+        end
+
+
+        context "common queries" do
+            it "default" do
+              controller.params = {percolator: {id: 1, body: {query: {"common" => {"body" => {"query" => "nelly the elephant as a cartoon", "cutoff_frequency" => 0.001, "low_freq_operator" => "and", "minimum_should_match"=> 2}}}}}}
+              new_params = controller.send(:percolator_params)
+            end
+            it "minimum_should_match with low and high freq" do
+              controller.params = {percolator: {id: 1, body: {query: {"common" => {"body" => {"query" => "nelly the elephant as a cartoon", "cutoff_frequency" => 0.001, "low_freq_operator" => "and", "minimum_should_match"=> {"low_freq" => 2, "high_freq" => 3}}}}}}}}
+              new_params = controller.send(:percolator_params)
+            end
+        end
+
+        context "dis max queries" do
+            it "default" do
+              controller.params = {percolator: {id: 1, body: {query: { "dis_max" => {"tie_breaker" => 0.7, "queries" => [{"term" => { "age" => 34 }}, { "term" => { "age" => 35 }}]}}}}}
+              new_params = controller.send(:percolator_params)
+            end
+        end
+        
+        context "match_all query" do
+            it "default" do
+              controller.params = {percolator: {id: 1, body: {query: {"match_all" : {}}}}}
+              new_params = controller.send(:percolator_params)
+            end
+        end
+
+        context "prefix query" do
+            it "default" do
+              controller.params = {percolator: {id: 1, body: {query: {"prefix" => { "user" => "ki" }}}}}
+              new_params = controller.send(:percolator_params)
+            end
+            it "long form" do
+              controller.params = {percolator: {id: 1, body: {query: {"prefix" => { "user" => {"prefix" => "ki"} }}}}}
+              new_params = controller.send(:percolator_params)
+            end            
+        end     
+
+        
+        context "query_string query" do
+            it "default_field" do
+              controller.params = {percolator: {id: 1, body: {query: {"query_string" => { "default_field" => "content", "query" => "this AND that OR thus", "default_operator" => "OR", "allow_leading_wildcard" => true }}}}}
+              new_params = controller.send(:percolator_params)
+            end
+            it "multi_field" do
+              controller.params = {percolator: {id: 1, body: {query: {"query_string" => { "fields" => ["content", "name"], "query" => "this AND that OR thus", "use_dis_max" => true }}}}}
+              new_params = controller.send(:percolator_params)
+            end       
+        end
+
+        context "range query" do
+            it "gte and lte" do
+              controller.params = {percolator: {id: 1, body: {query: {"range" => {"age" => {"gte" => 10,"lte" => 20}}}}}}}
+              new_params = controller.send(:percolator_params)
+            end
+            it "gt and lt" do
+              controller.params = {percolator: {id: 1, body: {query: {"range" => {"age" => {"gt" => 10,"lt" => 20}}}}}}}
+              new_params = controller.send(:percolator_params)
+            end  
+        end
+
+        context "span first query" do
+            it "default" do
+              controller.params = {percolator: {id: 1, body: {query: {"span_first" => {"match" => {"span_term" => { "user" => "kimchy" }},"end" => 3}}}}}
+              new_params = controller.send(:percolator_params)
+            end
+        end  
+
+        context "span-multi query" do
+            it "default" do
+              controller.params = {percolator: {id: 1, body: {query: {"span_multi" => {"match" => {"prefix" => { "user" =>  { "value" => "ki" } }}}}}}}
+              new_params = controller.send(:percolator_params)
+            end
+        end
+
+        context "span-near query" do
+            it "default" do
+              controller.params = {percolator: {id: 1, body: {query: {"span_near" => {"clauses" => [{ "span_term" => { "field" => "value1" } },{ "span_term" => { "field" => "value2" } },{ "span_term" => { "field" => "value3" } }],"slop" => 12,"in_order" => false,"collect_payloads" => false}}}}}
+              new_params = controller.send(:percolator_params)
+            end
+        end
+
+
+        context "span-not query" do
+            it "default" do
+              controller.params = {percolator: {id: 1, body: {query: {"span_not" => {"include" => {"span_term" => { "field1" => "value1" }},"exclude" => {"span_term" => { "field2" => "value2" }}}}}}}
+              new_params = controller.send(:percolator_params)
+            end
+        end 
+
+        context "span-or query" do
+            it "default" do
+              controller.params = {percolator: {id: 1, body: {query: {"span_or" => {"clauses" => [{ "span_term" => { "field" => "value1" } },{ "span_term" => { "field" => "value2" } },{ "span_term" => { "field" => "value3" } }]}}}}}
+              new_params = controller.send(:percolator_params)
+            end
+        end
+
+        context "span-term query" do
+            it "default" do
+              controller.params = {percolator: {id: 1, body: {query: {"span_term" => { "user" => "kimchy" }}}}}
+              new_params = controller.send(:percolator_params)
+            end
+
+            it "long form" do
+              controller.params = {percolator: {id: 1, body: {query: {"span_term" => { "user" => { "term" => "kimchy"} }}}}}
+              new_params = controller.send(:percolator_params)
+            end            
+        end          
+
+        context "term queries" do
+          it "with key value pairs" do
+            controller.params = {percolator: {id: 1, body: {query: {term: {user: "kimchy"}}}}}
+            new_params = controller.send(:percolator_params)
+          end
+
+          it "with a key and a value" do
+            controller.params = {percolator: {id: 1, body: {query: {term: {user: {value: "kimchy"}}}}}}
+            new_params = controller.send(:percolator_params)
+          end
+        end
+
+        context "terms queries" do
+          it "with array of values" do
+            controller.params = {percolator: {id: 1, body: {query: {terms: {tags: [ "blue", "pill" ], minimum_should_match: 1}}}}}
+            new_params = controller.send(:percolator_params)
+          end
+
+          it "with array of values using `in` alias" do
+            controller.params = {percolator: {id: 1, body: {query: {in: {tags: [ "blue", "pill" ], minimum_should_match: 1}}}}}
+            new_params = controller.send(:percolator_params)
+          end
+        end
+
+      end
+
     end
 end
 

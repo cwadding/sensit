@@ -28,7 +28,8 @@ module Sensit
         # create the elasticsearch index
         client = ::Elasticsearch::Client.new
         client.indices.create({:index => @topic.id, :type => @topic.id}) unless (client.indices.exists index: @topic.id)
-        respond_with(@topic,:status => 200, :template => "sensit/topics/show")
+        respond_with(@topic,:status => 201, :template => "sensit/topics/show")
+        # render(:json => "{\"location\":#{sensit_topic_url(@topic)}}", :status => :created)
       else
         render(:json => "{\"errors\":#{@topic.errors.to_json}}", :status => :unprocessable_entity)
       end
@@ -54,7 +55,7 @@ module Sensit
     # DELETE 1/topics/1
     def destroy
       @topic.destroy
-      head :status => 204
+      head :status => :no_content
     end
 
     private
