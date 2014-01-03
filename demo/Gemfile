@@ -31,8 +31,12 @@ group :doc do
   # bundle exec rake doc:rails generates the API under doc/api.
   gem 'sdoc', require: false
 end
+gem 'sensit_core', :path => "../api/core"
+gem 'sensit_percolator', :path => "../api/percolator"
+gem 'sensit_reports', :path => "../api/reports"
+gem 'sensit_subscriptions', :path => "../api/subscriptions"
+gem 'sensit_schema', :path => "../api/schema"
 
-gem 'sensit', :path => "../"
 gem 'devise'
 
 # Use ActiveModel has_secure_password

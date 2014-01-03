@@ -56,7 +56,15 @@ module Sensit
       # Only allow a trusted parameter "white list" through.
       def report_params
         # fields = Topic::Field.joins(:topic).where(:sensit_topics => {:slug => params[:topic_id]}).map(&:key)
-        params.require(:report).permit(:name, :query => {:match_all => {}}, :facets => {:statistical => [:field, :fields, :script, :params], :terms => [:field, :size, :order], :histogram => [:field, :interval, :time_interval, :key_field, :value_field, :key_script, :value_script, :params]})
+        params.require(:report).permit!#(:name, :query, :facets)
+        # (:name, 
+        #   :query => {:match_all => {}},
+        #   :facets => {
+        #     :statistical => [:field, :fields, :script, :params],
+        #     :terms => [:field, :size, :order], 
+        #     :histogram => [:field, :interval, :time_interval, :key_field, :value_field, :key_script, :value_script, :params]
+        #   }
+        # )
       end
   end
 end

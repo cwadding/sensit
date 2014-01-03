@@ -1,5 +1,6 @@
 source "https://rubygems.org"
 
+gem 'sensit_core', :path => "../core"
 gem 'sensit_schema', :path => "../schema"
 gem 'sqlite3'
 # Declare your gem's dependencies in sensit_api.gemspec.

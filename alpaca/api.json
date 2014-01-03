@@ -1,5 +1,5 @@
 {
-	"base": "http://localhost:3000",  // Base URL of the api
+	"base": "http://localhost:3000/api",  // Base URL of the api
 	"version": "1", // Default version for the api (https://api.example.com{/version}/users) [optional]
 	"authorization": { // Authorization strategies
 		// "basic" : true, // Basic authentication [optional] (default: false)
@@ -33,91 +33,146 @@
 //     }
 //   }	
 	"class": { // The classes for the api
-		"topic": {
-			"show": {
-				"path": "/info/configuration"
-			}
-		},
-		"feed": { // Name of a class of the api
-			"show": { // Name of a method of the api
-				"path": "/user" // Url of the api method
-			},
-			"profiles": {
-				"path": "/profiles" // Url of the api method
-			},
-			"create_update": {
-				"path": "/updates/create",
-				"method": "post",
-				"params": ["text", "profile_ids"]
-			}
-		},
-		"link": {
-			"shares": {
-				"path": "/link/shares",
-				"params": ["url"]
-			}
-		},
-		"profile": {
-			"args": ["id"],
-			"show": {
-				"path": "/profiles/:id"
-			},
-			"pending": {
-				"path": "/profiles/:id/updates/pending",
+		"topic": { // Name of a class of the api
+			"index": {  // Name of a method of the api
+				"path": "/topics",  // Url of the api method
 				"paginate": true
 			},
-			"sent": {
-				"path": "/profiles/:id/updates/sent",
-				"paginate": true
+			"show": { 
+				"path": "/topics/:id"
 			},
-			"reorder": {
-				"path": "/profiles/:id/updates/reorder",
-				"method": "post",
-				"params": ["order"]
-			},
-			"shuffle": {
-				"path": "/profiles/:id/updates/shuffle",
+			"create": {
+				"path": "/topics",
 				"method": "post"
-			}
-		},
-		"schedule": {
-			"args": ["id"],
-			"list": {
-				"path": "/profiles/:id/schedules"
 			},
 			"update": {
-				"path": "/profiles/:id/schedules/update",
-				"method": "post",
-				"params": ["schedules"]
+				"path": "/topics/:id",
+				"method": "put"
+			},
+			"delete": {
+				"path": "/topics/:id",
+				"method": "delete"
 			}
 		},
-		"update": {
-			"args": ["id"],
-			"show": {
-				"path": "/updates/:id"
-			},
-			"interactions": {
-				"path": "/updates/:id/interactions",
+		"feed": {
+			"args": ["topic_id", "id"],
+			"index": {
+				"path": "/topics/:topic_id/feeds",
 				"paginate": true
 			},
+			"show": { 
+				"path": "/topics/:topic_id/feeds/:id"
+			},
+			"create": {
+				"path": "/topics/:topic_id/feeds",
+				"method": "post"
+			},
 			"update": {
-				"path": "/updates/:id/update",
-				"method": "post",
-				"params": ["text"]
+				"path": "/topics/:topic_id/feeds/:id",
+				"method": "put"
 			},
-			"share": {
-				"path": "/updates/:id/share",
-				"method": "post"
-			},
-			"destroy": {
-				"path": "/updates/:id/destroy",
-				"method": "post"
-			},
-			"top": {
-				"path": "/updates/:id/move_to_top",
-				"method": "post"
+			"delete": {
+				"path": "/topics/:topic_id/feeds/:id",
+				"method": "delete",
 			}
-		}
+		},
+		"data": {
+			"args": ["topic_id", "feed_id", "id"],
+			"show": {
+				"path": "/topics/:topic_id/feeds/:feed_id/data/:id"
+			},
+			"update": {
+				"path": "/topics/:topic_id/feeds/:feed_id/data/:id",
+				"method": "put",
+			}
+		},		
+		"percolator": {
+			"args": ["topic_id", "id"],
+			"index": {
+				"path": "/topics/:topic_id/percolators"
+			},
+			"show": { 
+				"path": "/topics/:topic_id/percolators/:id"
+			},
+			"create": {
+				"path": "/topics/:topic_id/percolators",
+				"method": "post",
+			},
+			"update": {
+				"path": "/topics/:topic_id/percolators/:id",
+				"method": "put",
+			},
+			"delete": {
+				"path": "/topics/:topic_id/percolators/:id",
+				"method": "delete",
+			}
+		},
+		"report": {
+			"args": ["topic_id", "id"],
+			"index": {
+				"path": "/topics/:topic_id/reports",
+				"paginate": true
+			},
+			"show": { 
+				"path": "/topics/:topic_id/reports/:id"
+			},
+			"create": {
+				"path": "/topics/:topic_id/reports",
+				"method": "post",
+			},
+			"update": {
+				"path": "/topics/:topic_id/reports/:id",
+				"method": "put",
+			},
+			"delete": {
+				"path": "/topics/:topic_id/reports/:id",
+				"method": "delete",
+			}
+		},
+		"subscription": {
+			"args": ["topic_id", "id"],
+			"index": {
+				"path": "/topics/:topic_id/subscriptions",
+				"paginate": true
+			},
+			"show": { 
+				"path": "/topics/:topic_id/subscriptions/:id"
+			},
+			"create": {
+				"path": "/topics/:topic_id/subscriptions",
+				"method": "post",
+			},
+			"update": {
+				"path": "/topics/:topic_id/subscriptions/:id",
+				"method": "put",
+			},
+			"delete": {
+				"path": "/topics/:topic_id/subscriptions/:id",
+				"method": "delete",
+			}
+		},
+		"field": {
+			"args": ["topic_id", "id"],
+			"index": {
+				"path": "/topics/:topic_id/fields",
+				"paginate": true
+			},
+			"show": { 
+				"path": "/topics/:topic_id/fields/:id"
+			},
+			"create": {
+				"path": "/topics/:topic_id/fields",
+				"method": "post",
+			},
+			"update": {
+				"path": "/topics/:topic_id/fields/:id",
+				"method": "put",
+			},
+			"delete": {
+				"path": "/topics/:topic_id/fields/:id",
+				"method": "delete",
+			}
+		}	
 	}
 }
 

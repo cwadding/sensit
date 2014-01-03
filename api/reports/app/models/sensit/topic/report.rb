@@ -6,17 +6,14 @@ module Sensit
 	after_initialize :default_query
 
   	serialize :query, Hash
-  	serialize :facets, Hash
   	belongs_to :topic
 
 	validates_associated :topic
 
 	validates :name, presence: true, uniqueness: {scope: :topic_id}
-	validates :facets, presence: true
-
 
 	# validate :valid_query
-
+	has_many :facets
 
 
 	def valid_query

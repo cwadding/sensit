@@ -63,7 +63,43 @@ module Sensit
     end
     # Only allow a trusted parameter "white list" through.
     def percolator_params
-      params.require(:percolator).permit(:id, body: {query: {query_string: [:query]}})
+      params.require(:percolator).permit!#(:id, :body)
+      # (:id, 
+      #   body: {
+      #     query: {
+      #       bool: {
+      #         :minimum_should_match => [],
+      #         :must => {:term => [:user,:tag], :range => {:age => [:from, :to]}}, 
+      #         :must_not => {:term => [:user,:tag], :range => {:age => [:from, :to]}}, 
+      #         :should => {:term => [:user,:tag], :range => {:age => [:from, :to]}}
+      #       }, 
+      #       multi_match:[:query, :use_dis_max, :fields => []], 
+      #       query_string: [:query], 
+      #       match: { 
+      #         message: [:query, :type, :operator, :minimum_should_match, :zero_terms_query, :cutoff_frequency]
+      #       },
+      #       match_phrase:{
+      #         :message => [:query, :analyzer]
+      #       }, 
+      #       match_phrase_prefix: {
+      #         message:[:query, :max_expansions]
+      #       }, 
+      #       span_first:{
+      #         match:[:span_term]
+      #       }, 
+      #       span_multi:{
+      #         match:[:prefix]
+      #       }, 
+      #       span_near:[:clauses], 
+      #       span_not:[:include, :exclude], 
+      #       span_or:[:clauses], 
+      #       span_term:[], 
+      #       in: [], 
+      #       terms: [], 
+      #       term:[]
+      #     }
+      #   }
+      # )
     end
   end
 end

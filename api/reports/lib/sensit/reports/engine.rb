@@ -1,4 +1,3 @@
-require 'sensit/core'
 require 'sensit_schema'
 module Sensit
 	module Reports
