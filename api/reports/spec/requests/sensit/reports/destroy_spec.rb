@@ -7,7 +7,7 @@ describe "DELETE sensit/reports#destroy" do
 
 	context "when the report exists" do
 		before(:each) do
-          @report = ::Sensit::Topic::Report.create({ :name => "My Report", :query => { "statistical" => { "field" => "num1"}}, :topic_id => 1})
+          @report = ::Sensit::Topic::Report.create({ :name => "My Report", :facets => { "statistical" => { "field" => "num1"}}, :topic_id => 1})
 		end
 		it "is successful" do
 			status = process_request(@report)

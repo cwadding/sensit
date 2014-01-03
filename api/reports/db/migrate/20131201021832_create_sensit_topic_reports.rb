@@ -9,5 +9,4 @@ class CreateSensitTopicReports < ActiveRecord::Migration
       t.timestamps
     end
   end
-en
-d
+end

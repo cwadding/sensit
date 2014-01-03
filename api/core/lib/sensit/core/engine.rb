@@ -6,6 +6,7 @@ require 'csv'
 require 'roo'
 require 'zip'
 require 'friendly_id'
+require 'kaminari'
 
 module Sensit
 	module Core
@@ -19,9 +20,9 @@ module Sensit
       			g.helper false
 			end
 
-			Rabl.configure do |config|
-				config.include_json_root = false
-				config.include_child_root = false
+			::Rabl.configure do |rabl|
+				rabl.include_json_root = false
+				rabl.include_child_root = false
 			end
 
 			config.view_versions = [1]
@@ -30,6 +31,18 @@ module Sensit
 			# config.to_prepare do
 			# 	::Sensit::Topic.send :include, TopicApiKeyConcern
 			# end
+
+			::Kaminari.configure do |kaminari|
+			  # kaminari.default_per_page = 25
+			  # kaminari.max_per_page = nil
+			  # kaminari.window = 4
+			  # kaminari.outer_window = 0
+			  # kaminari.left = 0
+			  # kaminari.right = 0
+			  # kaminari.page_method_name = :page
+			  # kaminari.param_name = :page
+			end
+
 
 		end
 	end

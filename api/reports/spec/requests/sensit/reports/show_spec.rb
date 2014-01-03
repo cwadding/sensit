@@ -18,7 +18,7 @@ describe "GET sensit/reports#show" do
 
 		it "returns the expected json" do
 			process_request(@report)
-			response.body.should be_json_eql("{\"name\":\"#{@report.name}\",\"query\":#{@report.query.to_json}}")
+			response.body.should be_json_eql("{\"name\":\"#{@report.name}\",\"query\":{\"match_all\":{}},\"facets\":#{@report.facets.to_json}}")
 		end
 
 	end

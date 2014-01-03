@@ -16,7 +16,7 @@ describe "PUT sensit/reports#update" do
 			@params = {
 				:report => {
 					:name => "My New Report",
-					:query => { "statistical" => { "field" => "num2"}}
+					:facets => { "statistical" => { "field" => "num2"}}
 				}
 			}
 		end
@@ -28,7 +28,7 @@ describe "PUT sensit/reports#update" do
 		it "returns the expected json" do
 			process_request(@report, @params)
 			expect(response).to render_template(:show)
-			response.body.should be_json_eql("{\"name\": \"#{@params[:report][:name]}\",\"query\": #{@params[:report][:query].to_json}}")
+			response.body.should be_json_eql("{\"name\": \"#{@params[:report][:name]}\",\"query\":{\"match_all\":{}},\"facets\": #{@params[:report][:facets].to_json}}")
 		end
 	end
 end

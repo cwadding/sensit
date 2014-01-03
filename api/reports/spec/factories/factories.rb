@@ -6,7 +6,8 @@ FactoryGirl.define do
     sequence :name do |n|
       "Report#{n}"
     end
-    query ({ :statistical => { :field => "num1"}})
+    query ({:match_all => {}})
+    facets ({ :statistical => { :field => "num1"}})
     topic
   end
 

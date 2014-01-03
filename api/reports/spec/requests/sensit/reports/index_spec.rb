@@ -17,19 +17,20 @@ describe "GET sensit/reports#index" do
 
 		it "returns the expected json" do
 			process_request(@report)
-			response.body.should be_json_eql("{\"reports\": [{\"name\":\"#{@report.name}\",\"query\":#{@report.query.to_json}}]}")
+			response.body.should be_json_eql("{\"reports\": [{\"name\":\"#{@report.name}\",\"query\":{\"match_all\":{}},\"facets\":#{@report.facets.to_json}}]}")
 		end
 	end
 
 	context "with > 1 report" do
 		before(:each) do
-			@reports = [FactoryGirl.create(:report, :name => "R1"), FactoryGirl.create(:report, :name => "R2"), FactoryGirl.create(:report, :name => "R3")]
+			@topic = FactoryGirl.create(:topic)
+			@reports = [FactoryGirl.create(:report, :name => "R1", :topic => @topic), FactoryGirl.create(:report, :name => "R2", :topic => @topic), FactoryGirl.create(:report, :name => "R3", :topic => @topic)]
 		end
 
 		it "returns the expected json" do
-			process_request(@reports.first, {offset:2, limit:1})
-			puts response.body.inspect
-			response.body.should be_json_eql("{\"reports\": [{\"name\":\"#{@report.name}\",\"query\":#{@report.query.to_json}}]}")
+			report = @reports.last
+			process_request(report, {page:2, per:1})
+			response.body.should be_json_eql("{\"reports\": [{\"name\":\"R2\",\"query\":{\"match_all\":{}},\"facets\":#{report.facets.to_json}}]}")
 		end
 	end
 end
