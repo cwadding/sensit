@@ -1,0 +1,25 @@
+{
+  "name": "Sensit", // Name of the api (also used as class name for the library)
+  "package": "sensit-client", // Name of the package
+  "version": "0.0.1", // Version of the package
+  "url": "https://sensit.com", // URL of the api
+  "keywords": ["sensit", "api", "client", "library"], // Keywords for the package
+  "official": true,  // Are the api libraries official?
+  "author": {
+    "name": "Christopher Waddington",  // Name of the package author
+    "email": "cwadding@gmail.com",  // Email of the package author
+    "url": "http://github.com/cwadding"  // URL of the package author
+  },
+  "git": { // Used in the package definition
+    "site": "github.com",  // Name of the git website
+    "user": "cwadding",  // Username of the git website
+    "name": "sensit" // Namespace of the git repositories
+  },
+  "license": "MIT", // License of the package
+  "php": {  // Required only if creating php api lib
+    "vendor": "cwadding" // Packagist vendor name for the package
+  },
+  "python": {  // Required only if creating python api lib
+    "license": "MIT License"  // Classifier of the license used for the module
+  }
+}

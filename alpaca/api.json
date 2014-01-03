@@ -1,0 +1,158 @@
+{
+	"base": "http://localhost:3000",  // Base URL of the api
+	"version": "1", // Default version for the api (https://api.example.com{/version}/users) [optional]
+	"authorization": { // Authorization strategies
+		// "basic" : true, // Basic authentication [optional] (default: false)
+    	"header": true, // Token in authorization header [optional] (default: false)
+	    // "oauth" : false // OAUTH authorization [optional] (default: false)
+	},
+	"request": {  // Settings for requests to the api
+	    "formats": { // Format of the request body
+	      "default": "form", // Default format for the request body [optional] (default: raw)
+	      "json": true // Support json? [optional] (default: false)
+	    }
+	},
+	"response": { // Settings for responses from the api
+		"formats": { // Format of the response body
+			"default": "json", // Default response format. Used when 'suffix' is true [optional] (default: html) 
+			"json": true // Support json? [optional] (default: false)
+		},
+		"suffix": false // Should the urls be suffixed with response format? [optional] (default: false)
+	},
+	"error": { // Required if response format is 'json'
+		"message": "error" // The field to be used from the response body for error message
+	},
+//   "class": { // The classes for the api
+//     "users": { // Name of a class of the api
+//       "args": ["login"], // Arguments required for the api class [optional]
+//       "profile": { // Name of a method of the api
+//         "path": "/users/:login/profile", // Url of the api method
+//         "method": "post", // HTTP method of the api method [optional] (default: get)
+//         "params": ["bio"] // Arguments required for the api method [optional]
+//       }
+//     }
+//   }	
+	"class": { // The classes for the api
+		"topic": {
+			"show": {
+				"path": "/info/configuration"
+			}
+		},
+		"feed": { // Name of a class of the api
+			"show": { // Name of a method of the api
+				"path": "/user" // Url of the api method
+			},
+			"profiles": {
+				"path": "/profiles" // Url of the api method
+			},
+			"create_update": {
+				"path": "/updates/create",
+				"method": "post",
+				"params": ["text", "profile_ids"]
+			}
+		},
+		"link": {
+			"shares": {
+				"path": "/link/shares",
+				"params": ["url"]
+			}
+		},
+		"profile": {
+			"args": ["id"],
+			"show": {
+				"path": "/profiles/:id"
+			},
+			"pending": {
+				"path": "/profiles/:id/updates/pending",
+				"paginate": true
+			},
+			"sent": {
+				"path": "/profiles/:id/updates/sent",
+				"paginate": true
+			},
+			"reorder": {
+				"path": "/profiles/:id/updates/reorder",
+				"method": "post",
+				"params": ["order"]
+			},
+			"shuffle": {
+				"path": "/profiles/:id/updates/shuffle",
+				"method": "post"
+			}
+		},
+		"schedule": {
+			"args": ["id"],
+			"list": {
+				"path": "/profiles/:id/schedules"
+			},
+			"update": {
+				"path": "/profiles/:id/schedules/update",
+				"method": "post",
+				"params": ["schedules"]
+			}
+		},
+		"update": {
+			"args": ["id"],
+			"show": {
+				"path": "/updates/:id"
+			},
+			"interactions": {
+				"path": "/updates/:id/interactions",
+				"paginate": true
+			},
+			"update": {
+				"path": "/updates/:id/update",
+				"method": "post",
+				"params": ["text"]
+			},
+			"share": {
+				"path": "/updates/:id/share",
+				"method": "post"
+			},
+			"destroy": {
+				"path": "/updates/:id/destroy",
+				"method": "post"
+			},
+			"top": {
+				"path": "/updates/:id/move_to_top",
+				"method": "post"
+			}
+		}
+	}
+}
+
+// {
+//   "base": "http://localhost:3000", // Base URL of the api
+//   "version": "v1", // Default version for the api (https://api.example.com{/version}/users) [optional]
+//   "authorization": { // Authorization strategies
+//     "basic" : true, // Basic authentication [optional] (default: false)
+//     "header": true, // Token in authorization header [optional] (default: false)
+//     "oauth" : false // OAUTH authorization [optional] (default: false)
+//   },
+//   "request": { // Settings for requests to the api
+//     "formats": { // Format of the request body
+//       "default": "form", // Default format for the request body [optional] (default: raw)
+//       "json": true // Support json? [optional] (default: false)
+//     }
+//   },
+//   "response": { // Settings for responses from the api
+//     "formats": { // Format of the response body
+//       "default": "json", // Default response format. Used when 'suffix' is true [optional] (default: html) 
+//       "json": true // Support json? [optional] (default: false)
+//     },
+//     "suffix": false // Should the urls be suffixed with response format? [optional] (default: false)
+//   },
+//   "error": { // Required if response format is 'json'
+//     "message": "error" // The field to be used from the response body for error message
+//   },
+//   "class": { // The classes for the api
+//     "users": { // Name of a class of the api
+//       "args": ["login"], // Arguments required for the api class [optional]
+//       "profile": { // Name of a method of the api
+//         "path": "/users/:login/profile", // Url of the api method
+//         "method": "post", // HTTP method of the api method [optional] (default: get)
+//         "params": ["bio"] // Arguments required for the api method [optional]
+//       }
+//     }
+//   }
+// }
