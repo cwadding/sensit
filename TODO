@@ -36,6 +36,9 @@ API
 	Form for creating an Elastic Search query (used also to create percolate queries)
 	Form for creating facet like reports from queries
 
+// Client libraries for the API
+https://github.com/pksunkara/alpaca
+
 // Modules
 
 	// Inputs
