@@ -63,7 +63,7 @@ module Sensit
     end
     # Only allow a trusted parameter "white list" through.
     def percolator_params
-      params.require(:percolator).permit(:id, :type, body: {query: {query_string: [:query]}})
+      params.require(:percolator).permit(:id, body: {query: {query_string: [:query]}})
     end
   end
 end

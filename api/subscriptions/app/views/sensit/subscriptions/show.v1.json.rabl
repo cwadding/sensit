@@ -1,2 +1,2 @@
 object @subscription
-attribute :id, :name, :host
+attribute :name, :host

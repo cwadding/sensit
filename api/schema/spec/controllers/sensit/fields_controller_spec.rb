@@ -25,7 +25,7 @@ module Sensit
     # ::Sensit::Topic::Field. As you add validations to ::Sensit::Topic::Field, be sure to
     # adjust the attributes here as well.
       def valid_request(h = {})
-        h.merge!({:field_id => "1", :use_route => :sensit_api, :format => "json", :api_version => 1})
+        h.merge!({:use_route => :sensit_api, :format => "json", :api_version => 1})
       end
       # This should return the minimal set of attributes required to create a valid
       # ::Sensit::Topic::Field. As you add validations to ::Sensit::Topic::Feed, be sure to
@@ -45,8 +45,9 @@ module Sensit
 
     describe "GET index" do
       it "assigns all fields as @fields" do
-        field = ::Sensit::Topic::Field.create! valid_attributes
-        get :index, valid_request, valid_session
+        topic = FactoryGirl.create(:topic)
+        field = ::Sensit::Topic::Field.create! valid_attributes.merge!(:topic_id => topic.id)
+        get :index, valid_request(:topic_id => topic.to_param), valid_session
         assigns(:fields).to_a.should eq([field])
       end
     end

@@ -32,7 +32,7 @@ module Sensit
     # ::Sensit::Topic::Feed. As you add validations to ::Sensit::Topic::Feed, be sure to
     # update the return value of this method accordingly.
     def valid_attributes
-      { :name => "My Report", :query => { "statistical" => { "field" => "num1"}}}
+      { :name => "My Report", :facets => { "statistical" => { "field" => "num1"}}}
     end
 
     # This should return the minimal set of values that should be in the session
@@ -46,7 +46,7 @@ module Sensit
       it "assigns all reports as @reports" do
         report = @topic.reports.build(valid_attributes)
         report.save
-        get :index, valid_request({:topic_id => @topic.id}), valid_session
+        get :index, valid_request({:topic_id => @topic.to_param}), valid_session
         assigns(:reports).should eq([report])
       end
     end
@@ -55,7 +55,7 @@ module Sensit
       it "assigns the requested report as @report" do
         report = @topic.reports.build(valid_attributes)
         report.save
-        get :show, valid_request({:topic_id => @topic.id, :id => report.to_param}), valid_session
+        get :show, valid_request({:topic_id => @topic.to_param, :id => report.to_param}), valid_session
         assigns(:report).should eq(report)
       end
     end
@@ -84,14 +84,14 @@ module Sensit
         it "assigns a newly created but unsaved report as @report" do
           # Trigger the behavior that occurs when invalid params are submitted
           ::Sensit::Topic::Report.any_instance.stub(:save).and_return(false)
-          post :create, valid_request({:topic_id => @topic.id, :report => { "name" => "invalid value", :query => { "statistical" => { "field" => "num1"}} }}), valid_session
+          post :create, valid_request({:topic_id => @topic.id, :report => { "name" => "invalid value", :facets => { "statistical" => { "field" => "num1"}} }}), valid_session
           assigns(:report).should be_a_new(::Sensit::Topic::Report)
         end
 
         it "re-renders the 'new' template" do
           # Trigger the behavior that occurs when invalid params are submitted
           Topic::Report.any_instance.stub(:save).and_return(false)
-          post :create, valid_request({:topic_id => @topic.id, :report => { "name" => "invalid value", :query => { "statistical" => { "field" => "num1"}} }}), valid_session
+          post :create, valid_request({:topic_id => @topic.id, :report => { "name" => "invalid value", :facets => { "statistical" => { "field" => "num1"}} }}), valid_session
           response.status.should == 422
         end
       end
@@ -106,8 +106,8 @@ module Sensit
           # specifies that the Topic::Report created on the previous line
           # receives the :update_attributes message with whatever params are
           # submitted in the request.
-          ::Sensit::Topic::Report.any_instance.should_receive(:update).with({ "name" => "MyString", "query" => { "statistical" => { "field" => "num1"}} })
-          put :update, valid_request({:id => report.to_param, :topic_id => @topic.id, :report => { "name" => "MyString", :query => { "statistical" => { "field" => "num1"}} }}), valid_session
+          ::Sensit::Topic::Report.any_instance.should_receive(:update).with({ "name" => "MyString", "facets" => { "statistical" => { "field" => "num1"}} })
+          put :update, valid_request({:id => report.to_param, :topic_id => @topic.id, :report => { "name" => "MyString", :facets => { "statistical" => { "field" => "num1"}} }}), valid_session
         end
 
         it "assigns the requested report as @report" do
@@ -131,7 +131,7 @@ module Sensit
           report.save
           # Trigger the behavior that occurs when invalid params are submitted
           ::Sensit::Topic::Report.any_instance.stub(:save).and_return(false)
-          put :update, valid_request({:id => report.to_param, :topic_id => @topic.id, :report => { "name" => "invalid value", :query => { "statistical" => { "field" => "num1"}} }}), valid_session
+          put :update, valid_request({:id => report.to_param, :topic_id => @topic.id, :report => { "name" => "invalid value", :facets => { "statistical" => { "field" => "num1"}} }}), valid_session
           assigns(:report).should eq(report)
         end
 
@@ -140,7 +140,7 @@ module Sensit
           report.save
           # Trigger the behavior that occurs when invalid params are submitted
           ::Sensit::Topic::Report.any_instance.stub(:save).and_return(false)
-          put :update, valid_request({:id => report.to_param, :topic_id => @topic.id, :report => { "name" => "invalid value", :query => { "statistical" => { "field" => "num1"}} }}), valid_session
+          put :update, valid_request({:id => report.to_param, :topic_id => @topic.id, :report => { "name" => "invalid value", :facets => { "statistical" => { "field" => "num1"}} }}), valid_session
           response.status.should == 422
         end
       end
@@ -163,5 +163,174 @@ module Sensit
       end
     end
 
+            
+
+    describe ".report_params" do
+      after(:each) do
+        controller.params[:report].should == @new_params
+      end
+      context "terms facet" do
+        it "ordering" do
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {  }}, :facets => [{ "name" => "tag", "body" => { "terms" => {"field" => "tag","size" => 10, "order" => "term"}} }}}
+          @new_params = controller.send(:report_params)
+        end
+        it "all terms" do
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {  }}, :facets => [{  "name" => "tag", "body" => { "terms" => {"field" => "tag","all_terms" => true}} }}}
+          @new_params = controller.send(:report_params)
+        end
+        it "excluding terms" do
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {  }}, :facets => [{  "name" => "tag", "body" => { "terms" => {"field" => "tag","exclude" => ["term1", "term2"]}} }}}
+          @new_params = controller.send(:report_params)
+        end
+        it "regex" do
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {  }}, :facets => [{  "name" => "tag", "body" => { "terms" => {"field" => "tag","regex" => "_regex expression here_", "regex_flags" => "DOTALL"}} }}}
+          @new_params = controller.send(:report_params)
+        end  
+        it "term scripts" do
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {  }}, :facets => [{  "name" => "tag", "body" => { "terms" => {"field" => "tag","size" => 10, "script" => "term + 'aaa'"}} }}}
+          @new_params = controller.send(:report_params)
+        end
+        it "multi fields" do
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {  }}, :facets => [{  "name" => "tag", "body" => { "terms" => {"fields" => ["tag1", "tag2"],"size" => 10}} }}}
+          @new_params = controller.send(:report_params)
+        end 
+      end
+      context "range facets" do
+        it "default Option 1" do
+          controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"facets" => {"name" => "range1", "body" => {"range" => {"field" => "field_name","ranges" => [{ "to" => 50 },{ "from" => 20, "to" => 70 },{ "from" => 70, "to" => 120 },{ "from" => 150 }]}}}}}
+          @new_params = controller.send(:report_params)
+        end
+
+        it "default Option 2" do
+          controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"facets" => {"name" => "range1", "body" =>  {"range" => {"my_field" => [{ "to" => 50 },{ "from" => 20, "to" => 70 },{ "from" => 70, "to" => 120 },{ "from" => 150 }]}}}}}
+          @new_params = controller.send(:report_params)
+        end
+
+        it "key and value" do
+          controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"facets" => {"name" => "range1", "body" =>  {"range" => {"key_field" => "field_name","value_field" => "another_field_name","ranges" => [{ "to" => 50 },{ "from" => 20, "to" => 70 },{ "from" => 70, "to" => 120 },{ "from" => 150 }]}}}}}
+          @new_params = controller.send(:report_params)
+        end
+
+        it "script key and value" do
+          controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"facets" => {"name" => "range1", "body" =>  {"range" => {"key_script" => "doc['date'].date.minuteOfHour","value_script" => "doc['num1'].value","ranges" => [{ "to" => 50 },{ "from" => 20, "to" => 70 },{ "from" => 70, "to" => 120 },{ "from" => 150 }]}}}}}
+          @new_params = controller.send(:report_params)
+        end
+      end
+      context "histogram facets" do
+        it "integer interval" do
+          controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"facets" => {"name" => "histo1", "body" => {"histogram" => {"field" => "field_name","interval" => 100}}}}}
+          @new_params = controller.send(:report_params)
+        end
+        it "key and value" do
+          controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"facets" => {"name" => "histo1", "body" =>{"histogram" => {"key_field" => "key_field_name","value_field" => "value_field_name","interval" => 100}}}}}
+          @new_params = controller.send(:report_params)
+        end
+        it "script key and value" do
+          controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"facets" => {"name" => "histo1", "body" => {"histogram" => {"key_script" => "doc['date'].date.minuteOfHour","value_script" => "doc['num1'].value","interval" => 100}}}}}
+          @new_params = controller.send(:report_params)
+        end
+        it "script key and value with params" do
+          controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"facets" => {"name" => "histo1", "body" => {"histogram" => {"key_script" => "doc['date'].date.minuteOfHour*factor1","value_script" => "doc['num1'].value+factor2","params" => {"factor1" => 2, "factor2" => 3},"interval" => 100}}}}}
+          @new_params = controller.send(:report_params)
+        end
+      end
+      context "date histogram facet" do
+        # ["year", "quarter", "month", "week", "day", "hour", "minute"]
+        it "integer interval" do
+          controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"facets" => {"name" => "histo1", "body" => {"date_histogram" => {"field" => "field_name","interval" => "day"}}}}}
+          @new_params = controller.send(:report_params)
+        end
+        it "key and value" do
+          controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"facets" => {"name" => "histo1", "body" => {"date_histogram" => {"key_field" => "timestamp","value_field" => "price","interval" => "day"}}}}}
+          @new_params = controller.send(:report_params)
+        end
+        it "script key and value" do
+          controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"facets" => {"name" => "histo1", "body" => {"date_histogram" => {"key_field" => "timestamp","value_script" => "doc['price'].value * 2","interval" => "day"}}}}}
+          @new_params = controller.send(:report_params)
+        end
+      end
+      context "filter facets" do
+        it "filter" do
+          controller.params = {:report => { "name" => "invalid value","facets" => {"name" => "wow_facet", "body" =>{"filter" => {"term" => { "tag" => "wow" }}}}}}
+          @new_params = controller.send(:report_params)
+        end
+      end
+      context "query facets" do
+        it "query" do
+          controller.params = {:report => { "name" => "invalid value","facets" => {"name" => "wow_facet", "body" => {"query" => {"term" => { "tag" => "wow" }}}}}}
+          @new_params = controller.send(:report_params)
+        end
+      end
+
+      context "statistical facets" do
+        it "field" do
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"facets" => {"name" => "stat1", "body" =>  {"statistical" => {"field" => "num1"}}}}}
+          @new_params = controller.send(:report_params)
+        end
+        it "script" do
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"facets" => {"name" => "stat1", "body" =>  {"statistical" => {"script" => "doc['num1'].value + doc['num2'].value"}}}}}
+          @new_params = controller.send(:report_params)
+        end
+        it "script with params" do
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"facets" => {"name" => "stat1", "body" =>  {"statistical" => {"script" => "(doc['num1'].value + doc['num2'].value) * factor", "params" => {"factor" => 5}}}}}}
+          @new_params = controller.send(:report_params)
+        end
+        it "multi field" do
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"facets" => {"name" => "stat1", "body" =>  {"statistical" => {"fields" => ["num1", "num2"]}}}}}
+          @new_params = controller.send(:report_params)
+        end
+      end
+
+      context "terms stats facets" do
+        it "field" do
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"facets" => {"name" => "tag_price_stats", "body" => {"terms_stats" => {"key_field" => "tag","value_field" => "price"}}}}}
+          @new_params = controller.send(:report_params)
+        end  
+        # order => ["term", "reverse_term", "count", "reverse_count", "total", "reverse_total", "min", "reverse_min", "max", "reverse_max", "mean", "reverse_mean"]
+        it "field with size and order" do
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"facets" => {"name" => "tag_price_stats", "body" => {"terms_stats" => {"key_field" => "tag","value_field" => "price", "size" => 10, "order" => "count"}}}}}
+          @new_params = controller.send(:report_params)
+        end
+        it "script with params" do
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"facets" => {"name" => "tag_price_stats", "body" => {"terms_stats" => {"key_field" => "tag", "value_script" => "(doc['price'].value * factor", "params" => {"factor" => 5}}}}}}
+          @new_params = controller.send(:report_params)
+        end
+      end
+
+      context "geo distance facets" do
+        it "lat lon as properties" do
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"facets" => {"name" => "geo1", "body" => {"geo_distance" => {"pin.location" => {"lat" => 40,"lon" => -70},"ranges" => [{ "to" => 10 },{ "from" => 10, "to" => 20 },{ "from" => 20, "to" => 100 },{ "from" => 100 }]}}}}}
+          @new_params = controller.send(:report_params)
+        end
+        it "lat lon as array" do
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"facets" => {"name" => "geo1", "body" =>  {"geo_distance" => {"pin.location" => [40,-70],"ranges" => [{ "to" => 10 },{ "from" => 10, "to" => 20 },{ "from" => 20, "to" => 100 },{ "from" => 100 }]}}}}}
+          @new_params = controller.send(:report_params)
+        end
+
+        it "lat lon as string" do
+          # or geo hash "drm3btev3e86"
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"facets" => {"name" => "geo1", "body" =>  {"geo_distance" => {"pin.location" => "40,-70","ranges" => [{ "to" => 10 },{ "from" => 10, "to" => 20 },{ "from" => 20, "to" => 100 },{ "from" => 100 }]}}}}}
+          @new_params = controller.send(:report_params)
+        end
+
+        it "lat lon as string with unit and distance_type" do
+          # "unit" => [mi, miles, in, inch, yd, yards, kilometers, mm, millimeters, cm, centimeters, m, meters]
+          # "distance_type" => [arc (better precision), sloppy_arc (faster) or plane (fastest)]
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"facets" => {"name" => "geo1", "body" =>  {"geo_distance" => {"pin.location" => "40,-70","ranges" => [{ "to" => 10 },{ "from" => 10, "to" => 20 },{ "from" => 20, "to" => 100 },{ "from" => 100 }], "unit" => "mi", "distance_type" => "arc"}}}}}
+          @new_params = controller.send(:report_params)
+        end
+
+        it "lat lon as string with value_field" do
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"facets" => {"name" => "geo1", "body" =>  {"geo_distance" => {"pin.location" => "40,-70", "value_field" => "num1", "ranges" => [{ "to" => 10 },{ "from" => 10, "to" => 20 },{ "from" => 20, "to" => 100 },{ "from" => 100 }]}}}}}
+          @new_params = controller.send(:report_params)
+        end
+
+        it "lat lon as string with value_script" do
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"facets" => {"name" => "geo1", "body" => {"geo_distance" => {"pin.location" => "40,-70", "value_script" => "doc['num1'].value * factor","params" => {"factor" => 5}, "ranges" => [{ "to" => 10 },{ "from" => 10, "to" => 20 },{ "from" => 20, "to" => 100 },{ "from" => 100 }]}}}}}
+          @new_params = controller.send(:report_params)
+        end
+        
+      end      
+    end
   end
 end

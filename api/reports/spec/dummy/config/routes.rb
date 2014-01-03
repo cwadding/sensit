@@ -1,3 +1,3 @@
 Dummy::Application.routes.draw do
-  mount Sensit::Reports::Api::Engine => "/"
+  mount Sensit::Reports::Engine => "/"
 end

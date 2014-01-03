@@ -1,2 +1,2 @@
 object @report
-attribute :name, :query
+attribute :name, :query, :facets

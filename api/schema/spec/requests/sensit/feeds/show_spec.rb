@@ -3,7 +3,7 @@ describe "GET sensit/feeds#show" do
 
 	def process_request(topic)
 		feed = topic.feeds.first
-		get "/api/topics/#{topic.id}/feeds/#{feed.id}", valid_request, valid_session
+		get "/api/topics/#{topic.to_param}/feeds/#{feed.id}", valid_request, valid_session
 	end
 
 

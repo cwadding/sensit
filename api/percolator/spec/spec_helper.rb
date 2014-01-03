@@ -10,8 +10,9 @@ require "rails/test_help"
 require 'rspec/rails'
 require 'rspec/autorun'
 require 'factory_girl'
+require 'shoulda-matchers'
 # require 'database_cleaner'
-require 'sensit_percolator_api'
+require 'sensit_percolator'
 require 'json_spec'
 Rails.backtrace_cleaner.remove_silencers!
 
@@ -21,7 +22,7 @@ Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
 Dir["#{File.dirname(__FILE__)}/factories/*.rb"].each { |f| require f }
 
 RSpec.configure do |config|
-  config.include ::Sensit::Percolator::Api::Engine.routes.url_helpers
+  config.include ::Sensit::Percolator::Engine.routes.url_helpers
   config.include RequestHelpers, :type => :request
   # == Mock Framework
   #

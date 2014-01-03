@@ -2,13 +2,13 @@ require 'spec_helper'
 describe "GET sensit/reports#show" do
 
 	def process_request(report)
-		get "/api/topics/#{report.type}/reports/#{report.id}", valid_request, valid_session
+		get "/api/topics/#{report.topic.to_param}/reports/#{report.id}", valid_request, valid_session
 	end
 
 
 	context "when the report exists" do
 		before(:each) do
-			@report = ::Sensit::Topic::Report.create({ :name => "My Report", :query => { "statistical" => { "field" => "num1"}}, :topic_id => 1})
+			@report = FactoryGirl.create(:report)
 		end
 
 		it "is successful" do
@@ -18,7 +18,7 @@ describe "GET sensit/reports#show" do
 
 		it "returns the expected json" do
 			process_request(@report)
-			response.body.should be_json_eql("{\"name\":\"#{@report.name}\",\"query\":#{@report.query.to_json}}")
+			response.body.should be_json_eql("{\"name\":\"#{@report.name}\",\"query\":{\"match_all\":{}},\"facets\":#{@report.facets.to_json}}")
 		end
 
 	end

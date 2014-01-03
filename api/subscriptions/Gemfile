@@ -1,10 +1,6 @@
 source "https://rubygems.org"
 
-gem 'devise'
-gem 'sensit_core', :path => "../../core"
-gem 'sensit_percolator_api', :path => "../percolator"
-gem 'sensit_reports_api', :path => "../reports"
-gem 'sensit_frontend', :path => "../../frontend"
+gem 'sensit_core', :path => "../core"
 gem 'sqlite3'
 # Declare your gem's dependencies in sensit_api.gemspec.
 # Bundler will treat runtime dependencies like base dependencies, and

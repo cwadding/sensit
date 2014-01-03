@@ -16,10 +16,10 @@ describe "POST sensit/feeds#create"  do
    end
 
    def process_request(topic, params)
-      post "/api/topics/#{topic.id}/feeds", valid_request(params), valid_session
+      post "/api/topics/#{topic.to_param}/feeds", valid_request(params), valid_session
    end
 
-   context "multiple feeds"do
+   context "multiple feeds" do
       context "with correct attributes" do
          it "returns a 200 status code" do
             fields = @topic.fields.map(&:key)
@@ -104,7 +104,7 @@ describe "POST sensit/feeds#create"  do
       end
    end
 
-   context "zipped csv file", :current => true do
+   context "zipped csv file" do
       before(:each) do
       @topic = FactoryGirl.create(:topic_with_feeds_and_fields, field_keys: ["key1", "key2", "key3"])
       end
@@ -187,9 +187,7 @@ describe "POST sensit/feeds#create"  do
          end
 
          context "on first commit of fields" do
-            it "creates new fields for the data that don't exist" do
-
-            end
+            it "creates new fields for the data that don't exist"
          end
 
          # it "creates a new Feed" do
