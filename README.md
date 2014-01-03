@@ -22,16 +22,25 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+Check'N'Go
+
+Seed the database
+
+Searching through the API
+
+Generate Reports
+
+View reports
+
+View Transactions corresponding to video
 
 ## Building the demo
 
 cd demo
 bundle install
-rails g sensit:core:install
-rails g sensit api:install
-rails g devise user
+rails g sensit
 bundle exec rake db:migrate
+rails s
 
 ## Contributing
 

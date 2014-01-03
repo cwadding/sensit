@@ -1,15 +1,15 @@
 API
 	Core
-		- Importing of data in XML, OR CSV
 		- Write tests to ensure that :at attribute is a utc time and can be set by a string, object or number and the time is mapped to the correct time zone so there is no tz attribute but still stores the tz attribute
-		- parent child relationships (ancestry gem)
 		- Be able to search feeds (use the the subset of queries from the percolator for strong parameters)
+		- parent child relationships (ancestry gem)		
+		- Importing of data in XML, OR CSV		
 	Schema
 		- Creating field keys on initial feed request
 	Reports
-		- strong_parameters mass assignment of elasticsearch report querys
 		- use validate api to validate that queries are correct before saving
 		- hook in Schema to make sure that any fields in queries are the correct type for the value
+		- strong_parameters mass assignment of elasticsearch report querys
 	Percolator
 		- strong_parameters mass assignment of elasticsearch percolator querys
 	Subscriptions
@@ -44,6 +44,7 @@ https://www.stormpath.com/blog/designing-rest-json-apis
 // UI
 	Form for creating an Elastic Search query (used also to create percolate queries)
 	Form for creating facet like reports from queries
+	Visualization of reports
 
 // Client libraries for the API
 https://github.com/pksunkara/alpaca
@@ -53,10 +54,11 @@ https://github.com/pksunkara/alpaca
 	// Inputs
 		// various website API's (twitter)
 		- watcher for a file drop and then send the batch to the service (csv,sqlite, etc)
-		- an application with a database connection which polls the database for changes periodically looking for changes tha may have occured since the last time it check (like solrs dataimport)
+		- an application with a database connection which polls the database for changes periodically looking for changes that may have occured since the last time it check (like solrs dataimport)
 	// Analysis
 		// Machine learning or other rule processing based api
 		// Pattern rules
 	// Actions
 		// Downloading an image from a camera
 			// Module to manage connections to various NAS's
+		// Sending notifications
