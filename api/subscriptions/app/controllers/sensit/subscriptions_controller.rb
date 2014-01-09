@@ -22,7 +22,7 @@ module Sensit
       @subscription = topic.subscriptions.build(subscription_params)
       if @subscription.save
         SubscriptionsWorker.perform_async(@subscription.id)
-        respond_with(@subscription,:status => 200, :template => "sensit/subscriptions/show")
+        respond_with(@subscription,:status => :created, :template => "sensit/subscriptions/show")
       else
         render(:json => "{\"errors\":#{@subscription.errors.to_json}}", :status => :unprocessable_entity)
       end
@@ -32,7 +32,7 @@ module Sensit
     def update
       if @subscription.update(subscription_params)
         # SubscriptionsWorker.perform_async(@subscription.id)
-        respond_with(@subscription,:status => 200, :template => "sensit/subscriptions/show")
+        respond_with(@subscription,:status => :ok, :template => "sensit/subscriptions/show")
       else
         render(:json => "{\"errors\":#{@subscription.errors.to_json}}", :status => :unprocessable_entity)
       end
@@ -42,7 +42,7 @@ module Sensit
     def destroy
       # SubscriptionsWorker kill a job
       @subscription.destroy
-      head :status => 204
+      head :status => :no_content
     end
 
     private

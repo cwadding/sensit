@@ -6,8 +6,7 @@ module Sensit
     respond_to :json
     # GET /topics/1/fields
     def index
-      topic = Topic.find(params[:topic_id])
-      @fields = topic.fields
+      @fields = Topic::Field.joins(:topic).where(:sensit_topics => {:slug => params[:topic_id]}).page(params[:page] || 1).per(params[:per] || 10)
       respond_with(@fields)
     end
 
@@ -21,7 +20,7 @@ module Sensit
       topic = Topic.find(params[:topic_id])
       @field = topic.fields.build(field_params)
       if @field.save
-        respond_with(@field,:status => 200, :template => "sensit/fields/show")
+        respond_with(@field,:status => :created, :template => "sensit/fields/show")
       else
         render(:json => "{\"errors\":#{@field.errors.to_json}}", :status => :unprocessable_entity)
       end
@@ -30,7 +29,7 @@ module Sensit
     # PATCH/PUT /topics/1/fields/1
     def update
       if @field.update(field_params)
-        respond_with(@field,:status => 200, :template => "sensit/fields/show")
+        respond_with(@field,:status => :ok, :template => "sensit/fields/show")
       else
         render(:json => "{\"errors\":#{@field.errors.to_json}}", :status => :unprocessable_entity)
       end
@@ -39,7 +38,7 @@ module Sensit
     # DELETE topics/1/fields/1
     def destroy
       @field.destroy
-      head :status => 204
+      head :status => :no_content
     end
 
     private

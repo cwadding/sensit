@@ -17,7 +17,10 @@ describe "GET sensit/reports#index" do
 
 		it "returns the expected json" do
 			process_request(@report)
-			response.body.should be_json_eql("{\"reports\": [{\"name\":\"#{@report.name}\",\"query\":{\"match_all\":{}},\"facets\":#{@report.facets.to_json}}]}")
+			facet_arr = @report.facets.inject([]) do |facet_arr, facet|
+				facet_arr << "{\"body\":#{facet.body.to_json}, \"name\":\"#{facet.name}\"}"
+			end
+			response.body.should be_json_eql("{\"reports\": [{\"name\":\"#{@report.name}\",\"query\":{\"match_all\":{}},\"facets\":[#{facet_arr.join(',')}]}]}")
 		end
 	end
 
@@ -30,7 +33,10 @@ describe "GET sensit/reports#index" do
 		it "returns the expected json" do
 			report = @reports.last
 			process_request(report, {page:2, per:1})
-			response.body.should be_json_eql("{\"reports\": [{\"name\":\"R2\",\"query\":{\"match_all\":{}},\"facets\":#{report.facets.to_json}}]}")
+			facet_arr = report.facets.inject([]) do |facet_arr, facet|
+				facet_arr << "{\"body\":#{facet.body.to_json}, \"name\":\"#{facet.name}\"}"
+			end
+			response.body.should be_json_eql("{\"reports\": [{\"name\":\"R2\",\"query\":{\"match_all\":{}},\"facets\":[#{facet_arr.join(',')}]}]}")
 		end
 	end
 end

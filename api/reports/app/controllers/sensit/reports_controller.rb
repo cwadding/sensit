@@ -26,7 +26,7 @@ module Sensit
       @report = topic.reports.build(report_params)
 
       if @report.save
-        respond_with(@report,:status => 200, :template => "sensit/reports/show")
+        respond_with(@report,:status => :created, :template => "sensit/reports/show")
       else
         render(:json => "{\"errors\":#{@report.errors.to_json}}", :status => :unprocessable_entity)
       end
@@ -35,7 +35,7 @@ module Sensit
     # PATCH/PUT /reports/1
     def update
       if @report.update(report_params)
-        respond_with(@report,:status => 200, :template => "sensit/reports/show")
+        respond_with(@report,:status => :ok, :template => "sensit/reports/show")
       else
         render(:json => "{\"errors\":#{@report.errors.to_json}}", :status => :unprocessable_entity)
       end
@@ -44,7 +44,7 @@ module Sensit
     # DELETE /reports/1
     def destroy
       @report.destroy
-      head :status => 204
+      head :status => :no_content
     end
 
     private

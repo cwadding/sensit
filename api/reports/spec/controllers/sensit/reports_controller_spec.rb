@@ -32,8 +32,10 @@ module Sensit
     # ::Sensit::Topic::Feed. As you add validations to ::Sensit::Topic::Feed, be sure to
     # update the return value of this method accordingly.
     def valid_attributes
-      { :name => "My Report", :facets => { "statistical" => { "field" => "num1"}}}
+      { :name => "My Report", :query => {"match_all" => {  }}}
     end
+
+# :facets => { "statistical" => { "field" => "num1"}}
 
     # This should return the minimal set of values that should be in the session
     # in order to pass any filters (e.g. authentication) defined in
@@ -84,14 +86,14 @@ module Sensit
         it "assigns a newly created but unsaved report as @report" do
           # Trigger the behavior that occurs when invalid params are submitted
           ::Sensit::Topic::Report.any_instance.stub(:save).and_return(false)
-          post :create, valid_request({:topic_id => @topic.id, :report => { "name" => "invalid value", :facets => { "statistical" => { "field" => "num1"}} }}), valid_session
+          post :create, valid_request({:topic_id => @topic.id, :report => { "name" => "invalid value", :query => {"match_all" => {  }}}}), valid_session
           assigns(:report).should be_a_new(::Sensit::Topic::Report)
         end
 
         it "re-renders the 'new' template" do
           # Trigger the behavior that occurs when invalid params are submitted
           Topic::Report.any_instance.stub(:save).and_return(false)
-          post :create, valid_request({:topic_id => @topic.id, :report => { "name" => "invalid value", :facets => { "statistical" => { "field" => "num1"}} }}), valid_session
+          post :create, valid_request({:topic_id => @topic.id, :report => { "name" => "invalid value", :query => {"match_all" => {  }}}}), valid_session
           response.status.should == 422
         end
       end
@@ -106,8 +108,8 @@ module Sensit
           # specifies that the Topic::Report created on the previous line
           # receives the :update_attributes message with whatever params are
           # submitted in the request.
-          ::Sensit::Topic::Report.any_instance.should_receive(:update).with({ "name" => "MyString", "facets" => { "statistical" => { "field" => "num1"}} })
-          put :update, valid_request({:id => report.to_param, :topic_id => @topic.id, :report => { "name" => "MyString", :facets => { "statistical" => { "field" => "num1"}} }}), valid_session
+          ::Sensit::Topic::Report.any_instance.should_receive(:update).with({ "name" => "MyString", "query" => {"match_all" => {  }}} )
+          put :update, valid_request({:id => report.to_param, :topic_id => @topic.id, :report => { "name" => "MyString", :query => {"match_all" => {  }} }}), valid_session
         end
 
         it "assigns the requested report as @report" do
@@ -131,7 +133,7 @@ module Sensit
           report.save
           # Trigger the behavior that occurs when invalid params are submitted
           ::Sensit::Topic::Report.any_instance.stub(:save).and_return(false)
-          put :update, valid_request({:id => report.to_param, :topic_id => @topic.id, :report => { "name" => "invalid value", :facets => { "statistical" => { "field" => "num1"}} }}), valid_session
+          put :update, valid_request({:id => report.to_param, :topic_id => @topic.id, :report => { "name" => "invalid value", :query => {"match_all" => {  }} }}), valid_session
           assigns(:report).should eq(report)
         end
 
@@ -140,7 +142,7 @@ module Sensit
           report.save
           # Trigger the behavior that occurs when invalid params are submitted
           ::Sensit::Topic::Report.any_instance.stub(:save).and_return(false)
-          put :update, valid_request({:id => report.to_param, :topic_id => @topic.id, :report => { "name" => "invalid value", :facets => { "statistical" => { "field" => "num1"}} }}), valid_session
+          put :update, valid_request({:id => report.to_param, :topic_id => @topic.id, :report => { "name" => "invalid value", :query => {"match_all" => {  }} }}), valid_session
           response.status.should == 422
         end
       end

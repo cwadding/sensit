@@ -22,7 +22,7 @@ describe "POST sensit/fields#create" do
       
       it "returns a 200 status code" do
          status = process_request(@topic, @params)
-         status.should == 200
+         status.should == 201
       end
 
       it "returns the expected json" do
@@ -139,7 +139,7 @@ describe "POST sensit/fields#create" do
       end
       it "is a success" do
          status = process_request(@topic, @params)
-         status.should == 200
+         status.should == 201
       end
 
       it "creates a new Field" do

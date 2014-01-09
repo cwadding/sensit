@@ -19,4 +19,8 @@ describe "GET sensit/percolators#index" do
 			response.body.should be_json_eql("{\"percolators\": [{\"id\":\"#{percolator.id}\",\"body\":#{percolator.body.to_json}}]}")
 		end
 	end
+
+	context "pagination" do
+	end
+
 end

@@ -16,9 +16,11 @@ FactoryGirl.define do
     end
     query ({:match_all => {}})
     topic
-    after(:create) do |report, evaluator|
-      key_arr = []
-      FactoryGirl.create(:facet, :report => report)
+    factory :report_with_facets do
+      after(:create) do |report, evaluator|
+        key_arr = []
+        FactoryGirl.create(:facet, :report => report, name: "#{evaluator.name}-facet")
+      end
     end
   end
 

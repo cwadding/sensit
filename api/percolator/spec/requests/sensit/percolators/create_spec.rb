@@ -14,7 +14,7 @@ describe "POST sensit/percolators#create"  do
 				}
 			}
 			status = process_request(@params)
-			status.should == 200
+			status.should == 201
 		end
 
 		it "returns the expected json" do

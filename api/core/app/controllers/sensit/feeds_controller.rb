@@ -17,7 +17,7 @@ module Sensit
         importer = Topic::Feed::Importer.new({index: elastic_index_name, type: elastic_type_name, :topic_id => topic.id, :feeds => feeds_params})
         @feeds = importer.feeds
         if importer.save
-          respond_with(@feeds,:status => 200, :template => "sensit/feeds/index")
+          respond_with(@feeds,:status => :created, :template => "sensit/feeds/index")
         else
           render(:json => "{\"errors\":#{importer.errors.to_json}}", :status => :unprocessable_entity)
         end
@@ -25,7 +25,7 @@ module Sensit
         topic = Topic.find(params[:topic_id])
         @feed = Topic::Feed.new(feed_params.merge!({index: elastic_index_name, type: elastic_type_name, :topic_id => topic.id})) 
         if @feed.save
-          respond_with(@feed,:status => 200, :template => "sensit/feeds/show")
+          respond_with(@feed,:status => :created, :template => "sensit/feeds/show")
         else
           render(:json => "{\"errors\":#{@feed.errors.to_json}}", :status => :unprocessable_entity)
         end
@@ -35,7 +35,7 @@ module Sensit
     # PATCH/PUT /topics/1/feeds/1
     def update
       if @feed.update_attributes(feed_update_params)
-        respond_with(@feed,:status => 200, :template => "sensit/feeds/show")
+        respond_with(@feed,:status => :ok, :template => "sensit/feeds/show")
       else
         render(:json => "{\"errors\":#{@feed.errors.to_json}}", :status => :unprocessable_entity)
       end
@@ -44,7 +44,7 @@ module Sensit
     # DELETE /topics/1/feeds/1
     def destroy
       Topic::Feed.destroy({index: elastic_index_name, type: elastic_type_name, id:  params[:id].to_s})
-      head :status => 204
+      head :status => :no_content
     end
 
     private

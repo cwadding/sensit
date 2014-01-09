@@ -7,11 +7,12 @@ FactoryGirl.define do
 	    "Topic#{n}"
 	  end
 
-    ignore do
-      feeds_count 1
-    end
-
     factory :topic_with_feeds do
+
+      ignore do
+        feeds_count 1
+      end
+      
       after(:create) do |topic, evaluator|
         key_arr = []
         evaluator.feeds_count.times do |i|

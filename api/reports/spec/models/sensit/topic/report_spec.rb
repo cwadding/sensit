@@ -11,7 +11,7 @@ module Sensit
 
     describe ".valid_query" do
     	before(:each) do
-    		@report = Topic::Report.new({ :name => "My Report", :query => {:match_all => {}}, :facets => { "statistical" => { "field" => "num1"}}})
+    		@report = Topic::Report.new({ :name => "My Report", :query => {:match_all => {}}})
 			@client = ::Elasticsearch::Client.new
 			@indices_client = Elasticsearch::API::Indices::IndicesClient.new(@client)
 			

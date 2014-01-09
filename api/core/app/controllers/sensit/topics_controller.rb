@@ -7,7 +7,7 @@ module Sensit
     # GET 1/topics
     def index
       # scope all to the api key that is being used
-      @topics = Topic.all
+      @topics = Topic.page(params[:page] || 1).per(params[:per] || 10)
       respond_with(@topics)
     end
 
@@ -28,7 +28,7 @@ module Sensit
         # create the elasticsearch index
         client = ::Elasticsearch::Client.new
         client.indices.create({:index => @topic.id, :type => @topic.id}) unless (client.indices.exists index: @topic.id)
-        respond_with(@topic,:status => 201, :template => "sensit/topics/show")
+        respond_with(@topic,:status => :created, :template => "sensit/topics/show")
         # render(:json => "{\"location\":#{sensit_topic_url(@topic)}}", :status => :created)
       else
         render(:json => "{\"errors\":#{@topic.errors.to_json}}", :status => :unprocessable_entity)

@@ -15,10 +15,10 @@ describe "PUT sensit/reports#update" do
 		before(:each) do
 			@params = {
 				:report => {
-					:name => "My New Report",
-					:facets => { "statistical" => { "field" => "num2"}}
+					:name => "My New Report"
 				}
 			}
+			# :facets => { "statistical" => { "field" => "num2"}}
 		end
 		it "returns a 200 status code" do
 			status = process_request(@report, @params)
@@ -28,7 +28,11 @@ describe "PUT sensit/reports#update" do
 		it "returns the expected json" do
 			process_request(@report, @params)
 			expect(response).to render_template(:show)
-			response.body.should be_json_eql("{\"name\": \"#{@params[:report][:name]}\",\"query\":{\"match_all\":{}},\"facets\": #{@params[:report][:facets].to_json}}")
+			facet_arr = @report.facets.inject([]) do |facet_arr, facet|
+				facet_arr << "{\"body\":#{facet.body.to_json}, \"name\":\"#{facet.name}\"}"
+			end
+			response.body.should be_json_eql("{\"name\": \"#{@params[:report][:name]}\",\"query\":{\"match_all\":{}},\"facets\": [#{facet_arr.join(',')}]}")
 		end
 	end
+	# #{@params[:report][:facets].to_json}
 end

@@ -6,14 +6,14 @@ module Sensit
 	after_initialize :default_query
 
   	serialize :query, Hash
-  	belongs_to :topic
+  	belongs_to :topic, class_name: "Sensit::Topic"
 
 	validates_associated :topic
 
 	validates :name, presence: true, uniqueness: {scope: :topic_id}
 
 	# validate :valid_query
-	has_many :facets
+	has_many :facets, class_name: "Sensit::Topic::Report::Facet", dependent: :destroy
 
 
 	def valid_query

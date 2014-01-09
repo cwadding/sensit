@@ -23,7 +23,7 @@ describe "GET sensit/topics#show" do
 				feed.values.each do |key, value|
 					data_arr << "\"#{key}\": #{value}"
 				end
-				feeds_arr << "{\"at\":#{feed.at.utc.to_f}, \"data\":{#{data_arr.join(',')}}}"
+				feeds_arr << "{\"at\":\"#{feed.at.utc.iso8601}\", \"data\":{#{data_arr.join(',')}}}"
 			end
 			response.body.should be_json_eql("{\"id\":1,\"description\": null,\"feeds\": [#{feeds_arr.join(',')}],\"name\": \"#{@topic.name}\"}")
 		end  

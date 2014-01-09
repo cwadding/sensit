@@ -21,7 +21,7 @@ describe "POST sensit/topics#create" do
       
       it "returns a 200 status code" do
          status = process_request(@params)
-         status.should == 200
+         status.should == 201
       end
 
       it "returns the expected json" do

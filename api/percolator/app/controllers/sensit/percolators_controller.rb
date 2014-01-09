@@ -5,7 +5,7 @@ module Sensit
     respond_to :json
     # GET /percolators
     def index
-      @percolators = Topic::Percolator.search(type: elastic_type_name, body: query_params)
+      @percolators = Topic::Percolator.search(type: elastic_type_name, body: query_params, size: (params[:per] || 10), from: (params[:page] || 0) * (params[:per] || 10))
       respond_with(@percolators)
     end
 
@@ -19,7 +19,7 @@ module Sensit
     def create
       @percolator = Topic::Percolator.new(percolator_params.merge!(type: elastic_type_name))
       if @percolator.save
-        respond_with(@percolator,:status => 200, :template => "sensit/percolators/show")
+        respond_with(@percolator,:status => :created, :template => "sensit/percolators/show")
       else
         render(:json => "{\"errors\":#{@percolator.errors.to_json}}", :status => :unprocessable_entity)
       end
@@ -29,7 +29,7 @@ module Sensit
     def update
       @percolator = Topic::Percolator.update(percolator_params.merge!(type: elastic_type_name,:id => params[:id]))
       if @percolator.present? && @percolator.valid?
-        respond_with(@percolator,:status => 200, :template => "sensit/percolators/show")
+        respond_with(@percolator,:status => :ok, :template => "sensit/percolators/show")
       else
         render(:json => "{\"errors\":#{@percolator.errors.to_json}}", :status => :unprocessable_entity)
       end
@@ -38,7 +38,7 @@ module Sensit
     # DELETE /percolators/1
     def destroy
       elastic_client.delete(index: elastic_index_name, type: elastic_type_name, id: params[:id])
-      head :status => 204
+      head :status => :no_content
     end
 
 

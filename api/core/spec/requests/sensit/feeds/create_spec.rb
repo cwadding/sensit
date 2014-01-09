@@ -50,7 +50,7 @@ describe "POST sensit/feeds#create"  do
             ]
             }
             status = process_request(@topic, params)
-            status.should == 200
+            status.should == 201
          end
 
          it "returns the expected json" do
@@ -83,7 +83,7 @@ describe "POST sensit/feeds#create"  do
             }
             process_request(@topic, params)
             expect(response).to render_template(:index)
-            response.body.should be_json_eql("{\"feeds\":[{\"at\": 1386882015.0,\"data\": #{value_set1.to_json}, \"tz\": \"Eastern Time (US & Canada)\"}, {\"at\": 1386968415.0,\"data\": #{value_set2.to_json}, \"tz\": \"Eastern Time (US & Canada)\"}, {\"at\": 1387054815.0,\"data\": #{value_set3.to_json}, \"tz\": \"Eastern Time (US & Canada)\"}]}")
+            response.body.should be_json_eql("{\"feeds\":[{\"at\": \"2013-12-12T21:00:15Z\",\"data\": #{value_set1.to_json}, \"tz\": \"Eastern Time (US & Canada)\"}, {\"at\": \"2013-12-13T21:00:15Z\",\"data\": #{value_set2.to_json}, \"tz\": \"Eastern Time (US & Canada)\"}, {\"at\": \"2013-12-14T21:00:15Z\",\"data\": #{value_set3.to_json}, \"tz\": \"Eastern Time (US & Canada)\"}]}")
          end
       end
    end
@@ -96,7 +96,7 @@ describe "POST sensit/feeds#create"  do
             :feeds => fixture_file_upload("#{RSpec.configuration.fixture_path}/files/feeds.csv", 'text/csv')
          }
          status = process_request(@topic, params)
-         status.should == 200
+         status.should == 201
       end
    end
 
@@ -109,7 +109,7 @@ describe "POST sensit/feeds#create"  do
             :feeds => fixture_file_upload("#{RSpec.configuration.fixture_path}/files/feeds.zip")
          }
          status = process_request(@topic, params)
-         status.should == 200
+         status.should == 201
       end
    end
 
@@ -124,28 +124,28 @@ describe "POST sensit/feeds#create"  do
       before(:each) do
       @topic = FactoryGirl.create(:topic_with_feeds)
       end
-      it "returns a 200 status code"
+      it "returns a 201 status code"
    end
 
    context "OpenOffice file" do
       before(:each) do
       @topic = FactoryGirl.create(:topic_with_feeds)
       end
-      it "returns a 200 status code"
+      it "returns a 201 status code"
    end
 
    context "LibreOffice" do
       before(:each) do
       @topic = FactoryGirl.create(:topic_with_feeds)
       end
-      it "returns a 200 status code"
+      it "returns a 201 status code"
    end
 
    context "a single feed" do
 
       context "with correct attributes" do
          
-         it "returns a 200 status code" do
+         it "returns a 201 status code" do
             fields = ["field1", "field2", "field3"]
             values = {}
             fields.each_with_index do |field, i|
@@ -158,7 +158,7 @@ describe "POST sensit/feeds#create"  do
                }
             }
             status = process_request(@topic, params)
-            status.should == 200
+            status.should == 201
          end
 
          it "returns the expected json" do
@@ -169,14 +169,14 @@ describe "POST sensit/feeds#create"  do
             end
             params = {
                :feed => {
-                  :at => Time.now.utc.to_f,#Time.new(2013,11,14,3,56,6, "-00:00").utc.to_f,
+                  :at => Time.new(2013,11,14,3,56,6, "-00:00").utc.to_f,
                   :values => values
                }
             }
             process_request(@topic, params)
             expect(response).to render_template(:show)
             
-            response.body.should be_json_eql("{\"at\": #{params[:feed][:at]},\"data\": #{values.to_json},\"tz\": \"UTC\"}")
+            response.body.should be_json_eql("{\"at\": \"2013-11-14T03:56:06Z\",\"data\": #{values.to_json},\"tz\": \"UTC\"}")
          end
 
          context "on first commit of fields" do
@@ -220,7 +220,7 @@ describe "POST sensit/feeds#create"  do
             end
             params = {
                :feed => {
-                  :at => Time.now.utc.to_f,#Time.new(2013,11,14,3,56,6, "-00:00").utc.to_f,
+                  :at => Time.new(2013,11,14,3,56,6, "-00:00").utc.to_f,
                   :tz => "Eastern Time (US & Canada)",
                   :values => values
                }
@@ -228,7 +228,7 @@ describe "POST sensit/feeds#create"  do
             process_request(@topic, params)
             expect(response).to render_template(:show)
             
-            response.body.should be_json_eql("{\"at\": #{params[:feed][:at]},\"data\": #{values.to_json}, \"tz\": \"Eastern Time (US & Canada)\"}")
+            response.body.should be_json_eql("{\"at\": \"2013-11-14T03:56:06Z\",\"data\": #{values.to_json}, \"tz\": \"Eastern Time (US & Canada)\"}")
          end
       end   
    end

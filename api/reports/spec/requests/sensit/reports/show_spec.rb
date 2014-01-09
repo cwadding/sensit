@@ -18,7 +18,10 @@ describe "GET sensit/reports#show" do
 
 		it "returns the expected json" do
 			process_request(@report)
-			response.body.should be_json_eql("{\"name\":\"#{@report.name}\",\"query\":{\"match_all\":{}},\"facets\":#{@report.facets.to_json}}")
+			facet_arr = @report.facets.inject([]) do |facet_arr, facet|
+				facet_arr << "{\"body\":#{facet.body.to_json}, \"name\":\"#{facet.name}\"}"
+			end
+			response.body.should be_json_eql("{\"name\":\"#{@report.name}\",\"query\":{\"match_all\":{}},\"facets\":[#{facet_arr.join(',')}]}")
 		end
 
 	end
