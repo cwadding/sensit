@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'rabl', '0.8.4'
   s.add_dependency 'versioncake', '1.0.0'
   s.add_dependency 'kaminari', '~>0.15.0'
-  
+  s.add_dependency 'foreigner', '~>1.6.0'  
   s.add_dependency 'rubyzip', '~> 1.1.0'
   s.add_dependency "elasticsearch", "~> 0.4.1"
   s.add_dependency 'roo', "~> 1.13.0"

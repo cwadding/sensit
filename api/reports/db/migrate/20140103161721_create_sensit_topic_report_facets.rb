@@ -4,6 +4,7 @@ class CreateSensitTopicReportFacets < ActiveRecord::Migration
       t.string :name
       t.text :body
       t.integer :report_id
+      t.foreign_key :reports, dependent: :delete
       t.timestamps
     end
   end

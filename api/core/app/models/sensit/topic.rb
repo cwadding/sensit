@@ -11,13 +11,11 @@ module Sensit
 	delegate :name, :to => :node, :prefix => true
 
 	def feeds(params = nil)
-		
-      if params.nil?
-        Topic::Feed.search({index: elastic_index_name, type: elastic_type_name, body: { query: { term: { topic_id: self.id } } }})
-      else
-		params.deep_merge!({ query: { term: { topic_id: self.id } } })
-        Topic::Feed.search({index: elastic_index_name, type: elastic_type_name, body: params})
-      end
+		body = params[:body] || {:query => {"match_all" => {  }}}
+        sort = params[:sort] || "at:asc"
+        per = params[:per] || 10
+        from = ((params[:page]-1) || 0) * per
+        Topic::Feed.search({index: elastic_index_name, type: elastic_type_name, body: body, sort: sort, size: per, from: from})
 	end
 
 	def create_index

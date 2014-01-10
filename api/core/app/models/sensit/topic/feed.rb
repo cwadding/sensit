@@ -10,7 +10,7 @@ module Sensit
 	# include ElasticUniquenessValidator
   	define_model_callbacks :create, :update, :save
 
-  	attr_accessor :at, :values, :topic_id
+  	attr_accessor :at, :values
 	attr_reader :errors, :id, :type, :index
 
 	def initialize(params={})
@@ -28,7 +28,7 @@ module Sensit
 
 	validates :index, presence: true
 	validates :type, presence: true
-	validates :topic_id, presence: true
+	# validates :topic_id, presence: true
 	validates :at, presence: true, elastic_uniqueness: {scope: [:topic_id]}
 	validates :values, presence: true
 
@@ -89,7 +89,7 @@ module Sensit
 
 	def topic=(record)
 		raise ::TypeError.new("Not a Topic") unless record.instance_of? Topic
-		self.topic_id = record.id
+		self.type = record.id
 	end
 
   	# delegate :fields, :to => :topic, :prefix => false
@@ -113,7 +113,7 @@ module Sensit
 
 	def to_hash
 		body = self.values.clone
-		body.merge!({at:self.at.to_f, tz: (self.at.time_zone.name || "UTC"), topic_id:self.topic_id})
+		body.merge!({at:self.at.to_f, tz: (self.at.time_zone.name || "UTC")})
 	end
 
 private
@@ -122,9 +122,8 @@ private
 		t = result["_source"].delete("at")
 		tz = result["_source"].delete("tz")
 		at = Time.at(t) unless t.nil?
-		topic_id = result["_source"].delete("topic_id")
 		body = result["_source"]
-		obj = self.new({index: result["_index"], type: result["_type"], at: at, tz: tz, topic_id: topic_id, values: body})
+		obj = self.new({index: result["_index"], type: result["_type"], at: at, tz: tz, values: body})
 		obj.instance_variable_set(:@id, result["_id"])
 		obj.instance_variable_set(:@new_record, false)
 		obj

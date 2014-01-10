@@ -1,6 +1,5 @@
 API
 	Core
-		- Write tests to ensure that :at attribute is a utc time and can be set by a string, object or number and the time is mapped to the correct time zone so there is no tz attribute but still stores the tz attribute
 		- Be able to search feeds (use the the subset of queries from the percolator for strong parameters)
 		- parent child relationships (ancestry gem)		
 		- Importing of data in XML, OR CSV		
