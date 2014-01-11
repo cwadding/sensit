@@ -24,7 +24,7 @@ module Sensit
 					@report.stub(:elastic_client).and_return(@client)
 				end
 				it "returns true" do
-					@report.valid_query.should be_true
+					@report.valid_query?.should be_true
 				end
 			end
 			context "with invalid query" do
@@ -35,11 +35,11 @@ module Sensit
 					@report.stub(:elastic_client).and_return(@client)
 				end
 				it "returns false" do
-					@report.valid_query.should be_false
+					@report.valid_query?.should be_false
 				end
 
 				it "sets the errors" do
-					@report.valid_query
+					@report.valid_query?
 					@report.errors.messages.should include(:twitter)
 					@report.errors.messages[:twitter] == "org.elasticsearch.index.query.QueryParsingException: [twitter] Failed to parse; org.elasticsearch.ElasticSearchParseException: failed to parse date field [foo], tried both date format [dateOptionalTime], and timestamp number; java.lang.IllegalArgumentException: Invalid format: \"foo\""
 				end

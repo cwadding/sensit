@@ -6,7 +6,7 @@
 			# POST /topic/1/feeds
 			def create
 				if params.has_key?(:feeds)
-					importer = ::Sensit::Topic::Feed::Importer.new({index: elastic_index_name, type: elastic_type_name, :topic_id => topic.id, :fields => fields, :feeds => feeds_params})
+					importer = ::Sensit::Topic::Feed::Importer.new({index: elastic_index_name, type: elastic_type_name, :fields => fields, :feeds => feeds_params})
 					@feeds = importer.feeds
 					if importer.save
 						@fields = fields
@@ -15,7 +15,7 @@
 						render(:json => "{\"errors\":#{importer.errors.to_json}}", :status => :unprocessable_entity)
 					end
 				else
-					@feed = ::Sensit::Topic::Feed.new(feed_params.merge!({index: elastic_index_name, type: elastic_type_name, :topic_id => topic.id})) 
+					@feed = ::Sensit::Topic::Feed.new(feed_params.merge!({index: elastic_index_name, type: elastic_type_name})) 
 					if @feed.save
 						respond_with(@feed,:status => 200, :template => "sensit/feeds/show")
 					else

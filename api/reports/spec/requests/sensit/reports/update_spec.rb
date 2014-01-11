@@ -2,12 +2,12 @@ require 'spec_helper'
 describe "PUT sensit/reports#update" do
 
 	before(:each) do
-		@report = FactoryGirl.create(:report, :name => "My Report")
+		@report = FactoryGirl.create(:report, :name => "My Report", :topic => FactoryGirl.create(:topic_with_feeds))
 	end
 
 
 	def process_request(report, params)
-		put "/api/topics/#{report.topic.to_param}/reports/#{report.id}", valid_request(params), valid_session
+		put "/api/topics/#{report.topic.to_param}/reports/#{report.to_param}", valid_request(params), valid_session
 	end
 
 	context "with correct attributes" do
@@ -20,7 +20,7 @@ describe "PUT sensit/reports#update" do
 			}
 			# :facets => { "statistical" => { "field" => "num2"}}
 		end
-		it "returns a 200 status code" do
+		it "returns a 200 status code", :current => true do
 			status = process_request(@report, @params)
 			status.should == 200
 		end
@@ -29,10 +29,11 @@ describe "PUT sensit/reports#update" do
 			process_request(@report, @params)
 			expect(response).to render_template(:show)
 			facet_arr = @report.facets.inject([]) do |facet_arr, facet|
-				facet_arr << "{\"body\":#{facet.body.to_json}, \"name\":\"#{facet.name}\"}"
+				facet_arr << "{\"query\":#{facet.query.to_json}, \"name\":\"#{facet.name}\"}"
 			end
-			response.body.should be_json_eql("{\"name\": \"#{@params[:report][:name]}\",\"query\":{\"match_all\":{}},\"facets\": [#{facet_arr.join(',')}]}")
+			response.body.should be_json_eql("{\"name\": \"#{@params[:report][:name]}\",\"query\":{\"match_all\":{}},\"total\": 6,\"facets\": [{\"missing\": 0,\"name\": \"My Reportfacet\",\"query\": {\"terms\": {\"field\": \"value1\"}},\"results\": [{\"count\": 2,\"term\": 2},{\"count\": 2,\"term\": 1},{\"count\": 2,\"term\": 0}],\"total\": 6}]}")
 		end
+
 	end
 	# #{@params[:report][:facets].to_json}
 end

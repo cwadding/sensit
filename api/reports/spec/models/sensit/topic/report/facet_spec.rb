@@ -6,6 +6,6 @@ module Sensit
     it { should validate_presence_of(:name) }
     it { should validate_uniqueness_of(:name).scoped_to(:report_id) }
 
-    it { should validate_presence_of(:body) }
+    it { should validate_presence_of(:query) }
   end
 end

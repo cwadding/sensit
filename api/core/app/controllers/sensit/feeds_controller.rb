@@ -14,7 +14,7 @@ module Sensit
     def create
       if params.has_key?(:feeds)
         topic = Topic.find(params[:topic_id])
-        importer = Topic::Feed::Importer.new({index: elastic_index_name, type: elastic_type_name, :topic_id => topic.id, :feeds => feeds_params})
+        importer = Topic::Feed::Importer.new({index: elastic_index_name, type: elastic_type_name, :feeds => feeds_params})
         @feeds = importer.feeds
         if importer.save
           respond_with(@feeds,:status => :created, :template => "sensit/feeds/index")
@@ -23,7 +23,7 @@ module Sensit
         end
       else
         topic = Topic.find(params[:topic_id])
-        @feed = Topic::Feed.new(feed_params.merge!({index: elastic_index_name, type: elastic_type_name, :topic_id => topic.id})) 
+        @feed = Topic::Feed.new(feed_params.merge!({index: elastic_index_name, type: elastic_type_name})) 
         if @feed.save
           respond_with(@feed,:status => :created, :template => "sensit/feeds/show")
         else

@@ -1,5 +1,5 @@
 object @report
-attribute :name, :query
+attribute :name, :total, :query
 child :facets do
-	attribute :name, :body
+	attribute :name, :query, :total, :missing, :results
 end

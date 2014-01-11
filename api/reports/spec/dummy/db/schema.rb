@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140108014256) do
+ActiveRecord::Schema.define(version: 20140111003103) do
 
   create_table "sensit_topic_fields", force: true do |t|
     t.string   "name"
@@ -26,7 +26,8 @@ ActiveRecord::Schema.define(version: 20140108014256) do
 
   create_table "sensit_topic_report_facets", force: true do |t|
     t.string   "name"
-    t.text     "body"
+    t.string   "slug"
+    t.text     "query"
     t.integer  "report_id"
     t.datetime "created_at"
     t.datetime "updated_at"

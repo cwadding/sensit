@@ -8,7 +8,7 @@ describe "GET sensit/reports#show" do
 
 	context "when the report exists" do
 		before(:each) do
-			@report = FactoryGirl.create(:report)
+			@report = FactoryGirl.create(:report, :topic => FactoryGirl.create(:topic_with_feeds))
 		end
 
 		it "is successful" do
@@ -18,12 +18,11 @@ describe "GET sensit/reports#show" do
 
 		it "returns the expected json" do
 			process_request(@report)
-			facet_arr = @report.facets.inject([]) do |facet_arr, facet|
-				facet_arr << "{\"body\":#{facet.body.to_json}, \"name\":\"#{facet.name}\"}"
-			end
-			response.body.should be_json_eql("{\"name\":\"#{@report.name}\",\"query\":{\"match_all\":{}},\"facets\":[#{facet_arr.join(',')}]}")
+			# facet_arr = @report.facets.inject([]) do |facet_arr, facet|
+			# 	facet_arr << "{\"query\":#{facet.query.to_json}, \"name\":\"#{facet.name}\"}"
+			# end
+			response.body.should be_json_eql("{\"name\":\"#{@report.name}\",\"query\":{\"match_all\":{}},\"total\": 6,\"facets\":[{\"missing\": 0,\"name\": \"Report11facet\",\"query\": {\"terms\": {\"field\": \"value1\"}},\"results\": [{\"count\": 2,\"term\": 2},{\"count\": 2,\"term\": 1},{\"count\": 2,\"term\": 0}],\"total\": 6}]}")
 		end
-
 	end
 
 	context "when the field does not exist" do
