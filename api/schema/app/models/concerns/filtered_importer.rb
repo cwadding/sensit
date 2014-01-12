@@ -17,7 +17,7 @@
 						values = temp_fields.inject({}) {|h,field| h.merge!(field.key => field.convert(row[header.index(field.key)]))}
 						at = row[header.index("at")]
 						tz = row[header.index("tz")]
-						feed_arr << ::Sensit::Topic::Feed.new({index: self.index, type: self.type, topic_id: self.topic_id, at: at, tz: tz, values: values})
+						feed_arr << ::Sensit::Topic::Feed.new({index: self.index, type: self.type, at: at, tz: tz, values: values})
 					end
 				end
 				feed_arr.uniq {|feed| feed.at}

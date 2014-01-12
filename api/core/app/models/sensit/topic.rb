@@ -86,7 +86,7 @@ private
 		Rails.env.test? ? ELASTIC_SEARCH_INDEX_NAME : self.id.to_s
 	end
 	def elastic_type_name
-		Rails.env.test? ? ELASTIC_SEARCH_INDEX_TYPE : self.id.to_s
+		self.to_param
 	end   
   end
 end

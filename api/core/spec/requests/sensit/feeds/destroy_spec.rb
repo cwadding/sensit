@@ -12,7 +12,7 @@ describe "DELETE sensit/feeds#destroy" do
 			@feed = @topic.feeds.first
 		end
 		
-		it "is successful" do
+		it "is successful", :current => true do
 			status = process_request(@topic)
 			status.should == 204
 		end

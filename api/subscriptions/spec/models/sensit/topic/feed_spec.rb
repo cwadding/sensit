@@ -6,8 +6,8 @@ module Sensit
 		describe "#create" do
 			before(:each) do
 				@indices_client = Elasticsearch::API::Indices::IndicesClient.new(@client)
-				@feed = Topic::Feed.new({index: 'myindex', type: 'mytype', topic_id: 3, at: Time.now, values: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}})
-				# @params = {index: 'myindex', type: 'mytype', topic_id: 3, at: Time.now, values: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}}
+				@feed = Topic::Feed.new({index: 'myindex', type: 'mytype', at: Time.now, values: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}})
+				# @params = {index: 'myindex', type: 'mytype', at: Time.now, values: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}}
 				# {index: 'myindex',type: 'mytype', body: {title: 'Test 1',tags: ['y', 'z'], published: true, published_at: Time.now.utc.iso8601, counter: 1}}
 			end
 			# context "when the index doesn't exist (called for first time)" do
@@ -28,7 +28,7 @@ module Sensit
 				end
 				context "with valid response" do
 					it "executes the elastic create action" do
-						@client.should_receive(:create).with({:index=>"myindex", :type=>"mytype", :body=>{:title=>"Test 1", :tags=>["y", "z"], :published=>true, :counter=>1, :at=>@feed.at.utc.to_f, :tz=>"UTC", :topic_id=>3}}).and_return({"ok"=>true, "_index"=>'myindex', "_type"=>'mytype', "_id"=>"8eI2kKfwSymCrhqkjnGYiA", "_version"=>1})
+						@client.should_receive(:create).with({:index=>"myindex", :type=>"mytype", :body=>{:title=>"Test 1", :tags=>["y", "z"], :published=>true, :counter=>1, :at=>@feed.at.utc.to_f, :tz=>"UTC"}}).and_return({"ok"=>true, "_index"=>'myindex', "_type"=>'mytype', "_id"=>"8eI2kKfwSymCrhqkjnGYiA", "_version"=>1})
 						@feed.stub(:faye_broadcast).and_return(true)
 						@feed.stub(:percolate).and_return({"ok" => true, "matches" => []})
 						Topic::Feed.stub(:elastic_client).and_return(@client)
@@ -53,7 +53,7 @@ module Sensit
 								before(:each) do
 									@feed.stub(:percolate).and_return({"ok" => true, "matches" => ["foobar"]})
 								end
-								it "broadcasts the match", :current => true do
+								it "broadcasts the match" do
 									@feed.should_receive(:faye_broadcast).with("foobar").and_return(true)
 									@feed.send(:create)
 								end

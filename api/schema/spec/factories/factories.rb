@@ -34,7 +34,7 @@ FactoryGirl.define do
         evaluator.feeds_count.times do |i|
           values = evaluator.field_keys.inject({}) {|h, key| h.merge!(key => i)}
           client = ::Elasticsearch::Client.new
-          Sensit::Topic::Feed.create({index: ELASTIC_SEARCH_INDEX_NAME, type: ELASTIC_SEARCH_INDEX_TYPE, at: Time.now, :tz => "UTC", values: values})
+          Sensit::Topic::Feed.create({index: ELASTIC_SEARCH_INDEX_NAME, type: topic.to_param, at: Time.now, :tz => "UTC", values: values})
           client.indices.refresh(:index => ELASTIC_SEARCH_INDEX_NAME)
         end
       end

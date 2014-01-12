@@ -12,7 +12,7 @@ describe "GET sensit/topics#index" do
 		end  
 	end
 
-	context "with a single topic", :current => true do
+	context "with a single topic" do
 		before(:each) do
 			@topic = FactoryGirl.create(:topic_with_feeds, :description => "topic description")
 		end

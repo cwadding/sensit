@@ -33,17 +33,17 @@ describe "POST sensit/feeds#create"  do
             end
             params = {
                :feeds => [{
-                  :at => '2013-12-12T21:00:15Z',
+                  :at => '2013-12-12T21:00:15.000Z',
                   :tz => "Eastern Time (US & Canada)",
                   :values => value_set1
                },
                {
-                  :at => '2013-12-13T21:00:15Z',
+                  :at => '2013-12-13T21:00:15.000Z',
                   :tz => "Eastern Time (US & Canada)",
                   :values => value_set2
                },
                {
-                  :at => '2013-12-14T21:00:15Z',
+                  :at => '2013-12-14T21:00:15.000Z',
                   :tz => "Eastern Time (US & Canada)",
                   :values => value_set3
                }
@@ -65,17 +65,17 @@ describe "POST sensit/feeds#create"  do
             end
             params = {
                :feeds => [{
-                  :at => '2013-12-12T21:00:15Z',
+                  :at => '2013-12-12T21:00:15.000Z',
                   :tz => "Eastern Time (US & Canada)",
                   :values => value_set1
                },
                {
-                  :at => '2013-12-13T21:00:15Z',
+                  :at => '2013-12-13T21:00:15.000Z',
                   :tz => "Eastern Time (US & Canada)",
                   :values => value_set2
                },
                {
-                  :at => '2013-12-14T21:00:15Z',
+                  :at => '2013-12-14T21:00:15.000Z',
                   :tz => "Eastern Time (US & Canada)",
                   :values => value_set3
                }

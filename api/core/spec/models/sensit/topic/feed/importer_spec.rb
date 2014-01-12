@@ -83,7 +83,7 @@ module Sensit
 
 			# context "Unknown format" do
 			# 	it "throws an exception" do
-			# 		importer = Topic::Feed::Importer.new({index: ELASTIC_SEARCH_INDEX_NAME, type: ELASTIC_SEARCH_INDEX_TYPE, :topic_id => @topic.id, :feeds => fixture_file_upload("#{RSpec.configuration.fixture_path}/files/somefile.asd", 'text/csv'), :fields => @topic.fields})
+			# 		importer = Topic::Feed::Importer.new({index: ELASTIC_SEARCH_INDEX_NAME, type: @topic.to_param :feeds => fixture_file_upload("#{RSpec.configuration.fixture_path}/files/somefile.asd", 'text/csv'), :fields => @topic.fields})
 			# 		expect {
 			# 			importer.open_spreadsheet
 			# 		}.to raise_error(RuntimeError) #: Unknown file type: foo.asd"Unknown file type: asd")

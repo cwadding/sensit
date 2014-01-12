@@ -20,7 +20,7 @@ describe "GET sensit/reports#index" do
 			# facet_arr = @report.facets.inject([]) do |facet_arr, facet|
 			# 	facet_arr << "{\"query\":#{facet.query.to_json}, \"name\":\"#{facet.name}\"}"
 			# end
-			response.body.should be_json_eql("{\"reports\": [{\"name\":\"#{@report.name}\",\"query\":{\"match_all\":{}},\"total\":6,\"facets\":[{\"missing\": 0,\"name\": \"My Reportfacet\",\"query\": {\"terms\": {\"field\": \"value1\"}},\"results\": [{\"count\": 2,\"term\": 2},{\"count\": 2,\"term\": 1},{\"count\": 2,\"term\": 0}],\"total\": 6}	]}]}")
+			response.body.should be_json_eql("{\"reports\": [{\"name\":\"#{@report.name}\",\"query\":{\"match_all\":{}},\"total\":3,\"facets\":[{\"missing\": 0,\"name\": \"My Reportfacet\",\"query\": {\"terms\": {\"field\": \"value1\"}},\"results\": [{\"count\": 1,\"term\": 2},{\"count\": 1,\"term\": 1},{\"count\": 1,\"term\": 0}],\"total\": 3}	]}]}")
 		end
 	end
 
@@ -37,7 +37,7 @@ describe "GET sensit/reports#index" do
 			# facet_arr = report.facets.inject([]) do |facet_arr, facet|
 			# 	facet_arr << "{\"query\":#{facet.query.to_json}, \"name\":\"#{facet.name}\"}"
 			# end
-			response.body.should be_json_eql("{\"reports\": [{\"name\":\"R3\",\"query\":{\"match_all\":{}}, \"total\": 9,\"facets\":[{\"missing\": 0,\"name\": \"R3facet\",\"query\": {\"terms\": {\"field\": \"value1\"}},\"results\": [{\"count\": 3,\"term\": 2},{\"count\": 3,\"term\": 1},{\"count\": 3,\"term\": 0}],\"total\": 9}]}]}")
+			response.body.should be_json_eql("{\"reports\": [{\"name\":\"R3\",\"query\":{\"match_all\":{}}, \"total\": 3,\"facets\":[{\"missing\": 0,\"name\": \"R3facet\",\"query\": {\"terms\": {\"field\": \"value1\"}},\"results\": [{\"count\": 1,\"term\": 2},{\"count\": 1,\"term\": 1},{\"count\": 1,\"term\": 0}],\"total\": 3}]}]}")
 		end
 	end
 end

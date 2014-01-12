@@ -2,7 +2,7 @@ require 'spec_helper'
 describe "DELETE sensit/topics#destroy" do
 
 	def process_request(topic)
-		delete "/api/topics/#{topic.id}", valid_request, valid_session
+		delete "/api/topics/#{topic.to_param}", valid_request, valid_session
 	end
 
 	context "when the node exists" do

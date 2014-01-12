@@ -7,14 +7,14 @@ describe "DELETE sensit/percolators#destroy" do
 
 	context "when the percolator exists" do
 		it "is successful" do
-			@percolator = ::Sensit::Topic::Percolator.create({ type: ELASTIC_SEARCH_INDEX_TYPE, id: "3", body: { query: { query_string: { query: 'foo' } } } })
+			@percolator = ::Sensit::Topic::Percolator.create({ type: "topic_type", id: "3", body: { query: { query_string: { query: 'foo' } } } })
 			status = process_request(@percolator)
 			status.should == 204
 		end
 
 		it "deletes the Percolator" do
 			client = ::Elasticsearch::Client.new
-			@percolator = ::Sensit::Topic::Percolator.create({ type: ELASTIC_SEARCH_INDEX_TYPE, id: "3", body: { query: { query_string: { query: 'foo' } } } })
+			@percolator = ::Sensit::Topic::Percolator.create({ type: "topic_type", id: "3", body: { query: { query_string: { query: 'foo' } } } })
 			client.indices.refresh(:index => ELASTIC_SEARCH_INDEX_NAME)
 			expect {
 				process_request(@percolator)

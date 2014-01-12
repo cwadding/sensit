@@ -24,7 +24,7 @@ describe "POST sensit/reports#create"  do
 			it "returns the expected json" do
 				process_request(@topic, @params)
 				expect(response).to render_template(:show)
-				response.body.should be_json_eql("{\"name\": \"#{@params[:report][:name]}\",\"query\":{\"match_all\":{}},\"facets\":[{\"missing\": 0,\"name\": \"facet1\",\"query\": {\"terms\": {\"field\": \"value1\"}},\"results\": [{\"count\": 2,\"term\": 2},{\"count\": 2,\"term\": 1},{\"count\": 2,\"term\": 0}],\"total\": 6}], \"total\":6}")
+				response.body.should be_json_eql("{\"name\": \"#{@params[:report][:name]}\",\"query\":{\"match_all\":{}},\"facets\":[{\"missing\": 0,\"name\": \"facet1\",\"query\": {\"terms\": {\"field\": \"value1\"}},\"results\": [{\"count\": 1,\"term\": 2},{\"count\": 1,\"term\": 1},{\"count\": 1,\"term\": 0}],\"total\": 3}], \"total\":3}")
 			end
 		end
 		context "with incorrect attributes" do

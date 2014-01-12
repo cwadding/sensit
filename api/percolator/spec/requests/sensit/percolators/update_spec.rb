@@ -8,7 +8,7 @@ describe "PUT sensit/percolators#update" do
 	context "with correct attributes" do
 
 		it "returns a 200 status code" do
-			@percolator = ::Sensit::Topic::Percolator.create({ type: ELASTIC_SEARCH_INDEX_TYPE, id: "5", body: { query: { query_string: { query: 'foo' } } } })
+			@percolator = ::Sensit::Topic::Percolator.create({ type: "topic_type", id: "5", body: { query: { query_string: { query: 'foo' } } } })
 			@params = {
 				:percolator => {
 					:id => "5",
@@ -20,7 +20,7 @@ describe "PUT sensit/percolators#update" do
 		end
 
 		it "returns the expected json" do
-			@percolator = ::Sensit::Topic::Percolator.create({ type: ELASTIC_SEARCH_INDEX_TYPE, id: "6", body: { query: { query_string: { query: 'foo' } } } })
+			@percolator = ::Sensit::Topic::Percolator.create({ type: "topic_type", id: "6", body: { query: { query_string: { query: 'foo' } } } })
 			@params = {
 				:percolator => {
 					:id => "6",
