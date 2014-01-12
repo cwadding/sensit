@@ -10,8 +10,8 @@ module Sensit
 	# include ElasticUniquenessValidator
   	define_model_callbacks :create, :update, :save
 
-  	attr_accessor :at, :values
-	attr_reader :errors, :id, :type, :index
+  	attr_accessor :at, :values, :type
+	attr_reader :errors, :id, :index
 
 	def initialize(params={})
     	@new_record = true
@@ -84,7 +84,7 @@ module Sensit
 	end
 
 	def topic
-		@topic ||= Topic.find(self.topic_id)
+		@topic ||= Topic.find(self.type)
 	end
 
 	def topic=(record)

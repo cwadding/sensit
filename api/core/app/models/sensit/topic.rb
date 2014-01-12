@@ -10,12 +10,13 @@ module Sensit
 
 	delegate :name, :to => :node, :prefix => true
 
-	def feeds(params = nil)
+	def feeds(params = {})
 		body = params[:body] || {:query => {"match_all" => {  }}}
         sort = params[:sort] || "at:asc"
         per = params[:per] || 10
-        from = ((params[:page]-1) || 0) * per
-        Topic::Feed.search({index: elastic_index_name, type: elastic_type_name, body: body, sort: sort, size: per, from: from})
+        from = ((params[:page] || 1)-1) * per
+        # Sort is not included right now because it causes an exception when there are no documents in the index
+        Topic::Feed.search({index: elastic_index_name, type: elastic_type_name, body: body, size: per, from: from})
 	end
 
 	def create_index

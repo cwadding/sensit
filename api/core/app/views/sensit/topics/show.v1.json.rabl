@@ -1,6 +1,6 @@
 object @topic
 attribute :id, :name, :description
-node :feeds do
-	collection @topic.feeds(params)
+
+child @topic.feeds(params) => :feeds do
 	extends "sensit/feeds/show"
-end
+end unless @topic.blank?

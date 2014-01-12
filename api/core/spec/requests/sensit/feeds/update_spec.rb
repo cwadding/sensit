@@ -32,7 +32,7 @@ describe "PUT sensit/feeds#update" do
 			data_arr = values.inject([]) do |arr, (key, value)|
 				arr << "\"#{key}\": \"#{value}\""
 			end
-			response.body.should be_json_eql("{\"at\": \"#{@topic.feeds.first.at.utc.iso8601}\",\"data\": {#{data_arr.join(',')}},\"tz\":\"UTC\"}")
+			response.body.should be_json_eql("{\"at\": \"#{@topic.feeds.first.at.utc.strftime("%Y-%m-%dT%H:%M:%S.%3NZ")}\",\"data\": {#{data_arr.join(',')}},\"tz\":\"UTC\"}")
 		end
 
 		it "returns a 200 status code" do

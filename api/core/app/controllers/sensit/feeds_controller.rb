@@ -15,8 +15,8 @@ module Sensit
       if params.has_key?(:feeds)
         topic = Topic.find(params[:topic_id])
         importer = Topic::Feed::Importer.new({index: elastic_index_name, type: elastic_type_name, :feeds => feeds_params})
-        @feeds = importer.feeds
         if importer.save
+          @feeds = importer.feeds
           respond_with(@feeds,:status => :created, :template => "sensit/feeds/index")
         else
           render(:json => "{\"errors\":#{importer.errors.to_json}}", :status => :unprocessable_entity)

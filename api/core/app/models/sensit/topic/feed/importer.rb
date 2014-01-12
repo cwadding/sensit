@@ -8,7 +8,6 @@ module Sensit
     attr_reader :feeds
     attr_accessor :index
     attr_accessor :type
-    attr_accessor :topic_id
 
     def initialize(attributes = {})
       attributes.each { |name, value| send("#{name}=", value) }
@@ -17,7 +16,7 @@ module Sensit
     def feeds=(value)
       if value.is_a?(Array)
           @feeds = value.inject([]) do |arr, body|
-            arr << Topic::Feed.new(body.merge!({index: self.index, type: self.type, :topic_id => self.topic_id}))
+            arr << Topic::Feed.new(body.merge!({index: self.index, type: self.type}))
           end
       elsif value.is_a?(ActionDispatch::Http::UploadedFile)
         @feeds = load_feeds(value)
@@ -55,7 +54,7 @@ private
           values = header.inject({}) {|h,field| h.merge!(field => row[header.index(field)])}
           at = row[header.index("at")]
           tz = row[header.index("tz")]
-          feed_arr << Topic::Feed.new({index: self.index, type: self.type, topic_id: self.topic_id, at: at, tz: tz, values: values})
+          feed_arr << Topic::Feed.new({index: self.index, type: self.type, at: at, tz: tz, values: values})
         end
       end
       feed_arr.uniq {|feed| feed.at}

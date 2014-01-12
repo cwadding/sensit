@@ -1,6 +1,2 @@
-object false
-
-node :feeds do
-	collection @feeds
-	extends "sensit/feeds/show"
-end
+collection @feeds => :feeds
+extends "sensit/feeds/show"

@@ -2,7 +2,7 @@ object @feed
 attributes :id
 
 node :at do |u|
-	u.at.utc.iso8601
+	u.at.utc.strftime("%Y-%m-%dT%H:%M:%S.%3NZ")
 end
 
 node :tz do |u|

@@ -12,7 +12,7 @@ describe "GET sensit/topics#index" do
 		end  
 	end
 
-	context "with a single topic" do
+	context "with a single topic", :current => true do
 		before(:each) do
 			@topic = FactoryGirl.create(:topic_with_feeds, :description => "topic description")
 		end
@@ -23,13 +23,13 @@ describe "GET sensit/topics#index" do
 
 		it "returns the expected json" do
 			process_request
-			feeds_arr = @topic.feeds.inject([]) do |arr1, feed|
-				data_arr = feed.values.inject([]) do |arr2, (key, value)|
-					arr2 << "\"#{key}\":#{value}"
-				end
-				arr1 << "{\"at\":\"#{feed.at.iso8601}\",\"data\":{#{data_arr.join(',')}}}"
-			end
-			response.body.should be_json_eql("{\"topics\":[{\"id\":#{@topic.id},\"name\":\"#{@topic.name}\",\"description\":\"topic description\",\"feeds\":[#{feeds_arr.join(",")}]}]}")
+			# feeds_arr = @topic.feeds.inject([]) do |arr1, feed|
+			# 	data_arr = feed.values.inject([]) do |arr2, (key, value)|
+			# 		arr2 << "\"#{key}\":#{value}"
+			# 	end
+			# 	arr1 << "{\"at\":\"#{feed.at.strftime("%Y-%m-%dT%H:%M:%S.%3NZ")}\",\"data\":{#{data_arr.join(',')}}}"
+			# end
+			response.body.should be_json_eql("{\"topics\":[{\"id\":#{@topic.id},\"name\":\"#{@topic.name}\",\"description\":\"topic description\"}]}")
 		end  
 	end
 
@@ -44,9 +44,9 @@ describe "GET sensit/topics#index" do
 				data_arr = feed.values.inject([]) do |arr2, (key, value)|
 					arr2 << "\"#{key}\":#{value}"
 				end
-				arr1 << "{\"at\":\"#{feed.at.iso8601}\",\"data\":{#{data_arr.join(',')}}}"
+				arr1 << "{\"at\":\"#{feed.at.strftime("%Y-%m-%dT%H:%M:%S.%3NZ")}\",\"data\":{#{data_arr.join(',')}}}"
 			end
-			response.body.should be_json_eql("{\"topics\":[{\"id\":#{topic.id},\"name\":\"#{topic.name}\",\"description\": null,\"feeds\":[#{feeds_arr.join(",")}]}]}")
+			response.body.should be_json_eql("{\"topics\":[{\"id\":#{topic.id},\"name\":\"#{topic.name}\",\"description\": null}]}")
 		end  
 	end
 

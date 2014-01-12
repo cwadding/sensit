@@ -33,17 +33,17 @@ describe "POST sensit/feeds#create"  do
             end
             params = {
                :feeds => [{
-                  :at => '2013-12-12T21:00:15Z',
+                  :at => '2013-12-12T21:00:15.000Z',
                   :tz => "Eastern Time (US & Canada)",
                   :values => value_set1
                },
                {
-                  :at => '2013-12-13T21:00:15Z',
+                  :at => '2013-12-13T21:00:15.000Z',
                   :tz => "Eastern Time (US & Canada)",
                   :values => value_set2
                },
                {
-                  :at => '2013-12-14T21:00:15Z',
+                  :at => '2013-12-14T21:00:15.000Z',
                   :tz => "Eastern Time (US & Canada)",
                   :values => value_set3
                }
@@ -83,7 +83,7 @@ describe "POST sensit/feeds#create"  do
             }
             process_request(@topic, params)
             expect(response).to render_template(:index)
-            response.body.should be_json_eql("{\"feeds\":[{\"at\": \"2013-12-12T21:00:15Z\",\"data\": #{value_set1.to_json}, \"tz\": \"Eastern Time (US & Canada)\"}, {\"at\": \"2013-12-13T21:00:15Z\",\"data\": #{value_set2.to_json}, \"tz\": \"Eastern Time (US & Canada)\"}, {\"at\": \"2013-12-14T21:00:15Z\",\"data\": #{value_set3.to_json}, \"tz\": \"Eastern Time (US & Canada)\"}]}")
+            response.body.should be_json_eql("{\"feeds\":[{\"at\": \"2013-12-12T21:00:15.000Z\",\"data\": #{value_set1.to_json}, \"tz\": \"Eastern Time (US & Canada)\"}, {\"at\": \"2013-12-13T21:00:15.000Z\",\"data\": #{value_set2.to_json}, \"tz\": \"Eastern Time (US & Canada)\"}, {\"at\": \"2013-12-14T21:00:15.000Z\",\"data\": #{value_set3.to_json}, \"tz\": \"Eastern Time (US & Canada)\"}]}")
          end
       end
    end
@@ -176,7 +176,7 @@ describe "POST sensit/feeds#create"  do
             process_request(@topic, params)
             expect(response).to render_template(:show)
             
-            response.body.should be_json_eql("{\"at\": \"2013-11-14T03:56:06Z\",\"data\": #{values.to_json},\"tz\": \"UTC\"}")
+            response.body.should be_json_eql("{\"at\": \"2013-11-14T03:56:06.000Z\",\"data\": #{values.to_json},\"tz\": \"UTC\"}")
          end
 
          context "on first commit of fields" do
@@ -228,7 +228,7 @@ describe "POST sensit/feeds#create"  do
             process_request(@topic, params)
             expect(response).to render_template(:show)
             
-            response.body.should be_json_eql("{\"at\": \"2013-11-14T03:56:06Z\",\"data\": #{values.to_json}, \"tz\": \"Eastern Time (US & Canada)\"}")
+            response.body.should be_json_eql("{\"at\": \"2013-11-14T03:56:06.000Z\",\"data\": #{values.to_json}, \"tz\": \"Eastern Time (US & Canada)\"}")
          end
       end   
    end

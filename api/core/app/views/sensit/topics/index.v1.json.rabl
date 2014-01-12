@@ -1,2 +1,2 @@
-collection @topics => "topics"
-extends "sensit/topics/show"
+collection @topics => :topics
+attribute :id, :name, :description
