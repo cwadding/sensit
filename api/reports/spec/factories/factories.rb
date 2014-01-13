@@ -2,6 +2,12 @@
 
 FactoryGirl.define do
 
+  factory :user, :class => Sensit::User do
+    sequence :name do |n|
+      "Company#{n}"
+    end
+  end
+
   factory :facet, :class => Sensit::Topic::Report::Facet do
     sequence :name do |n|
       "Facet#{n}"
@@ -26,7 +32,7 @@ FactoryGirl.define do
     sequence :name do |n|
       "Topic#{n}"
     end
-
+    user
     factory :topic_with_feeds do
 
       ignore do
@@ -37,8 +43,8 @@ FactoryGirl.define do
         key_arr = []
         evaluator.feeds_count.times do |i|
           client = ::Elasticsearch::Client.new
-          Sensit::Topic::Feed.create({index: ELASTIC_SEARCH_INDEX_NAME, type: topic.to_param, at: Time.now, :tz => "UTC", values: {value1: i}})
-          client.indices.refresh(:index => ELASTIC_SEARCH_INDEX_NAME)
+          Sensit::Topic::Feed.create({index: topic.user.to_param, type: topic.to_param, at: Time.now, :tz => "UTC", values: {value1: i}})
+          client.indices.refresh(:index => topic.user.to_param)
         end
       end
     end

@@ -2,21 +2,23 @@ require 'spec_helper'
 describe "GET sensit/percolators#show" do
 
 	def process_request(percolator)
-		get "/api/topics/#{percolator.type}/percolators/#{percolator.id}", valid_request, valid_session
+		get "/api/topics/#{percolator.topic.to_param}/percolators/#{percolator.id}", valid_request, valid_session(percolator.topic.user.to_param)
 	end
 
-
+	before(:each) do
+		@topic = FactoryGirl.create(:topic, user: @user)
+	end
 	context "when the percolator exists" do
 		it "is successful" do
-			percolator = ::Sensit::Topic::Percolator.create({ type: "topic_type", id: "foo", body: { query: { query_string: { query: 'foo' } } } })
+			percolator = ::Sensit::Topic::Percolator.create({ topic: @topic, name: "foo", query: { query: { query_string: { query: 'foo' } } } })
 			status = process_request(percolator)
 			status.should == 200
 		end
 
 		it "returns the expected json" do
-			percolator = ::Sensit::Topic::Percolator.create({ type: "topic_type", id: "bar", body: { query: { query_string: { query: 'bar' } } } })
+			percolator = ::Sensit::Topic::Percolator.create({ topic: @topic, name: "bar", query: { query: { query_string: { query: 'bar' } } } })
 			process_request(percolator)
-			response.body.should be_json_eql("{\"id\":\"#{percolator.id}\",\"body\":#{percolator.body.to_json}}")
+			response.body.should be_json_eql("{\"name\":\"#{percolator.id}\",\"query\":#{percolator.query.to_json}}")
 		end
 
 	end

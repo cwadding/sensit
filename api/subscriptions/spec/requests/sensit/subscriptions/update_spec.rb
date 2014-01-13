@@ -1,13 +1,14 @@
 require 'spec_helper'
 describe "PUT sensit/subscriptions#update" do
 
-	before(:each) do
-		@subscription = FactoryGirl.create(:subscription)
-	end
+		before(:each) do
+			topic = FactoryGirl.create(:topic, :user => @user)
+			@subscription = FactoryGirl.create(:subscription, :topic => topic)
+		end
 
 
 	def process_request(subscription, params)
-		put "/api/topics/#{subscription.topic.to_param}/subscriptions/#{subscription.to_param}", valid_request(params), valid_session
+		put "/api/topics/#{subscription.topic.to_param}/subscriptions/#{subscription.to_param}", valid_request(params), valid_session(user_id: subscription.topic.user.to_param)
 	end
 
 	context "with correct attributes" do

@@ -13,7 +13,6 @@ module Sensit
     # POST /topic/1/feeds
     def create
       if params.has_key?(:feeds)
-        topic = Topic.find(params[:topic_id])
         importer = Topic::Feed::Importer.new({index: elastic_index_name, type: elastic_type_name, :feeds => feeds_params})
         if importer.save
           @feeds = importer.feeds
@@ -22,7 +21,6 @@ module Sensit
           render(:json => "{\"errors\":#{importer.errors.to_json}}", :status => :unprocessable_entity)
         end
       else
-        topic = Topic.find(params[:topic_id])
         @feed = Topic::Feed.new(feed_params.merge!({index: elastic_index_name, type: elastic_type_name})) 
         if @feed.save
           respond_with(@feed,:status => :created, :template => "sensit/feeds/show")
@@ -48,13 +46,6 @@ module Sensit
     end
 
     private
-
-      def elastic_index_name
-        Rails.env.test? ? ELASTIC_SEARCH_INDEX_NAME : params[:topic_id].to_s
-      end
-      def elastic_type_name
-        params[:topic_id].to_s
-      end      
       # Use callbacks to share common setup or constraints between actions.
       def set_feed
         @feed = Topic::Feed.find({index: elastic_index_name, type: elastic_type_name, id:  params[:id].to_s})

@@ -2,12 +2,13 @@ require 'spec_helper'
 describe "DELETE sensit/subscriptions#destroy" do
 
 	def process_request(subscription)
-		delete "/api/topics/#{subscription.topic.to_param}/subscriptions/#{subscription.to_param}", valid_request, valid_session
+		delete "/api/topics/#{subscription.topic.to_param}/subscriptions/#{subscription.to_param}", valid_request, valid_session(user_id: subscription.topic.user.to_param)
 	end
 
 	context "when the subscription exists" do
 		before(:each) do
-          @subscription = FactoryGirl.create(:subscription)
+			topic = FactoryGirl.create(:topic, :user => @user)
+			@subscription = FactoryGirl.create(:subscription, :topic => topic)
 		end
 		it "is successful" do
 			status = process_request(@subscription)
@@ -27,7 +28,7 @@ describe "DELETE sensit/subscriptions#destroy" do
 	context "when the subscription does not exist" do
 		it "is unsuccessful" do
 			expect{
-				status = delete "/api/topics/1/subscriptions/1", valid_request, valid_session
+				status = delete "/api/topics/1/subscriptions/1", valid_request, valid_session(user_id: @user.to_param)
 			}.to raise_error(ActiveRecord::RecordNotFound)
 			#status.should == 404
 		end

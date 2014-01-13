@@ -7,7 +7,7 @@ module Sensit
 
     # GET /subscriptions
     def index
-      topic = Topic.find(params[:topic_id])
+      topic = current_user.topics.find(params[:topic_id])
       @subscriptions = topic.subscriptions
     end
 
@@ -18,7 +18,7 @@ module Sensit
 
     # POST /subscriptions
     def create
-      topic = Topic.find(params[:topic_id])
+      topic = current_user.topics.find(params[:topic_id])
       @subscription = topic.subscriptions.build(subscription_params)
       if @subscription.save
         SubscriptionsWorker.perform_async(@subscription.id)
@@ -48,7 +48,7 @@ module Sensit
     private
       # Use callbacks to share common setup or constraints between actions.
       def set_subscription
-        @subscription = Sensit::Topic::Subscription.find(params[:id])
+        @subscription = current_user.topics.find(params[:topic_id]).subscriptions.find(params[:id])
       end
 
       # Only allow a trusted parameter "white list" through.

@@ -7,7 +7,7 @@ describe "GET sensit/topics#show" do
 
 	context "when the node exists" do
 		before(:each) do
-			@topic = FactoryGirl.create(:topic_with_feeds)
+			@topic = FactoryGirl.create(:topic_with_feeds, user: @user)
 		end
 		it "is successful" do
 			status = process_request(@topic)

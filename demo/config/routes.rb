@@ -1,5 +1,6 @@
 Demo::Application.routes.draw do
 
+  use_doorkeeper
   devise_for :users
   mount Sensit::Core::Engine => "/"
   mount Sensit::Percolator::Engine => "/"

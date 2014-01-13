@@ -2,13 +2,13 @@ require 'spec_helper'
 describe "GET sensit/reports#show" do
 
 	def process_request(report)
-		get "/api/topics/#{report.topic.to_param}/reports/#{report.id}", valid_request, valid_session
+		get "/api/topics/#{report.topic.to_param}/reports/#{report.id}", valid_request, valid_session(:user_id => topic.user.to_param)
 	end
 
 
 	context "when the report exists" do
 		before(:each) do
-			@report = FactoryGirl.create(:report, :topic => FactoryGirl.create(:topic_with_feeds))
+			@report = FactoryGirl.create(:report, :topic => FactoryGirl.create(:topic_with_feeds, user: @user))
 		end
 
 		it "is successful" do
@@ -28,14 +28,14 @@ describe "GET sensit/reports#show" do
 	context "when the field does not exist" do
 		it "is unsuccessful" do
 			expect{
-			status = get "/api/topics/1/reports/1", valid_request, valid_session
+			status = get "/api/topics/1/reports/1", valid_request, valid_session(:user_id => topic.user.to_param)
 			}.to raise_error(ActiveRecord::RecordNotFound)
 			#status.should == 404
 		end
 
 		it "returns the expected json" do
 			expect{
-				get "/api/topics/1/reports/1", valid_request, valid_session
+				get "/api/topics/1/reports/1", valid_request, valid_session(:user_id => topic.user.to_param)
 			}.to raise_error(ActiveRecord::RecordNotFound)
 			#response.body.should be_json_eql("{\"id\":1,\"name\":\"Test node\",\"description\":\"A description of my node\",\"topics\":[]}")
 		end

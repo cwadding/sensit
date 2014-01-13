@@ -33,14 +33,14 @@ module Sensit
       # This should return the minimal set of values that should be in the session
       # in order to pass any filters (e.g. authentication) defined in
       # ::Sensit::PercolatorsController. Be sure to keep this updated too.
-      def valid_session
-        {}
+      def valid_session(params = {})
+        {}.merge!(params)
       end
 
       describe "GET show" do
         it "assigns the requested percolator as @percolator" do
           percolator = ::Sensit::Topic::Percolator.create valid_attributes
-          get :show, valid_request(:id => percolator.id), valid_session
+          get :show, valid_request(:id => percolator.id), valid_session(user_id: @user.to_param)
           assigns(:percolator).id.should eq(percolator.id)
         end
       end
@@ -50,19 +50,19 @@ module Sensit
           it "creates a new ::Sensit::Topic::Percolator" do
             client = ::Elasticsearch::Client.new
             expect {
-              post :create, valid_request(:percolator => { type: "topic_type", :id => "mytest1", :body => {query: { query_string: { query: 'foo' } } }}), valid_session
-              client.indices.refresh(:index => ELASTIC_SEARCH_INDEX_NAME)
+              post :create, valid_request(:percolator => { type: "topic_type", :id => "mytest1", :body => {query: { query_string: { query: 'foo' } } }}), valid_session(user_id: @user.to_param)
+              client.indices.refresh(:index => @user.to_param)
             }.to change{::Sensit::Topic::Percolator.count({ type: "topic_type"})}.by(1)
           end
 
           it "assigns a newly created percolator as @percolator" do
-            post :create, valid_request(:percolator => {  type: "topic_type", :id => "mytest2", :body => {query: { query_string: { query: 'foo' } } } }), valid_session
+            post :create, valid_request(:percolator => {  type: "topic_type", :id => "mytest2", :body => {query: { query_string: { query: 'foo' } } } }), valid_session(user_id: @user.to_param)
             assigns(:percolator).should be_a(::Sensit::Topic::Percolator)
             # assigns(:percolator).should_not be_a_new_record
           end
 
           it "renders to the created percolator" do
-            post :create, valid_request(:percolator => { type: "topic_type", :id => "mytest3", :body => {query: { query_string: { query: 'foo' } } } }), valid_session
+            post :create, valid_request(:percolator => { type: "topic_type", :id => "mytest3", :body => {query: { query_string: { query: 'foo' } } } }), valid_session(user_id: @user.to_param)
             response.should render_template("sensit/percolators/show")
           end
         end
@@ -71,14 +71,14 @@ module Sensit
           it "assigns a newly created but unsaved percolator as @percolator" do
             # Trigger the behavior that occurs when invalid params are submitted
             ::Sensit::Topic::Percolator.any_instance.stub(:save).and_return(false)
-            post :create, valid_request(:percolator => { type: "topic_type", :id => "mytest", :body => {query: { query_string: { query: 'foo' } } }  }), valid_session
+            post :create, valid_request(:percolator => { type: "topic_type", :id => "mytest", :body => {query: { query_string: { query: 'foo' } } }  }), valid_session(user_id: @user.to_param)
             assigns(:percolator).should be_a_new(::Sensit::Topic::Percolator)
           end
 
           it "re-renders the 'new' template" do
             # Trigger the behavior that occurs when invalid params are submitted
             ::Sensit::Topic::Percolator.any_instance.stub(:save).and_return(false)
-            post :create, valid_request(:percolator => { type: "topic_type", :id => "mytest", :body => {query: { query_string: { query: 'foo' } } }  }), valid_session
+            post :create, valid_request(:percolator => { type: "topic_type", :id => "mytest", :body => {query: { query_string: { query: 'foo' } } }  }), valid_session(user_id: @user.to_param)
             response.status.should == 422
           end
         end
@@ -93,18 +93,18 @@ module Sensit
             # receives the :update_attributes message with whatever params are
             # submitted in the request.
             ::Sensit::Topic::Percolator.should_receive(:update).with({"id" => percolator.id, "type" => percolator.type, "body" => {"query" => { "query_string" => { "query" => 'foo' } } }  }).and_return(percolator)
-            put :update, valid_request(:id => percolator.id, :percolator => { :body => {query: { query_string: { query: 'foo' } } }  }), valid_session
+            put :update, valid_request(:id => percolator.id, :percolator => { :body => {query: { query_string: { query: 'foo' } } }  }), valid_session(user_id: @user.to_param)
           end
 
           it "assigns the requested percolator as @percolator" do
             percolator = ::Sensit::Topic::Percolator.create valid_attributes(id:5)
-            put :update, valid_request(:id => percolator.id, :percolator => { :body => {query: { query_string: { query: 'foo' } } }  }), valid_session
+            put :update, valid_request(:id => percolator.id, :percolator => { :body => {query: { query_string: { query: 'foo' } } }  }), valid_session(user_id: @user.to_param)
             assigns(:percolator).id.should == percolator.id
           end
 
           it "renders the percolator" do
             percolator = ::Sensit::Topic::Percolator.create valid_attributes(id:6)
-            put :update, valid_request(:id => percolator.id, :percolator => { :body => {query: { query_string: { query: 'foo' } } }  }), valid_session
+            put :update, valid_request(:id => percolator.id, :percolator => { :body => {query: { query_string: { query: 'foo' } } }  }), valid_session(user_id: @user.to_param)
             response.should render_template("sensit/percolators/show")
           end
         end
@@ -115,7 +115,7 @@ module Sensit
             # Trigger the behavior that occurs when invalid params are submitted
             percolator.stub(:valid?).and_return(false)
             ::Sensit::Topic::Percolator.should_receive(:update).with({"id" => percolator.id, "type" => percolator.type, "body" => {"query" => { "query_string" => { "query" => 'foo' } } }  }).and_return(percolator)
-            put :update, valid_request(:id => percolator.id, :percolator => { :body => {query: { query_string: { query: 'foo' } } }  } ), valid_session
+            put :update, valid_request(:id => percolator.id, :percolator => { :body => {query: { query_string: { query: 'foo' } } }  } ), valid_session(user_id: @user.to_param)
             assigns(:percolator).id.should == percolator.id
           end
 
@@ -125,7 +125,7 @@ module Sensit
             percolator.stub(:valid?).and_return(false)
             ::Sensit::Topic::Percolator.should_receive(:update).with({"id" => percolator.id, "type" => percolator.type, "body" => {"query" => { "query_string" => { "query" => 'foo' } } }  }).and_return(percolator)
 
-            put :update, valid_request(:id => percolator.id, :percolator => { :body => {query: { query_string: { query: 'foo' } } }  } ), valid_session
+            put :update, valid_request(:id => percolator.id, :percolator => { :body => {query: { query_string: { query: 'foo' } } }  } ), valid_session(user_id: @user.to_param)
             response.status.should == 422
           end
         end
@@ -135,16 +135,16 @@ module Sensit
         it "destroys the requested percolator" do
           percolator = ::Sensit::Topic::Percolator.create valid_attributes(id:9)
           client = ::Elasticsearch::Client.new
-          client.indices.refresh(:index => ELASTIC_SEARCH_INDEX_NAME)
+          client.indices.refresh(:index => @user.to_param)
           expect {
-            delete :destroy, valid_request(:id => percolator.id), valid_session
-            client.indices.refresh(:index => ELASTIC_SEARCH_INDEX_NAME)
+            delete :destroy, valid_request(:id => percolator.id), valid_session(user_id: @user.to_param)
+            client.indices.refresh(:index => @user.to_param)
           }.to change{::Sensit::Topic::Percolator.count({type: "topic_type"})}.by(-1)
         end
 
         it "redirects to the percolators list" do
           percolator = ::Sensit::Topic::Percolator.create valid_attributes(id:10)
-          delete :destroy, valid_request(:id => percolator.id), valid_session
+          delete :destroy, valid_request(:id => percolator.id), valid_session(user_id: @user.to_param)
           response.status.should == 204
         end
       end

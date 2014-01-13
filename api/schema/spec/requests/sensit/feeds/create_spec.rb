@@ -12,11 +12,11 @@ describe "POST sensit/feeds#create"  do
    # }
 
    before(:each) do
-      @topic = FactoryGirl.create(:topic_with_feeds_and_fields) 
+      @topic = FactoryGirl.create(:topic_with_feeds_and_fields, user: @user) 
    end
 
    def process_request(topic, params)
-      post "/api/topics/#{topic.to_param}/feeds", valid_request(params), valid_session
+      post "/api/topics/#{topic.to_param}/feeds", valid_request(params), valid_session(:user_id => topic.user.to_param)
    end
 
    context "multiple feeds" do
@@ -93,7 +93,7 @@ describe "POST sensit/feeds#create"  do
    end
    context "csv file" do
       before(:each) do
-      @topic = FactoryGirl.create(:topic_with_feeds_and_fields, field_keys: ["key1", "key2", "key3"])
+      @topic = FactoryGirl.create(:topic_with_feeds_and_fields, field_keys: ["key1", "key2", "key3"], user: @user)
       end
       it "returns a 200 status code" do
          params = {
@@ -106,7 +106,7 @@ describe "POST sensit/feeds#create"  do
 
    context "zipped csv file" do
       before(:each) do
-      @topic = FactoryGirl.create(:topic_with_feeds_and_fields, field_keys: ["key1", "key2", "key3"])
+      @topic = FactoryGirl.create(:topic_with_feeds_and_fields, field_keys: ["key1", "key2", "key3"], user: @user)
       end
       it "returns a 200 status code" do
          params = {
@@ -119,28 +119,28 @@ describe "POST sensit/feeds#create"  do
 
    context "xls file" do
       before(:each) do
-      @topic = FactoryGirl.create(:topic_with_feeds_and_fields, field_keys: ["key1", "key2", "key3"])
+      @topic = FactoryGirl.create(:topic_with_feeds_and_fields, field_keys: ["key1", "key2", "key3"], user: @user)
       end
       it "returns a 200 status code"
    end
 
    context "google spreadsheet file" do
       before(:each) do
-      @topic = FactoryGirl.create(:topic_with_feeds_and_fields, field_keys: ["key1", "key2", "key3"])
+      @topic = FactoryGirl.create(:topic_with_feeds_and_fields, field_keys: ["key1", "key2", "key3"], user: @user)
       end
       it "returns a 200 status code"
    end
 
    context "OpenOffice file" do
       before(:each) do
-      @topic = FactoryGirl.create(:topic_with_feeds_and_fields, field_keys: ["key1", "key2", "key3"])
+      @topic = FactoryGirl.create(:topic_with_feeds_and_fields, field_keys: ["key1", "key2", "key3"], user: @user)
       end
       it "returns a 200 status code"
    end
 
    context "LibreOffice" do
       before(:each) do
-      @topic = FactoryGirl.create(:topic_with_feeds_and_fields, field_keys: ["key1", "key2", "key3"])
+      @topic = FactoryGirl.create(:topic_with_feeds_and_fields, field_keys: ["key1", "key2", "key3"], user: @user)
       end
       it "returns a 200 status code"
    end

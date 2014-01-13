@@ -4,11 +4,11 @@ module Sensit
 
 	friendly_id :name, use: [:slugged, :finders]
   	after_destroy :destroy_feeds
-
+  	belongs_to :user
 	
 	validates :name, presence: true, uniqueness: true
 
-	delegate :name, :to => :node, :prefix => true
+	# delegate :name, :to => :node, :prefix => true
 
 	def feeds(params = {})
 		body = params[:body] || {:query => {"match_all" => {  }}}
@@ -83,7 +83,7 @@ private
 	end
 
 	def elastic_index_name
-		Rails.env.test? ? ELASTIC_SEARCH_INDEX_NAME : self.id.to_s
+		user.id
 	end
 	def elastic_type_name
 		self.to_param

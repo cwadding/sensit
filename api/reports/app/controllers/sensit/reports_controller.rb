@@ -8,7 +8,7 @@ module Sensit
     # returns the name and query along with the results of the query
     # accepts additional parameters which will be merged into each report
     def index
-      # topic = Topic.find(params[:topic_id])
+      # TODO  Also join with user
       @reports = Topic::Report.joins(:topic).where(:sensit_topics => {:slug => params[:topic_id]}).page(params[:page] || 1).per(params[:per] || 10)
       respond_with(@reports)
     end
@@ -23,7 +23,7 @@ module Sensit
 
     # POST /reports
     def create
-      topic = Topic.find(params[:topic_id])
+      topic = current_user.topics.find(params[:topic_id])
       @report = topic.reports.build(report_params)
       facets_params.each do |facet_params|
         @report.facets.build(facet_params)
@@ -59,7 +59,7 @@ module Sensit
     private
       # Use callbacks to share common setup or constraints between actions.
       def set_report
-        @report = Topic::Report.find(params[:id])
+        @report = current_user.topics.find(params[:topic_id]).reports.find(params[:id])
       end
 
       # Only allow a trusted parameter "white list" through.

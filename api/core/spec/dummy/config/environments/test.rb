@@ -35,6 +35,4 @@ Dummy::Application.configure do
   config.active_support.deprecation = :stderr
 
   config.view_version_extraction_strategy = [:query_parameter, :request_parameter, :http_header, :http_accept_parameter]
-
-  ELASTIC_SEARCH_INDEX_NAME = "test_index"
 end

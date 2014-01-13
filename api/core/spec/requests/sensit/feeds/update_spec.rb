@@ -2,14 +2,14 @@ require 'spec_helper'
 describe "PUT sensit/feeds#update" do
 
 	before(:each) do
-		@topic = FactoryGirl.create(:topic_with_feeds)
+		@topic = FactoryGirl.create(:topic_with_feeds, user: @user)
 		@feed = @topic.feeds.first
 	end
 
 
 	def process_request(topic, params)
 		feed = topic.feeds.first
-		put "/api/topics/#{topic.to_param}/feeds/#{feed.id}", valid_request(params), valid_session
+		put "/api/topics/#{topic.to_param}/feeds/#{feed.id}", valid_request(params), valid_session(:user_id => topic.user.to_param)
 	end
 
 	context "with correct attributes" do

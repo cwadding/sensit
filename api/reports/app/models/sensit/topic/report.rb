@@ -57,7 +57,7 @@ private
 	end
 
       def elastic_index_name
-        Rails.env.test? ? ELASTIC_SEARCH_INDEX_NAME : params[:topic_id].to_s
+        Rails.env.test? ? topic.user.to_param : params[:topic_id].to_s
       end
       def elastic_type_name
         topic.to_param

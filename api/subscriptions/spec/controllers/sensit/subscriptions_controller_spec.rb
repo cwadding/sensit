@@ -38,15 +38,15 @@ module Sensit
     # This should return the minimal set of values that should be in the session
     # in order to pass any filters (e.g. authentication) defined in
     # ::Sensit::Topic::FeedsController. Be sure to keep this updated too.
-    def valid_session
-      {}
+    def valid_session(params = {})
+      {}.merge!(params)
     end
 
 
     describe "GET index" do
       it "assigns all subscriptions as @subscriptions" do
         subscription = Sensit::Topic::Subscription.create! valid_attributes.merge!(:topic_id => @topic.id)
-        get :index, valid_request({:topic_id => @topic.id}), valid_session
+        get :index, valid_request({:topic_id => @topic.id}), valid_session(user_id: @user.to_param)
         assigns(:subscriptions).to_a.should eq([subscription])
       end
     end
@@ -54,7 +54,7 @@ module Sensit
     describe "GET show" do
       it "assigns the requested subscription as @subscription" do
         subscription = Sensit::Topic::Subscription.create! valid_attributes.merge!(:topic_id => @topic.id)
-        get :show, valid_request({:id => subscription.to_param}), valid_session
+        get :show, valid_request({:id => subscription.to_param}), valid_session(user_id: @user.to_param)
         assigns(:subscription).should eq(subscription)
       end
     end
@@ -63,18 +63,18 @@ module Sensit
       describe "with valid params" do
         it "creates a new Subscription" do
           expect {
-            post :create, valid_request({:topic_id => @topic.id, :subscription => valid_attributes}), valid_session
+            post :create, valid_request({:topic_id => @topic.id, :subscription => valid_attributes}), valid_session(user_id: @user.to_param)
           }.to change(Sensit::Topic::Subscription, :count).by(1)
         end
 
         it "assigns a newly created subscription as @subscription" do
-          post :create, valid_request({:topic_id => @topic.id, :subscription => valid_attributes}), valid_session
+          post :create, valid_request({:topic_id => @topic.id, :subscription => valid_attributes}), valid_session(user_id: @user.to_param)
           assigns(:subscription).should be_a(Sensit::Topic::Subscription)
           assigns(:subscription).should be_persisted
         end
 
         it "redirects to the created subscription" do
-          post :create, valid_request({:topic_id => @topic.id, :subscription => valid_attributes}), valid_session
+          post :create, valid_request({:topic_id => @topic.id, :subscription => valid_attributes}), valid_session(user_id: @user.to_param)
           response.should render_template("sensit/subscriptions/show")
         end
       end
@@ -83,14 +83,14 @@ module Sensit
         it "assigns a newly created but unsaved subscription as @subscription" do
           # Trigger the behavior that occurs when invalid params are submitted
           Sensit::Topic::Subscription.any_instance.stub(:save).and_return(false)
-          post :create, valid_request({:topic_id => @topic.id, :subscription => { "name" => "invalid value" }}), valid_session
+          post :create, valid_request({:topic_id => @topic.id, :subscription => { "name" => "invalid value" }}), valid_session(user_id: @user.to_param)
           assigns(:subscription).should be_a_new(Sensit::Topic::Subscription)
         end
 
         it "re-renders the 'new' template" do
           # Trigger the behavior that occurs when invalid params are submitted
           Sensit::Topic::Subscription.any_instance.stub(:save).and_return(false)
-          post :create, valid_request({:topic_id => @topic.id, :subscription => { "name" => "invalid value" }}), valid_session
+          post :create, valid_request({:topic_id => @topic.id, :subscription => { "name" => "invalid value" }}), valid_session(user_id: @user.to_param)
           response.status.should == 422
         end
       end
@@ -105,18 +105,18 @@ module Sensit
           # receives the :update_attributes message with whatever params are
           # submitted in the request.
           Sensit::Topic::Subscription.any_instance.should_receive(:update).with({ "name" => "MyString" })
-          put :update, valid_request({:id => subscription.to_param, :topic_id => @topic.id, :subscription => { "name" => "MyString" }}), valid_session
+          put :update, valid_request({:id => subscription.to_param, :topic_id => @topic.id, :subscription => { "name" => "MyString" }}), valid_session(user_id: @user.to_param)
         end
 
         it "assigns the requested subscription as @subscription" do
           subscription = Sensit::Topic::Subscription.create! valid_attributes.merge!(:topic_id => @topic.id)
-          put :update, valid_request({:id => subscription.to_param, :topic_id => @topic.id, :subscription => valid_attributes}), valid_session
+          put :update, valid_request({:id => subscription.to_param, :topic_id => @topic.id, :subscription => valid_attributes}), valid_session(user_id: @user.to_param)
           assigns(:subscription).should eq(subscription)
         end
 
         it "redirects to the subscription" do
           subscription = Sensit::Topic::Subscription.create! valid_attributes.merge!(:topic_id => @topic.id)
-          put :update, valid_request({:id => subscription.to_param, :topic_id => @topic.id, :subscription => valid_attributes}), valid_session
+          put :update, valid_request({:id => subscription.to_param, :topic_id => @topic.id, :subscription => valid_attributes}), valid_session(user_id: @user.to_param)
           response.should render_template("sensit/subscriptions/show")
         end
       end
@@ -126,7 +126,7 @@ module Sensit
           subscription = Sensit::Topic::Subscription.create! valid_attributes.merge!(:topic_id => @topic.id)
           # Trigger the behavior that occurs when invalid params are submitted
           Sensit::Topic::Subscription.any_instance.stub(:save).and_return(false)
-          put :update, valid_request({:id => subscription.to_param, :topic_id => @topic.id, :subscription => { "name" => "invalid value" }}), valid_session
+          put :update, valid_request({:id => subscription.to_param, :topic_id => @topic.id, :subscription => { "name" => "invalid value" }}), valid_session(user_id: @user.to_param)
           assigns(:subscription).should eq(subscription)
         end
 
@@ -134,7 +134,7 @@ module Sensit
           subscription = Sensit::Topic::Subscription.create! valid_attributes.merge!(:topic_id => @topic.id)
           # Trigger the behavior that occurs when invalid params are submitted
           Sensit::Topic::Subscription.any_instance.stub(:save).and_return(false)
-          put :update, valid_request({:id => subscription.to_param, :topic_id => @topic.id, :subscription => { "name" => "invalid value" }}), valid_session
+          put :update, valid_request({:id => subscription.to_param, :topic_id => @topic.id, :subscription => { "name" => "invalid value" }}), valid_session(user_id: @user.to_param)
           response.status.should == 422
         end
       end
@@ -144,13 +144,13 @@ module Sensit
       it "destroys the requested subscription" do
         subscription = Sensit::Topic::Subscription.create! valid_attributes.merge!(:topic_id => @topic.id)
         expect {
-          delete :destroy, valid_request({:id => subscription.to_param, :topic_id => @topic.id}), valid_session
+          delete :destroy, valid_request({:id => subscription.to_param, :topic_id => @topic.id}), valid_session(user_id: @user.to_param)
         }.to change(Sensit::Topic::Subscription, :count).by(-1)
       end
 
       it "redirects to the subscriptions list" do
         subscription = Sensit::Topic::Subscription.create! valid_attributes.merge!(:topic_id => @topic.id)
-        delete :destroy, valid_request({:id => subscription.to_param, :topic_id => @topic.id}), valid_session
+        delete :destroy, valid_request({:id => subscription.to_param, :topic_id => @topic.id}), valid_session(user_id: @user.to_param)
         response.status.should == 204
       end
     end

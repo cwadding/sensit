@@ -43,11 +43,11 @@ module Sensit
 
 
     def elastic_index_name
-      Rails.env.test? ? ELASTIC_SEARCH_INDEX_NAME : "_percolator"
+      Rails.env.test? ? @user.to_param : "_percolator"
     end
 
     def elastic_type_name
-      params[:topic_id].to_s
+      "#{current_user.name}-#{params[:topic_id].to_s}"
     end
 
 

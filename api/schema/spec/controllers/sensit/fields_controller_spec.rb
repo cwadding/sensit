@@ -41,13 +41,15 @@ module Sensit
     # This should return the minimal set of values that should be in the session
     # in order to pass any filters (e.g. authentication) defined in
     # ::Sensit::Topic::FieldsController. Be sure to keep this updated too.
-    let(:valid_session) { {} }
+      def valid_session(params = {})
+        {}.merge!(params)
+      end
 
     describe "GET index" do
       it "assigns all fields as @fields" do
-        topic = FactoryGirl.create(:topic)
+        topic = FactoryGirl.create(:topic, user: @user)
         field = ::Sensit::Topic::Field.create! valid_attributes.merge!(:topic_id => topic.id)
-        get :index, valid_request(:topic_id => topic.to_param), valid_session
+        get :index, valid_request(:topic_id => topic.to_param), valid_session(user_id: @user.to_param)
         assigns(:fields).to_a.should eq([field])
       end
     end
@@ -55,30 +57,30 @@ module Sensit
     describe "GET show" do
       it "assigns the requested field as @field" do
         field = ::Sensit::Topic::Field.create! valid_attributes
-        get :show, valid_request({:id => field.to_param}), valid_session
+        get :show, valid_request({:id => field.to_param}), valid_session(user_id: @user.to_param)
         assigns(:field).should eq(field)
       end
     end
 
     describe "POST create" do
       before(:each) do
-        Topic.any_instance.stub(:find).with(1).and_return(FactoryGirl.create(:topic))
+        Topic.any_instance.stub(:find).with(1).and_return(FactoryGirl.create(:topic, user: @user))
       end
       describe "with valid params" do
         it "creates a new ::Sensit::Topic::Field" do
           expect {
-            post :create, valid_request({ "topic_id" => "1", :field => valid_attributes}), valid_session
+            post :create, valid_request({ "topic_id" => "1", :field => valid_attributes}), valid_session(user_id: @user.to_param)
           }.to change(::Sensit::Topic::Field, :count).by(1)
         end
 
         it "assigns a newly created field as @field" do
-          post :create, valid_request({ "topic_id" => "1", :field => valid_attributes}), valid_session
+          post :create, valid_request({ "topic_id" => "1", :field => valid_attributes}), valid_session(user_id: @user.to_param)
           assigns(:field).should be_a(::Sensit::Topic::Field)
           assigns(:field).should be_persisted
         end
 
         it "redirects to the created field" do
-          post :create, valid_request({ "topic_id" => "1", :field => valid_attributes}), valid_session
+          post :create, valid_request({ "topic_id" => "1", :field => valid_attributes}), valid_session(user_id: @user.to_param)
           response.should render_template("sensit/fields/show")
         end
       end
@@ -87,14 +89,14 @@ module Sensit
         it "assigns a newly created but unsaved field as @field" do
           # Trigger the behavior that occurs when invalid params are submitted
           ::Sensit::Topic::Field.any_instance.stub(:save).and_return(false)
-          post :create, valid_request({ "topic_id" => "1", :field => { "topic_id" => "1", :key => "asd"  }}), valid_session
+          post :create, valid_request({ "topic_id" => "1", :field => { "topic_id" => "1", :key => "asd"  }}), valid_session(user_id: @user.to_param)
           assigns(:field).should be_a_new(::Sensit::Topic::Field)
         end
 
         it "re-renders the 'new' template" do
           # Trigger the behavior that occurs when invalid params are submitted
           ::Sensit::Topic::Field.any_instance.stub(:save).and_return(false)
-          post :create, valid_request({ "topic_id" => "1", :field => { "topic_id" => "1", :key => "asd" }}), valid_session
+          post :create, valid_request({ "topic_id" => "1", :field => { "topic_id" => "1", :key => "asd" }}), valid_session(user_id: @user.to_param)
           response.status.should == 422
         end
       end
@@ -109,18 +111,18 @@ module Sensit
           # receives the :update_attributes message with whatever params are
           # submitted in the request.
           ::Sensit::Topic::Field.any_instance.should_receive(:update).with({ "key" => "params" })
-          put :update, valid_request({:id => field.to_param, :field => { "key" => "params" }}), valid_session
+          put :update, valid_request({:id => field.to_param, :field => { "key" => "params" }}), valid_session(user_id: @user.to_param)
         end
 
         it "assigns the requested field as @field" do
           field = ::Sensit::Topic::Field.create! valid_attributes
-          put :update, valid_request({:id => field.to_param, :field => { "key" => "params" }}), valid_session
+          put :update, valid_request({:id => field.to_param, :field => { "key" => "params" }}), valid_session(user_id: @user.to_param)
           assigns(:field).should eq(field)
         end
 
         it "redirects to the field" do
           field = ::Sensit::Topic::Field.create! valid_attributes
-          put :update, valid_request({:id => field.to_param, :field => { "key" => "params" }}), valid_session
+          put :update, valid_request({:id => field.to_param, :field => { "key" => "params" }}), valid_session(user_id: @user.to_param)
           response.should render_template("sensit/fields/show")
         end
       end
@@ -130,7 +132,7 @@ module Sensit
           field = ::Sensit::Topic::Field.create! valid_attributes
           # Trigger the behavior that occurs when invalid params are submitted
           ::Sensit::Topic::Field.any_instance.stub(:save).and_return(false)
-          put :update, valid_request({:id => field.to_param, :field => { "key" => "params" }}), valid_session
+          put :update, valid_request({:id => field.to_param, :field => { "key" => "params" }}), valid_session(user_id: @user.to_param)
           assigns(:field).should eq(field)
         end
 
@@ -138,7 +140,7 @@ module Sensit
           field = ::Sensit::Topic::Field.create! valid_attributes
           # Trigger the behavior that occurs when invalid params are submitted
           ::Sensit::Topic::Field.any_instance.stub(:save).and_return(false)
-          put :update, valid_request({:id => field.to_param, :field => { "key" => "asd" }}), valid_session
+          put :update, valid_request({:id => field.to_param, :field => { "key" => "asd" }}), valid_session(user_id: @user.to_param)
           response.status.should == 422
         end
       end
@@ -148,13 +150,13 @@ module Sensit
       it "destroys the requested field" do
         field = ::Sensit::Topic::Field.create! valid_attributes
         expect {
-          delete :destroy, valid_request({:id => field.to_param}), valid_session
+          delete :destroy, valid_request({:id => field.to_param}), valid_session(user_id: @user.to_param)
         }.to change(::Sensit::Topic::Field, :count).by(-1)
       end
 
       it "redirects to the fields_fields list" do
         field = ::Sensit::Topic::Field.create! valid_attributes
-        delete :destroy, valid_request({:id => field.to_param}), valid_session
+        delete :destroy, valid_request({:id => field.to_param}), valid_session(user_id: @user.to_param)
         response.status.should == 204
       end
     end

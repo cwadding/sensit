@@ -36,7 +36,7 @@ gem 'sensit_percolator', :path => "../api/percolator"
 gem 'sensit_reports', :path => "../api/reports"
 gem 'sensit_subscriptions', :path => "../api/subscriptions"
 gem 'sensit_schema', :path => "../api/schema"
-
+gem 'doorkeeper'
 gem 'devise'
 
 # Use ActiveModel has_secure_password

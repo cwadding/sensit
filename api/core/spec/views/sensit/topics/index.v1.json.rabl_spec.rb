@@ -4,8 +4,8 @@ describe "sensit/topics/index" do
   context "when topic is incomplete" do
     before(:each) do
       @topics = [
-        FactoryGirl.create(:topic),
-        FactoryGirl.create(:topic)
+        FactoryGirl.create(:topic, user: @user),
+        FactoryGirl.create(:topic, user: @user)
       ]
       assign(:topics, @topics)
     end

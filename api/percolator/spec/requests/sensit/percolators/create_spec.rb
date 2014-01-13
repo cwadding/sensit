@@ -1,32 +1,35 @@
 require 'spec_helper'
 describe "POST sensit/percolators#create"  do
 
-	def process_request(params)
-		post "/api/topics/1/percolators", valid_request(params), valid_session
+	def process_request(topic, params)
+		post "/api/topics/#{topic.to_param}/percolators", valid_request(params), valid_session(:user_id => topic.user.to_param)
 	end
 
 	context "with correct attributes" do
+		before(:each) do
+			@topic = FactoryGirl.create(:topic, user: @user)
+		end
 		it "returns a 200 status code" do
 			@params = {
 				:percolator => {
-					:id => "foo",
-					:body => { query: { query_string: { query: 'foo' } } }
+					:name => "foo",
+					:query => { query: { query_string: { query: 'foo' } } }
 				}
 			}
-			status = process_request(@params)
+			status = process_request(@topic, @params)
 			status.should == 201
 		end
 
 		it "returns the expected json" do
 			@params = {
 				:percolator => {
-					:id => "bar",
-					:body => { query: { query_string: { query: 'bar' } } }
+					:name => "bar",
+					:query => { query: { query_string: { query: 'bar' } } }
 				}
 			}
-			process_request(@params)
+			process_request(@topic, @params)
 			expect(response).to render_template(:show)
-			response.body.should be_json_eql("{\"id\": \"#{@params[:percolator][:id]}\",\"body\": #{@params[:percolator][:body].to_json}}")
+			response.body.should be_json_eql("{\"name\": \"#{@params[:percolator][:name]}\",\"query\": #{@params[:percolator][:query].to_json}}")
 		end
 	end
 

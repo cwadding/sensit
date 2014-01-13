@@ -17,6 +17,10 @@ module Sensit
     	@errors = ActiveModel::Errors.new(self)
   	end
 
+  	def topic
+  		@topic ||= Topic.find(self.type)
+  	end
+
   	# define_model_callbacks :create, :update, :destroy, :save
 
 	validates :type, presence: true
@@ -137,7 +141,7 @@ private
 	end
 
 	def self.elastic_index_name
-		@@index ||= Rails.env.test? ? ELASTIC_SEARCH_INDEX_NAME : "_percolator"
+		@@index ||= Rails.env.test? ? topic.user.to_param : "_percolator"
 	end
 
 	def elastic_index_name

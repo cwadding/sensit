@@ -2,23 +2,27 @@ require 'spec_helper'
 describe "DELETE sensit/percolators#destroy" do
 
 	def process_request(percolator)
-		delete "/api/topics/#{percolator.type}/percolators/#{percolator.id}", valid_request, valid_session
+		delete "/api/topics/#{percolator.topic.to_param}/percolators/#{percolator.id}", valid_request, valid_session(percolator.topic.user.to_param)
 	end
 
 	context "when the percolator exists" do
+		before(:each) do
+			@topic = FactoryGirl.create(:topic, user: @user)
+		end
+
 		it "is successful" do
-			@percolator = ::Sensit::Topic::Percolator.create({ type: "topic_type", id: "3", body: { query: { query_string: { query: 'foo' } } } })
+			@percolator = ::Sensit::Topic::Percolator.create({ topic: @topic, name: "3", query: { query: { query_string: { query: 'foo' } } } })
 			status = process_request(@percolator)
 			status.should == 204
 		end
 
 		it "deletes the Percolator" do
 			client = ::Elasticsearch::Client.new
-			@percolator = ::Sensit::Topic::Percolator.create({ type: "topic_type", id: "3", body: { query: { query_string: { query: 'foo' } } } })
-			client.indices.refresh(:index => ELASTIC_SEARCH_INDEX_NAME)
+			@percolator = ::Sensit::Topic::Percolator.create({ topic: @topic, name: "3", query: { query: { query_string: { query: 'foo' } } } })
+			client.indices.refresh(:index => @user.to_param)
 			expect {
 				process_request(@percolator)
-				client.indices.refresh(:index => ELASTIC_SEARCH_INDEX_NAME)
+				client.indices.refresh(:index => @user.to_param)
 			}.to change(Sensit::Topic::Percolator, :count).by(-1)
         end
 

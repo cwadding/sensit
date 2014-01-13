@@ -2,7 +2,7 @@ require 'spec_helper'
 describe "POST sensit/topics#create" do
 
    before(:each) do
-      @topic = FactoryGirl.create(:topic)
+      @topic = FactoryGirl.create(:topic, user: @user)
    end
 
    def process_request(params)

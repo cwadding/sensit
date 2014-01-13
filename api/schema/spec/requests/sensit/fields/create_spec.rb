@@ -2,12 +2,12 @@ require 'spec_helper'
 describe "POST sensit/fields#create" do
 
 	before(:each) do
-		@topic = FactoryGirl.create(:topic_with_feeds_and_fields)
+		@topic = FactoryGirl.create(:topic_with_feeds_and_fields, user: @user)
 		@field = @topic.fields.first		
 	end
 
    def process_request(topic, params)
-      post "/api/topics/#{topic.to_param}/fields", valid_request(params), valid_session
+      post "/api/topics/#{topic.to_param}/fields", valid_request(params), valid_session(:user_id => topic.user.to_param)
    end
 
    context "with correct attributes" do

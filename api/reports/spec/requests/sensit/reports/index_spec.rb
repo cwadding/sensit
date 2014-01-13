@@ -2,13 +2,13 @@ require 'spec_helper'
 describe "GET sensit/reports#index" do
 
 	def process_request(report, params = {})
-		get "/api/topics/#{report.topic.to_param}/reports", valid_request(params), valid_session
+		get "/api/topics/#{report.topic.to_param}/reports", valid_request(params), valid_session(:user_id => topic.user.to_param)
 	end
 
 
 	context "with 1 report" do
 		before(:each) do
-			@report = FactoryGirl.create(:report, :name => "My Report", :topic => FactoryGirl.create(:topic_with_feeds))
+			@report = FactoryGirl.create(:report, :name => "My Report", :topic => FactoryGirl.create(:topic_with_feeds, user: @user))
 		end
 		it "is successful" do
 			status = process_request(@report)
@@ -27,7 +27,7 @@ describe "GET sensit/reports#index" do
 
 	context "with > 1 report" do
 		before(:each) do
-			topic = FactoryGirl.create(:topic_with_feeds)
+			topic = FactoryGirl.create(:topic_with_feeds, user: @user)
 			@reports = [FactoryGirl.create(:report, :name => "R1", :topic => topic), FactoryGirl.create(:report, :name => "R2", :topic => @topic), FactoryGirl.create(:report, :name => "R3", :topic => topic)]
 		end
 

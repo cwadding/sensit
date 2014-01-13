@@ -2,12 +2,12 @@ require 'spec_helper'
 describe "POST sensit/reports#create"  do
 
 	def process_request(topic, params)
-		post "/api/topics/#{topic.to_param}/reports", valid_request(params), valid_session
+		post "/api/topics/#{topic.to_param}/reports", valid_request(params), valid_session(:user_id => topic.user.to_param)
 	end
 	context "with facets" do 
 		context "with correct attributes" do
 			before(:each) do
-				@topic = FactoryGirl.create(:topic_with_feeds)
+				@topic = FactoryGirl.create(:topic_with_feeds, user: @user)
 				@params = {
 					:report => {
 						:name => "My Report",

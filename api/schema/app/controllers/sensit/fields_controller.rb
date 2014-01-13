@@ -6,6 +6,7 @@ module Sensit
     respond_to :json
     # GET /topics/1/fields
     def index
+      # TODO also include user_id in find
       @fields = Topic::Field.joins(:topic).where(:sensit_topics => {:slug => params[:topic_id]}).page(params[:page] || 1).per(params[:per] || 10)
       respond_with(@fields)
     end
@@ -17,7 +18,7 @@ module Sensit
 
     # POST /topics/1/fields
     def create
-      topic = Topic.find(params[:topic_id])
+      topic = current_user.topics.find(params[:topic_id])
       @field = topic.fields.build(field_params)
       if @field.save
         respond_with(@field,:status => :created, :template => "sensit/fields/show")
@@ -44,7 +45,7 @@ module Sensit
     private
       # Use callbacks to share common setup or constraints between actions.
       def set_field
-        @field = Topic::Field.find(params[:id])
+        @field = current_user.topics.find(params[:topic_id]).fields.find(params[:id])
       end
 
       # Only allow a trusted parameter "white list" through.

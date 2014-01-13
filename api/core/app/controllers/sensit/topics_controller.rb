@@ -7,7 +7,7 @@ module Sensit
     # GET 1/topics
     def index
       # scope all to the api key that is being used
-      @topics = Topic.page(params[:page] || 1).per(params[:per] || 10)
+      @topics = current_user.topics.page(params[:page] || 1).per(params[:per] || 10)
       respond_with(@topics)
     end
 
@@ -18,17 +18,9 @@ module Sensit
 
     # POST 1/topics
     def create
-      field_attribute_sets = topic_params.delete(:fields)
-      @topic = Topic.new(topic_params)
-      field_attribute_sets.each do |field_set|
-        @topic.fields.build(field_set)
-      end unless field_attribute_sets.blank?
+      @topic = current_user.topics.build(topic_params)
       if @topic.save
-        # create the elasticsearch index
-        client = ::Elasticsearch::Client.new
-        client.indices.create({:index => @topic.id, :type => @topic.id}) unless (client.indices.exists index: @topic.id)
         respond_with(@topic,:status => :created, :template => "sensit/topics/show")
-        # render(:json => "{\"location\":#{sensit_topic_url(@topic)}}", :status => :created)
       else
         render(:json => "{\"errors\":#{@topic.errors.to_json}}", :status => :unprocessable_entity)
       end
@@ -36,19 +28,11 @@ module Sensit
 
     # PATCH/PUT 1/topics/1
     def update
-      field_attribute_sets = topic_params.delete(:fields)
-      field_attribute_sets.each do |field_set|
-        field = @topic.fields.where(:key => field_set[:key]).first
-        field.name = field_set[:name]
-        field.save
-      end unless field_attribute_sets.blank?
-
       if @topic.update(topic_params)
         respond_with(@topic,:status => 200, :template => "sensit/topics/show")
       else
         render(:json => "{\"errors\":#{@topic.errors.to_json}}", :status => :unprocessable_entity)
       end
-      
     end
 
     # DELETE 1/topics/1
@@ -60,7 +44,7 @@ module Sensit
     private
       # Use callbacks to share common setup or constraints between actions.
       def set_topic
-        @topic = Topic.find(params[:id])
+        @topic = current_user.topics.find(params[:id])
       end
 
       # Only allow a trusted parameter "white list" through.

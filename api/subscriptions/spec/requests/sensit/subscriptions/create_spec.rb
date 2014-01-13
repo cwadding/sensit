@@ -2,12 +2,12 @@ require 'spec_helper'
 describe "POST sensit/subscriptions#create"  do
 
 	def process_request(topic, params)
-		post "/api/topics/#{topic.to_param}/subscriptions", valid_request(params), valid_session
+		post "/api/topics/#{topic.to_param}/subscriptions", valid_request(params), valid_session(user_id: topic.user.to_param)
 	end
 
 	context "with correct attributes" do
 		before(:each) do
-			@topic = FactoryGirl.create(:topic)
+			@topic = FactoryGirl.create(:topic, :user => @user)
 			@params = {
 				:subscription => {
 					:name => "MyString",

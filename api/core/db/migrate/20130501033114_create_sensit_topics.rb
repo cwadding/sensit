@@ -4,6 +4,7 @@ class CreateSensitTopics < ActiveRecord::Migration
       t.string :name
       t.string :description
       t.string :slug
+      t.integer :user_id
       t.timestamps
     end
   end

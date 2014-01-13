@@ -2,5 +2,10 @@
 
 FactoryGirl.define do
 
+  factory :user, :class => Sensit::User do
+    sequence :name do |n|
+      "Company#{n}"
+    end
+  end
 
 end

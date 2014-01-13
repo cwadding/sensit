@@ -22,7 +22,7 @@ module Sensit
   describe ReportsController do
 
     before(:each) do
-      @topic = FactoryGirl.create(:topic_with_feeds)
+      @topic = FactoryGirl.create(:topic_with_feeds, user: @user)
     end
 
     def valid_request(h = {})
@@ -40,14 +40,14 @@ module Sensit
     # This should return the minimal set of values that should be in the session
     # in order to pass any filters (e.g. authentication) defined in
     # ::Sensit::Topic::FeedsController. Be sure to keep this updated too.
-    def valid_session
-      {}
+    def valid_session(params = {})
+      {}.merge!(params)
     end
 
     describe "GET index" do
       it "assigns all reports as @reports" do
         report = FactoryGirl.create(:report, :topic => @topic)
-        get :index, valid_request({:topic_id => @topic.to_param}), valid_session
+        get :index, valid_request({:topic_id => @topic.to_param}), valid_session(user_id: @user.to_param)
         assigns(:reports).should eq([report])
       end
     end
@@ -55,7 +55,7 @@ module Sensit
     describe "GET show" do
       it "assigns the requested report as @report" do
         report = FactoryGirl.create(:report, :topic => @topic)
-        get :show, valid_request({:topic_id => @topic.to_param, :id => report.to_param}), valid_session
+        get :show, valid_request({:topic_id => @topic.to_param, :id => report.to_param}), valid_session(user_id: @user.to_param)
         assigns(:report).should eq(report)
       end
     end
@@ -64,18 +64,18 @@ module Sensit
       describe "with valid params" do
         it "creates a new Topic::Report" do
           expect {
-            post :create, valid_request({:topic_id => @topic.id, :report => valid_attributes}), valid_session
+            post :create, valid_request({:topic_id => @topic.id, :report => valid_attributes}), valid_session(user_id: @user.to_param)
           }.to change(Topic::Report, :count).by(1)
         end
 
         it "assigns a newly created report as @report" do
-          post :create, valid_request({:topic_id => @topic.id, :report => valid_attributes}), valid_session
+          post :create, valid_request({:topic_id => @topic.id, :report => valid_attributes}), valid_session(user_id: @user.to_param)
           assigns(:report).should be_a(Topic::Report)
           assigns(:report).should be_persisted
         end
 
         it "redirects to the created report" do
-          post :create, valid_request({:topic_id => @topic.id, :report => valid_attributes}), valid_session
+          post :create, valid_request({:topic_id => @topic.id, :report => valid_attributes}), valid_session(user_id: @user.to_param)
           response.should render_template("sensit/reports/show")
         end
       end
@@ -84,14 +84,14 @@ module Sensit
         it "assigns a newly created but unsaved report as @report" do
           # Trigger the behavior that occurs when invalid params are submitted
           ::Sensit::Topic::Report.any_instance.stub(:save).and_return(false)
-          post :create, valid_request({:topic_id => @topic.id, :report => { "name" => "invalid value", :query => {"match_all" => {  }}, :facets => [{"name" => "facet1", "query" => { :terms => { :field => "value1"}}}]}}), valid_session
+          post :create, valid_request({:topic_id => @topic.id, :report => { "name" => "invalid value", :query => {"match_all" => {  }}, :facets => [{"name" => "facet1", "query" => { :terms => { :field => "value1"}}}]}}), valid_session(user_id: @user.to_param)
           assigns(:report).should be_a_new(::Sensit::Topic::Report)
         end
 
         it "re-renders the 'new' template" do
           # Trigger the behavior that occurs when invalid params are submitted
           Topic::Report.any_instance.stub(:save).and_return(false)
-          post :create, valid_request({:topic_id => @topic.id, :report => { "name" => "invalid value", :query => {"match_all" => {  }}, :facets => [{"name" => "facet1", "query" => { :terms => { :field => "value1"}}}]}}), valid_session
+          post :create, valid_request({:topic_id => @topic.id, :report => { "name" => "invalid value", :query => {"match_all" => {  }}, :facets => [{"name" => "facet1", "query" => { :terms => { :field => "value1"}}}]}}), valid_session(user_id: @user.to_param)
           response.status.should == 422
         end
       end
@@ -106,18 +106,18 @@ module Sensit
           # receives the :update_attributes message with whatever params are
           # submitted in the request.
           ::Sensit::Topic::Report.any_instance.should_receive(:update).with({ "name" => "MyString", "query" => {"match_all" => {  }}} )
-          put :update, valid_request({:id => report.to_param, :topic_id => @topic.id, :report => { "name" => "MyString", :query => {"match_all" => {  }}, :facets => [{"name" => "facet1", "query" => { :terms => { :field => "value1"}}}] }}), valid_session
+          put :update, valid_request({:id => report.to_param, :topic_id => @topic.id, :report => { "name" => "MyString", :query => {"match_all" => {  }}, :facets => [{"name" => "facet1", "query" => { :terms => { :field => "value1"}}}] }}), valid_session(user_id: @user.to_param)
         end
 
         it "assigns the requested report as @report" do
           report = FactoryGirl.create(:report, :topic => @topic)
-          put :update, valid_request({:id => report.to_param, :topic_id => @topic.id, :report => valid_attributes}), valid_session
+          put :update, valid_request({:id => report.to_param, :topic_id => @topic.id, :report => valid_attributes}), valid_session(user_id: @user.to_param)
           assigns(:report).should eq(report)
         end
 
         it "redirects to the report" do
           report = FactoryGirl.create(:report, :topic => @topic)
-          put :update, valid_request({:id => report.to_param, :topic_id => @topic.id, :report => valid_attributes}), valid_session
+          put :update, valid_request({:id => report.to_param, :topic_id => @topic.id, :report => valid_attributes}), valid_session(user_id: @user.to_param)
           response.should render_template("sensit/reports/show")
         end
       end
@@ -127,7 +127,7 @@ module Sensit
           report = FactoryGirl.create(:report, :topic => @topic)
           # Trigger the behavior that occurs when invalid params are submitted
           ::Sensit::Topic::Report.any_instance.stub(:save).and_return(false)
-          put :update, valid_request({:id => report.to_param, :topic_id => @topic.id, :report => { "name" => "invalid value", :query => {"match_all" => {  }} }, :facets => [{"name" => "facet1", "query" => { :terms => { :field => "value1"}}}]}), valid_session
+          put :update, valid_request({:id => report.to_param, :topic_id => @topic.id, :report => { "name" => "invalid value", :query => {"match_all" => {  }} }, :facets => [{"name" => "facet1", "query" => { :terms => { :field => "value1"}}}]}), valid_session(user_id: @user.to_param)
           assigns(:report).should eq(report)
         end
 
@@ -135,7 +135,7 @@ module Sensit
           report = FactoryGirl.create(:report, :topic => @topic)
           # Trigger the behavior that occurs when invalid params are submitted
           ::Sensit::Topic::Report.any_instance.stub(:save).and_return(false)
-          put :update, valid_request({:id => report.to_param, :topic_id => @topic.id, :report => { "name" => "invalid value", :query => {"match_all" => {  }} }, :facets => [{"name" => "facet1", "query" => { :terms => { :field => "value1"}}}]}), valid_session
+          put :update, valid_request({:id => report.to_param, :topic_id => @topic.id, :report => { "name" => "invalid value", :query => {"match_all" => {  }} }, :facets => [{"name" => "facet1", "query" => { :terms => { :field => "value1"}}}]}), valid_session(user_id: @user.to_param)
           response.status.should == 422
         end
       end
@@ -145,13 +145,13 @@ module Sensit
       it "destroys the requested report" do
         report = FactoryGirl.create(:report, :topic => @topic)
         expect {
-          delete :destroy, valid_request({:topic_id => @topic.id, :id => report.to_param}), valid_session
+          delete :destroy, valid_request({:topic_id => @topic.id, :id => report.to_param}), valid_session(user_id: @user.to_param)
         }.to change(Topic::Report, :count).by(-1)
       end
 
       it "redirects to the reports list" do
         report = FactoryGirl.create(:report, :topic => @topic)
-        delete :destroy, valid_request({:topic_id => @topic.id, :id => report.to_param}), valid_session
+        delete :destroy, valid_request({:topic_id => @topic.id, :id => report.to_param}), valid_session(user_id: @user.to_param)
         response.status.should == 204
       end
     end

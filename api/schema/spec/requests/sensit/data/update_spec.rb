@@ -5,7 +5,7 @@ describe "PUT sensit/data#update" do
 #    "value":12
 # }
 	# before(:each) do
-	# 	@topic = FactoryGirl.create(:topic_with_feeds_and_fields)
+	# 	@topic = FactoryGirl.create(:topic_with_feeds_and_fields, user: @user)
 	# 	@feed = @topic.feeds.first
 	# 	@values = @feed.values.first
 	# end

@@ -50,20 +50,22 @@ RSpec.configure do |config|
       end
   end
 
+
   config.before(:all) do
+    @user = Sensit::User.create(:name => "test_user")
     client = ::Elasticsearch::Client.new
-    client.indices.create({index: ELASTIC_SEARCH_INDEX_NAME, :body => {:settings => {:index => {:store => {:type => :memory}}}}})
+    client.indices.create({index: @user.to_param, :body => {:settings => {:index => {:store => {:type => :memory}}}}})
   end
 
   config.after(:each) do
     client = ::Elasticsearch::Client.new
-    client.indices.flush(index: ELASTIC_SEARCH_INDEX_NAME, refresh: true)
+    client.indices.flush(index: @user.to_param, refresh: true)
   end
 
 
   config.after(:all) do
     client = ::Elasticsearch::Client.new
-    client.indices.delete(index: ELASTIC_SEARCH_INDEX_NAME)
+    client.indices.delete(index: @user.to_param)
   end
 
   # config.before(:suite) do

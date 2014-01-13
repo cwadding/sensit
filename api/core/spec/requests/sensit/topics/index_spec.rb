@@ -14,7 +14,7 @@ describe "GET sensit/topics#index" do
 
 	context "with a single topic" do
 		before(:each) do
-			@topic = FactoryGirl.create(:topic_with_feeds, :description => "topic description")
+			@topic = FactoryGirl.create(:topic_with_feeds, :description => "topic description", user: @user)
 		end
 		it "is successful" do
 			status = process_request

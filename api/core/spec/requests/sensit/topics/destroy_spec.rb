@@ -7,7 +7,7 @@ describe "DELETE sensit/topics#destroy" do
 
 	context "when the node exists" do
 		before(:each) do
-			@topic = FactoryGirl.create(:topic_with_feeds)
+			@topic = FactoryGirl.create(:topic_with_feeds, user: @user)
 		end
 		it "is successful" do
 			status = process_request(@topic)
@@ -26,7 +26,7 @@ describe "DELETE sensit/topics#destroy" do
 			number_of_feeds.should > 0
 			expect {
 				process_request(@topic)
-				client.indices.refresh(:index => ELASTIC_SEARCH_INDEX_NAME)
+				client.indices.refresh(:index => @user.to_param)
 			}.to change(Sensit::Topic::Feed, :count).by(-1*number_of_feeds)
         end
 	end
