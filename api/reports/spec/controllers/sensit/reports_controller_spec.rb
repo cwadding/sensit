@@ -35,8 +35,6 @@ module Sensit
       { :name => "My Report", :query => {"match_all" => {  }}, :facets => [{"name" => "facet1", "query" => { :terms => { :field => "value1"}}}]}
     end
 
-# :facets => { "terms" => { "field" => "value1"}}
-
     # This should return the minimal set of values that should be in the session
     # in order to pass any filters (e.g. authentication) defined in
     # ::Sensit::Topic::FeedsController. Be sure to keep this updated too.

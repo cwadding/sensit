@@ -150,7 +150,7 @@ module Sensit
           expect {
             delete :destroy, valid_request(topic_id: @topic.to_param, :id => feed.id), valid_session(user_id: @user.to_param)
             client.indices.refresh(:index => @user.to_param)
-          }.to change{::Sensit::Topic::Feed.count({index: ELASTIC_SEARCH_INDEX_NAME, type: @topic.to_param})}.by(-1)
+          }.to change{::Sensit::Topic::Feed.count({index: @user.to_param, type: @topic.to_param})}.by(-1)
         end
 
         it "redirects to the feeds list" do

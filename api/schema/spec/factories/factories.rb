@@ -16,6 +16,7 @@ FactoryGirl.define do
       "key#{n}"
     end
     datatype 'string'
+    topic
   end  
 
 	factory :topic, :class => Sensit::Topic do

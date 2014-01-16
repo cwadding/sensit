@@ -3,9 +3,10 @@ require 'spec_helper'
 describe "sensit/fields/index" do
   context "when feed is incomplete" do
     before(:each) do
+      topic = FactoryGirl.create(:topic, user: @user)
       @fields = [
-        FactoryGirl.create(:field),
-        FactoryGirl.create(:field)
+        FactoryGirl.create(:field, topic: topic),
+        FactoryGirl.create(:field, topic: topic)
       ]
       assign(:fields, @fields)
     end

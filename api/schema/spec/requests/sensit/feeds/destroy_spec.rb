@@ -8,7 +8,7 @@ describe "DELETE sensit/feeds#destroy" do
 
 	context "when the field exists" do
 		before(:each) do
-			@topic = FactoryGirl.create(:topic_with_feeds_and_fields)
+			@topic = FactoryGirl.create(:topic_with_feeds_and_fields, user: @user)
 			@feed = @topic.feeds.first
 		end
 		it "is successful" do

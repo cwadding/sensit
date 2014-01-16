@@ -23,6 +23,7 @@ module Sensit
 			config.to_prepare do
 				::Sensit::Topic.send :include, ::Schematic
 				::Sensit::Topic::Feed.send :include, ::ParentSchematic
+				::Sensit::TopicsController.send :include, ::AcceptFieldsWhenCreatingTopics
 				::Sensit::FeedsController.send :include, ::StrongFeedWithFieldParameters
 				::Sensit::DataController.send :include, ::StrongDataWithFieldParameters
 				::Sensit::Topic::Feed::Importer.send :include, ::FilteredImporter

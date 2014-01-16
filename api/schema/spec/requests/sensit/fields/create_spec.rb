@@ -127,7 +127,8 @@ describe "POST sensit/fields#create" do
 
    context "with a non-unique name between topics" do
       before(:each) do
-         FactoryGirl.create(:field, :name => "Existing Field", :key => "my_key")
+         new_topic = FactoryGirl.create(:topic, user: @user)
+         FactoryGirl.create(:field, :name => "Existing Field", :key => "my_key", topic: new_topic)
       end
       before(:all) do
          @params = {

@@ -49,7 +49,7 @@ module Sensit
 
       # Only allow a trusted parameter "white list" through.
       def topic_params
-        @topic_params ||= params.require(:topic).permit(:name, :description, :fields => [:name, :key])
+        @topic_params ||= params.require(:topic).permit(:name, :description)
       end
   end
 end
