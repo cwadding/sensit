@@ -7,7 +7,7 @@ describe "PUT sensit/reports#update" do
 
 
 	def process_request(report, params)
-		put "/api/topics/#{report.topic.to_param}/reports/#{report.to_param}", valid_request(params), valid_session(:user_id => topic.user.to_param)
+		put "/api/topics/#{report.topic.to_param}/reports/#{report.to_param}", valid_request(params), valid_session(:user_id => report.topic.user.to_param)
 	end
 
 	context "with correct attributes" do

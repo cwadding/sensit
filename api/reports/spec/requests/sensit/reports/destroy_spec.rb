@@ -2,12 +2,12 @@ require 'spec_helper'
 describe "DELETE sensit/reports#destroy" do
 
 	def process_request(report)
-		delete "/api/topics/#{report.topic_id}/reports/#{report.id}", valid_request, valid_session(:user_id => topic.user.to_param)
+		delete "/api/topics/#{report.topic_id}/reports/#{report.id}", valid_request, valid_session(:user_id => report.topic.user.to_param)
 	end
 
 	context "when the report exists" do
 		before(:each) do
-          @report = ::Sensit::Topic::Report.create({ :name => "My Report", :query => {:match_all => {}}, :topic_id => 1})
+			@report = FactoryGirl.create(:report, :topic => FactoryGirl.create(:topic, user: @user))
 		end
 		it "is successful" do
 			status = process_request(@report)
@@ -27,7 +27,7 @@ describe "DELETE sensit/reports#destroy" do
 	context "when the report does not exist" do
 		it "is unsuccessful" do
 			expect{
-				status = delete "/api/topics/1/reports/1", valid_request, valid_session(:user_id => topic.user.to_param)
+				status = delete "/api/topics/1/reports/1", valid_request, valid_session(:user_id => @user.to_param)
 			}.to raise_error(ActiveRecord::RecordNotFound)
 			#status.should == 404
 		end

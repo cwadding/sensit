@@ -4,8 +4,8 @@ describe "sensit/reports/index" do
   context "when report is incomplete" do
     before(:each) do
       @reports = [
-        FactoryGirl.create(:report),
-        FactoryGirl.create(:report)
+        FactoryGirl.create(:report, :topic => FactoryGirl.create(:topic, user: @user)),
+        FactoryGirl.create(:report, :topic => FactoryGirl.create(:topic, user: @user))
       ]
       assign(:reports, @reports)
     end

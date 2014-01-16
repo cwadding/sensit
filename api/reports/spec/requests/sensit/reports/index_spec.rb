@@ -2,7 +2,7 @@ require 'spec_helper'
 describe "GET sensit/reports#index" do
 
 	def process_request(report, params = {})
-		get "/api/topics/#{report.topic.to_param}/reports", valid_request(params), valid_session(:user_id => topic.user.to_param)
+		get "/api/topics/#{report.topic.to_param}/reports", valid_request(params), valid_session(:user_id => report.topic.user.to_param)
 	end
 
 
