@@ -9,7 +9,7 @@ describe "GET sensit/subscriptions#index" do
 	context "with > 1 subscription" do
 		before(:each) do
 			@topic = FactoryGirl.create(:topic, :user => @user)
-			@subscription = FactoryGirl.create(:subscription, :topic => topic)
+			@subscription = FactoryGirl.create(:subscription, :topic => @topic)
 		end
 		it "is successful" do
 			status = process_request(@topic)

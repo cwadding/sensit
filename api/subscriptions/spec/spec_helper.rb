@@ -50,6 +50,27 @@ RSpec.configure do |config|
         raise ActiveRecord::Rollback
       end
   end
+
+  config.around do |example|
+      ActiveRecord::Base.transaction do
+        example.run
+        raise ActiveRecord::Rollback
+      end
+  end
+
+  config.before(:all) do
+    Sensit::User.destroy_all
+    @user = Sensit::User.create(:name => "test_user", :password => "foobar")
+  end
+
+  config.before(:each, :type => :request) do
+    post "/api/sessions", valid_request({name: @user.name, password: @user.password}), valid_session
+  end
+
+  config.after(:all) do
+    @user.destroy
+  end
+
   # config.before(:suite) do
   #   DatabaseCleaner.strategy = :transaction
   #   DatabaseCleaner.clean_with(:truncation)
