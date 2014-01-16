@@ -65,8 +65,6 @@ module Sensit
 		elastic_client.indices.delete arguments
 	end
 
-
-
 	def new_record?
 		@new_record || false
 	end

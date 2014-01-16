@@ -8,7 +8,7 @@ module Sensit
 	extend ::ActiveModel::Callbacks
 	include ::ActiveModel::Dirty
 
-  	attr_accessor :id, :body, :type
+  	attr_accessor :name, :query, :topic_id, :user_id
 	attr_reader :errors
 
 	def initialize(params={})
@@ -17,30 +17,30 @@ module Sensit
     	@errors = ActiveModel::Errors.new(self)
   	end
 
-  	def topic
-  		@topic ||= Topic.find(self.type)
-  	end
-
   	# define_model_callbacks :create, :update, :destroy, :save
 
-	validates :type, presence: true
-	validates :id, presence: true
-	validates :body, presence: true
+	validates :user_id, presence: true
+	validates :topic_id, presence: true
+	validates :name, presence: true
+	validates :query, presence: true
 
   	def self.find(arguments = {})
-  		# Should make sure that it has a id index  and type
-		result = elastic_client.get arguments.merge({index: elastic_index_name})
+		user_id, topic_id, name = extract_params_with_name(arguments)
+  		# Should make sure that it has a id index and type
+		result = elastic_client.get arguments.merge({index: elastic_index_name(user_id), type: type_key(user_id, topic_id), id: name})
 		result.nil? ? nil : map_results(result)
   	end
 
 	def self.search(arguments = {})
+		user_id, topic_id = extract_params(arguments)
 		# Should make sure that it has a id index  and type
-		results = elastic_client.search arguments.merge({index: elastic_index_name})
+		results = elastic_client.search arguments.merge({index: elastic_index_name(user_id), type: type_key(user_id, topic_id)})
 		results["hits"]["hits"].inject([]) {|arr, result| arr << map_results(result)}
 	end
 
 	def self.count(arguments = {})
-		result = elastic_client.count arguments.merge({index: elastic_index_name})
+		user_id, topic_id = extract_params(arguments)
+		result = elastic_client.count arguments.merge({index: elastic_index_name(user_id), type: type_key(user_id, topic_id)})
 		result["count"].to_i
 	end
 
@@ -59,14 +59,26 @@ module Sensit
 
 	def self.destroy(arguments = {})
 		# run_callbacks :destroy do
-			elastic_client.delete arguments.merge(index: elastic_index_name)
+			user_id, topic_id, name = extract_params_with_name(arguments)
+			elastic_client.delete arguments.merge(index: elastic_index_name(user_id), type: type_key(user_id, topic_id), id: name)
 		# end
 	end
 
 	def self.destroy_all(arguments = {})
 		# run_callbacks :destroy do
-			elastic_client.indices.delete arguments.merge(index: elastic_index_name)
+			user_id, topic_id = extract_params(arguments)
+			elastic_client.indices.delete arguments.merge(index: elastic_index_name(user_id), type: type_key(user_id, topic_id))
 		# end
+	end
+
+
+	def topic=(record)
+		self.topic_id = record.to_param
+		self.user_id = record.user.to_param if record.user
+	end
+
+	def topic
+		@topic ||= Topic.find(self.topic_id)
 	end
 
 	def new_record?
@@ -80,30 +92,30 @@ module Sensit
 	end	
 
 	def destroy
-		raise ::Elasticsearch::Transport::Transport::Errors::BadRequest.new if new_record? || id.nil?
-		
-		self.class.destroy({index: elastic_index_name, type: type, id: id})
+		raise ::Elasticsearch::Transport::Transport::Errors::BadRequest.new if new_record? || [self.name, self.topic_id, self.user_id].any?(&:nil?)		
+		self.class.destroy({user_id: self.user_id, topic_id: self.topic_id, name: self.name})
 	end
 
 	# need a custom validation to ensure that the data value is the datatype that is expected based on the field value type and that the key is correct as well
 
-	def validate!
-		errors.add(:id, "can not be nil") if id.nil?
-	end
+	# def validate!
+	# 	errors.add(:id, "can not be nil") if id.nil?
+	# end
 
-	def self.human_attribute_name(attr, options = {})
-		"Name"
-	end
+	# def self.human_attribute_name(attr, options = {})
+	# 	"Name"
+	# end
 
 	def update_attributes(params)
-		body = params
+		self.query = params
 		save
 	end
 
 private
 
 	def self.map_results(result)
-		obj = self.new({type: result["_type"], id: result["_id"], body: result["_source"]})
+		user_id, topic_id = result["_type"].split(":")
+		obj = self.new({user_id: user_id, topic_id: topic_id, name: result["_id"], query: result["_source"]})
 		obj.instance_variable_set(:@new_record, false)
 		obj
 	end
@@ -117,11 +129,11 @@ private
 	end
 
 	def attributes_to_create
-		{index: elastic_index_name, type: type, id: id, body: body}
+		{index: elastic_index_name, type: elastic_index_type, id: self.name, body: self.query}
 	end
 
 	def attributes_to_update
-		{index: elastic_index_name, type: type, id: id, body: {doc: body} }
+		{index: elastic_index_name, type: elastic_index_type, id: self.name, body: {doc: self.query} }
 	end
 
 
@@ -140,13 +152,36 @@ private
 		response["ok"]
 	end
 
-	def self.elastic_index_name
-		@@index ||= Rails.env.test? ? topic.user.to_param : "_percolator"
+	def self.elastic_index_name(user_id)
+		@@index = Rails.env.test? ? user_id : "_percolator"
 	end
 
 	def elastic_index_name
-		self.class.elastic_index_name
+		self.class.elastic_index_name(self.user_id)
 	end	
+
+	def elastic_index_type
+		self.class.type_key(self.user_id, self.topic_id)
+	end
+	def self.type_key(user_id, topic_id)
+		"#{user_id}:#{topic_id}"
+	end
+
+	def self.extract_params(params)
+		user_id = params.delete(:user_id)
+  		topic_id = params.delete(:topic_id)
+  		raise ArgumentError, "user_id is required." if user_id.nil?
+  		raise ArgumentError, "topic_id is required." if topic_id.nil?
+  		[user_id, topic_id]
+	end
+
+	def self.extract_params_with_name(params)
+		user_id, topic_id = extract_params(params)
+  		name = params.delete(:name)
+  		raise ArgumentError, "name is required." if name.nil?
+  		[user_id, topic_id, name]
+	end
+
   end
 end
 

@@ -35,7 +35,7 @@ describe "GET sensit/topics#index" do
 
 	context "with > 1 topic" do
 		before(:each) do
-			@topics = [FactoryGirl.create(:topic, :name => "T1"), FactoryGirl.create(:topic, :name => "T2"), FactoryGirl.create(:topic, :name => "T3")]
+			@topics = [FactoryGirl.create(:topic, :name => "T1", user: @user), FactoryGirl.create(:topic, :name => "T2", user: @user), FactoryGirl.create(:topic, :name => "T3", user: @user)]
 		end
 		it "returns the expected json" do
 			process_request({page:3, per:1})

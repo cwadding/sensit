@@ -5,19 +5,19 @@ module Sensit
     respond_to :json
     # GET /percolators
     def index
-      @percolators = Topic::Percolator.search(type: elastic_type_name, body: query_params, size: (params[:per] || 10), from: (params[:page] || 0) * (params[:per] || 10))
+      @percolators = Topic::Percolator.search(topic_id: params[:topic_id], user_id: session[:user_id], body: {:query => {"match_all" => {  }}}, size: (params[:per] || 10), from: (params[:page] || 0) * (params[:per] || 10))
       respond_with(@percolators)
     end
 
     # GET /percolators/1
     def show
-      @percolator = Topic::Percolator.find(type: elastic_type_name, id: params[:id])
+      @percolator = Topic::Percolator.find(topic_id: params[:topic_id], user_id: session[:user_id], name: params[:id])
       respond_with(@percolator)
     end
 
     # POST /percolators
     def create
-      @percolator = Topic::Percolator.new(percolator_params.merge!(type: elastic_type_name))
+      @percolator = Topic::Percolator.new(percolator_params.merge!(topic_id: params[:topic_id], user_id: session[:user_id]))
       if @percolator.save
         respond_with(@percolator,:status => :created, :template => "sensit/percolators/show")
       else
@@ -27,7 +27,7 @@ module Sensit
 
     # PATCH/PUT /percolators/1
     def update
-      @percolator = Topic::Percolator.update(percolator_params.merge!(type: elastic_type_name,:id => params[:id]))
+      @percolator = Topic::Percolator.update(percolator_params.merge!(topic_id: params[:topic_id], user_id: session[:user_id],:name => params[:id]))
       if @percolator.present? && @percolator.valid?
         respond_with(@percolator,:status => :ok, :template => "sensit/percolators/show")
       else
@@ -37,10 +37,13 @@ module Sensit
 
     # DELETE /percolators/1
     def destroy
-      elastic_client.delete(index: elastic_index_name, type: elastic_type_name, id: params[:id])
+      Topic::Percolator.destroy(topic_id: params[:topic_id], user_id: session[:user_id], name: params[:id])
       head :status => :no_content
     end
 
+
+
+    private
 
     def elastic_index_name
       Rails.env.test? ? @user.to_param : "_percolator"
@@ -49,21 +52,21 @@ module Sensit
     def elastic_type_name
       "#{current_user.name}-#{params[:topic_id].to_s}"
     end
-
-
-
-    private
-
-    def query_params
-      params.permit(body: {query: {query_string: [:query]}})
-    end
       # Use callbacks to share common setup or constraints between actions.
     def elastic_client
       @client ||= ::Elasticsearch::Client.new
     end
+
+    def query_params
+      params.require(:percolator).require(:query).permit!
+    end
     # Only allow a trusted parameter "white list" through.
+
     def percolator_params
-      params.require(:percolator).permit!#(:id, :body)
+        params.require(:percolator).permit(:name).tap do |whitelisted|
+          whitelisted[:query] = params[:percolator][:query] if params[:percolator].has_key?(:query)
+        end
+
       # (:id, 
       #   body: {
       #     query: {

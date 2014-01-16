@@ -12,7 +12,7 @@ describe "POST sensit/feeds#create"  do
    # }
 
    before(:each) do
-      @topic = FactoryGirl.create(:topic_with_feeds, user: @user) 
+      @topic = FactoryGirl.create(:topic_with_feeds, user: @user)
    end
 
    def process_request(topic, params)
@@ -21,7 +21,7 @@ describe "POST sensit/feeds#create"  do
 
    context "multiple feeds" do
       context "with correct attributes" do
-         it "returns a 200 status code" do
+         it "returns a 201 status code", :current => true do
             fields = ["field1", "field2", "field3"]
             value_set1 = {}
             value_set2 = {}

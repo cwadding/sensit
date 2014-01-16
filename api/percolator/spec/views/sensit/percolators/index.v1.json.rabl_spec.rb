@@ -4,8 +4,8 @@ describe "sensit/percolators/index" do
   context "when percolator is incomplete" do
     before(:each) do
       @percolators = [
-        ::Sensit::Topic::Percolator.create({ type: "topic_type", id: "3", body: { query: { query_string: { query: 'foo' } } } }),
-        ::Sensit::Topic::Percolator.create({ type: "topic_type", id: "4", body: { query: { query_string: { query: 'bar' } } } })
+        ::Sensit::Topic::Percolator.create({ topic_id: "topic_type", user_id: @user.to_param, name: "3", query: { query: { query_string: { query: 'foo' } } } }),
+        ::Sensit::Topic::Percolator.create({ topic_id: "topic_type", user_id: @user.to_param, name: "4", query: { query: { query_string: { query: 'bar' } } } })
       ]
       assign(:percolators, @percolators)
     end

@@ -2,7 +2,7 @@ require 'spec_helper'
 describe "GET sensit/percolators#show" do
 
 	def process_request(percolator)
-		get "/api/topics/#{percolator.topic.to_param}/percolators/#{percolator.id}", valid_request, valid_session(percolator.topic.user.to_param)
+		get "/api/topics/#{percolator.topic.to_param}/percolators/#{percolator.name}", valid_request, valid_session(user_id: percolator.topic.user.to_param)
 	end
 
 	before(:each) do
@@ -18,7 +18,7 @@ describe "GET sensit/percolators#show" do
 		it "returns the expected json" do
 			percolator = ::Sensit::Topic::Percolator.create({ topic: @topic, name: "bar", query: { query: { query_string: { query: 'bar' } } } })
 			process_request(percolator)
-			response.body.should be_json_eql("{\"name\":\"#{percolator.id}\",\"query\":#{percolator.query.to_json}}")
+			response.body.should be_json_eql("{\"name\":\"#{percolator.name}\",\"query\":#{percolator.query.to_json}}")
 		end
 
 	end

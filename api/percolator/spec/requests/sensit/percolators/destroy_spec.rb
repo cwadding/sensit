@@ -2,7 +2,7 @@ require 'spec_helper'
 describe "DELETE sensit/percolators#destroy" do
 
 	def process_request(percolator)
-		delete "/api/topics/#{percolator.topic.to_param}/percolators/#{percolator.id}", valid_request, valid_session(percolator.topic.user.to_param)
+		delete "/api/topics/#{percolator.topic.to_param}/percolators/#{percolator.name}", valid_request, valid_session( user_id: percolator.topic.user.to_param)
 	end
 
 	context "when the percolator exists" do
@@ -23,7 +23,7 @@ describe "DELETE sensit/percolators#destroy" do
 			expect {
 				process_request(@percolator)
 				client.indices.refresh(:index => @user.to_param)
-			}.to change(Sensit::Topic::Percolator, :count).by(-1)
+			}.to change{::Sensit::Topic::Percolator.count({ topic_id: @topic.to_param, user_id: @user.to_param})}.by(-1)
         end
 
  #        it "removes that feed from the elastic_search index"

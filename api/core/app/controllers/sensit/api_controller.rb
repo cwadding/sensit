@@ -1,14 +1,15 @@
 module Sensit
 	class ApiController < ActionController::Base
-		# http_basic_authenticate_with name: "admin", password: "secret"
 		# before_filter :restrict_access
 
-      def elastic_index_name
-        session[:user_id]
-      end
-      def elastic_type_name
-        params[:topic_id].to_s
-      end
+		# force_ssl
+
+		def elastic_index_name
+			session[:user_id]
+		end
+		def elastic_type_name
+			params[:topic_id].to_s
+		end
 
 		# def restrict_access
 		#   api_key = ApiKey.find_by_access_token(params[:access_token])

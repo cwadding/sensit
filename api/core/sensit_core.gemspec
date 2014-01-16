@@ -23,7 +23,7 @@ Gem::Specification.new do |s|
   s.add_dependency "elasticsearch", "~> 0.4.1"
   s.add_dependency 'roo', "~> 1.13.0"
   s.add_dependency 'friendly_id', '~> 5.0.2'
-
+  s.add_dependency 'bcrypt-ruby', "~> 3.1.2"
 
   s.add_development_dependency "sqlite3"
   s.add_development_dependency 'rspec-rails'

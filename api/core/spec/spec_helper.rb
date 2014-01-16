@@ -54,9 +54,14 @@ RSpec.configure do |config|
   end
 
   config.before(:all) do
-    @user = Sensit::User.create(:name => "test_user")
+    Sensit::User.destroy_all
+    @user = Sensit::User.create(:name => "test_user", :password => "foobar")
     client = ::Elasticsearch::Client.new
     client.indices.create({index: @user.to_param, :body => {:settings => {:index => {:store => {:type => :memory}}}}})
+  end
+
+  config.before(:each, :type => :request) do
+    post "/api/sessions", valid_request({name: @user.name, password: @user.password}), valid_session
   end
 
   config.after(:each) do
@@ -68,6 +73,7 @@ RSpec.configure do |config|
   config.after(:all) do
     client = ::Elasticsearch::Client.new
     client.indices.delete(index: @user.to_param)
+    @user.destroy
   end
 
   # config.before(:suite) do

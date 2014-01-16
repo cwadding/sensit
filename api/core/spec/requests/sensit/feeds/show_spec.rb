@@ -31,14 +31,14 @@ describe "GET sensit/feeds#show" do
 	context "when the field does not exist" do
 		it "is unsuccessful" do
 			expect{
-			status = get "/api/topics/1/feeds/1", valid_request, valid_session(:user_id => topic.user.to_param)
+			status = get "/api/topics/1/feeds/1", valid_request, valid_session(:user_id => @user.to_param)
 			}.to raise_error(Elasticsearch::Transport::Transport::Errors::NotFound)
 			#status.should == 404
 		end
 
 		it "returns the expected json" do
 			expect{
-				get "/api/topics/1/feeds/1", valid_request, valid_session(:user_id => topic.user.to_param)
+				get "/api/topics/1/feeds/1", valid_request, valid_session(:user_id => @user.to_param)
 			}.to raise_error(Elasticsearch::Transport::Transport::Errors::NotFound)
 			
 			#response.body.should be_json_eql("{\"id\":1,\"name\":\"Test node\",\"description\":\"A description of my node\",\"topics\":[]}")

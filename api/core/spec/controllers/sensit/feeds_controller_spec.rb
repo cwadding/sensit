@@ -22,7 +22,7 @@ module Sensit
     describe FeedsController do
 
       before(:each) do
-        @topic = Topic.create(:name => "MyTopic")
+        @topic = Topic.create(:name => "MyTopic", :user => @user)
         # field = @topic.fields.build( :key => "assf", :name => "Assf" )
         # field.save
       end
@@ -44,7 +44,7 @@ module Sensit
         {}.merge!(params)
       end
 
-      describe "GET show", :current => true do
+      describe "GET show" do
         it "assigns the requested feed as @feed" do
           feed = ::Sensit::Topic::Feed.create valid_attributes.merge!(index: @user.id, type: @topic.to_param)
           get :show, valid_request(:id => feed.id, topic_id: @topic.to_param), valid_session(user_id: @user.to_param)

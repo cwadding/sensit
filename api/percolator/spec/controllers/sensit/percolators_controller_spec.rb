@@ -27,7 +27,7 @@ module Sensit
       # ::Sensit::Topic::Percolator. As you add validations to ::Sensit::Topic::Percolator, be sure to
       # update the return value of this method accordingly.
       def valid_attributes(h={})
-        { type: "topic_type", id: "3", body: { query: { query_string: { query: 'foo' } } } }.merge!(h)
+        { :topic_id => "topic_type", name: "3", query: { query: { query_string: { query: 'foo' } } } }.merge!(h)
       end
 
       # This should return the minimal set of values that should be in the session
@@ -39,9 +39,9 @@ module Sensit
 
       describe "GET show" do
         it "assigns the requested percolator as @percolator" do
-          percolator = ::Sensit::Topic::Percolator.create valid_attributes
-          get :show, valid_request(:id => percolator.id), valid_session(user_id: @user.to_param)
-          assigns(:percolator).id.should eq(percolator.id)
+          percolator = ::Sensit::Topic::Percolator.create valid_attributes(user_id: @user.to_param)
+          get :show, valid_request(:id => percolator.name), valid_session(user_id: @user.to_param)
+          assigns(:percolator).name.should eq(percolator.name)
         end
       end
 
@@ -50,19 +50,19 @@ module Sensit
           it "creates a new ::Sensit::Topic::Percolator" do
             client = ::Elasticsearch::Client.new
             expect {
-              post :create, valid_request(:percolator => { type: "topic_type", :id => "mytest1", :body => {query: { query_string: { query: 'foo' } } }}), valid_session(user_id: @user.to_param)
+              post :create, valid_request(:percolator => { topic_id: "topic_type", user_id: @user.to_param, :name => "mytest1", :query => {query: { query_string: { query: 'foo' } } }}), valid_session(user_id: @user.to_param)
               client.indices.refresh(:index => @user.to_param)
-            }.to change{::Sensit::Topic::Percolator.count({ type: "topic_type"})}.by(1)
+            }.to change{::Sensit::Topic::Percolator.count({ topic_id: "topic_type", user_id: @user.to_param})}.by(1)
           end
 
           it "assigns a newly created percolator as @percolator" do
-            post :create, valid_request(:percolator => {  type: "topic_type", :id => "mytest2", :body => {query: { query_string: { query: 'foo' } } } }), valid_session(user_id: @user.to_param)
+            post :create, valid_request(:percolator => {  topic_id: "topic_type", user_id: @user.to_param, :name => "mytest2", :query => {query: { query_string: { query: 'foo' } } } }), valid_session(user_id: @user.to_param)
             assigns(:percolator).should be_a(::Sensit::Topic::Percolator)
             # assigns(:percolator).should_not be_a_new_record
           end
 
           it "renders to the created percolator" do
-            post :create, valid_request(:percolator => { type: "topic_type", :id => "mytest3", :body => {query: { query_string: { query: 'foo' } } } }), valid_session(user_id: @user.to_param)
+            post :create, valid_request(:percolator => { topic_id: "topic_type", user_id: @user.to_param, :name => "mytest3", :query => {query: { query_string: { query: 'foo' } } } }), valid_session(user_id: @user.to_param)
             response.should render_template("sensit/percolators/show")
           end
         end
@@ -71,14 +71,14 @@ module Sensit
           it "assigns a newly created but unsaved percolator as @percolator" do
             # Trigger the behavior that occurs when invalid params are submitted
             ::Sensit::Topic::Percolator.any_instance.stub(:save).and_return(false)
-            post :create, valid_request(:percolator => { type: "topic_type", :id => "mytest", :body => {query: { query_string: { query: 'foo' } } }  }), valid_session(user_id: @user.to_param)
+            post :create, valid_request(:percolator => { topic_id: "topic_type", user_id: @user.to_param, :name => "mytest", :query => {query: { query_string: { query: 'foo' } } }  }), valid_session(user_id: @user.to_param)
             assigns(:percolator).should be_a_new(::Sensit::Topic::Percolator)
           end
 
           it "re-renders the 'new' template" do
             # Trigger the behavior that occurs when invalid params are submitted
             ::Sensit::Topic::Percolator.any_instance.stub(:save).and_return(false)
-            post :create, valid_request(:percolator => { type: "topic_type", :id => "mytest", :body => {query: { query_string: { query: 'foo' } } }  }), valid_session(user_id: @user.to_param)
+            post :create, valid_request(:percolator => { topic_id: "topic_type", user_id: @user.to_param, :name => "mytest", :query => {query: { query_string: { query: 'foo' } } }  }), valid_session(user_id: @user.to_param)
             response.status.should == 422
           end
         end
@@ -87,45 +87,45 @@ module Sensit
       describe "PUT update" do
         describe "with valid params" do
           it "updates the requested percolator" do
-            percolator = ::Sensit::Topic::Percolator.create valid_attributes(id:4)
+            percolator = ::Sensit::Topic::Percolator.create valid_attributes(user_id: @user.to_param, name:4)
             # Assuming there are no other percolator_percolators in the database, this
             # specifies that the ::Sensit::Topic::Percolator created on the previous line
             # receives the :update_attributes message with whatever params are
             # submitted in the request.
-            ::Sensit::Topic::Percolator.should_receive(:update).with({"id" => percolator.id, "type" => percolator.type, "body" => {"query" => { "query_string" => { "query" => 'foo' } } }  }).and_return(percolator)
-            put :update, valid_request(:id => percolator.id, :percolator => { :body => {query: { query_string: { query: 'foo' } } }  }), valid_session(user_id: @user.to_param)
+            ::Sensit::Topic::Percolator.should_receive(:update).with({"name" => percolator.name, "topic_id" => percolator.topic_id, "user_id" => @user.to_param, "query" => {"query" => { "query_string" => { "query" => 'foo' } } }  }).and_return(percolator)
+            put :update, valid_request(:id => percolator.name, :percolator => { :query => {query: { query_string: { query: 'foo' } } }  }), valid_session(user_id: @user.to_param)
           end
 
           it "assigns the requested percolator as @percolator" do
-            percolator = ::Sensit::Topic::Percolator.create valid_attributes(id:5)
-            put :update, valid_request(:id => percolator.id, :percolator => { :body => {query: { query_string: { query: 'foo' } } }  }), valid_session(user_id: @user.to_param)
-            assigns(:percolator).id.should == percolator.id
+            percolator = ::Sensit::Topic::Percolator.create valid_attributes(user_id: @user.to_param, name:5)
+            put :update, valid_request(:id => percolator.name, :percolator => { :query => {query: { query_string: { query: 'foo' } } }  }), valid_session(user_id: @user.to_param)
+            assigns(:percolator).name.should == percolator.name
           end
 
           it "renders the percolator" do
-            percolator = ::Sensit::Topic::Percolator.create valid_attributes(id:6)
-            put :update, valid_request(:id => percolator.id, :percolator => { :body => {query: { query_string: { query: 'foo' } } }  }), valid_session(user_id: @user.to_param)
+            percolator = ::Sensit::Topic::Percolator.create valid_attributes(user_id: @user.to_param, name:6)
+            put :update, valid_request(:id => percolator.name, :percolator => { :query => {query: { query_string: { query: 'foo' } } }  }), valid_session(user_id: @user.to_param)
             response.should render_template("sensit/percolators/show")
           end
         end
 
         describe "with invalid params" do
           it "assigns the percolator as @percolator" do
-            percolator = ::Sensit::Topic::Percolator.create valid_attributes(id:7)
+            percolator = ::Sensit::Topic::Percolator.create valid_attributes(user_id: @user.to_param, name:7)
             # Trigger the behavior that occurs when invalid params are submitted
             percolator.stub(:valid?).and_return(false)
-            ::Sensit::Topic::Percolator.should_receive(:update).with({"id" => percolator.id, "type" => percolator.type, "body" => {"query" => { "query_string" => { "query" => 'foo' } } }  }).and_return(percolator)
-            put :update, valid_request(:id => percolator.id, :percolator => { :body => {query: { query_string: { query: 'foo' } } }  } ), valid_session(user_id: @user.to_param)
-            assigns(:percolator).id.should == percolator.id
+            ::Sensit::Topic::Percolator.should_receive(:update).with({"name" => percolator.name, "topic_id" => percolator.topic_id, "user_id" => @user.to_param, "query" => {"query" => { "query_string" => { "query" => 'foo' } } }  }).and_return(percolator)
+            put :update, valid_request(:id => percolator.name, :percolator => { :query => {query: { query_string: { query: 'foo' } } }  } ), valid_session(user_id: @user.to_param)
+            assigns(:percolator).name.should == percolator.name
           end
 
           it "re-renders the 'edit' template" do
-            percolator = ::Sensit::Topic::Percolator.create valid_attributes(id:8)
+            percolator = ::Sensit::Topic::Percolator.create valid_attributes(user_id: @user.to_param, name:8)
             # Trigger the behavior that occurs when invalid params are submitted
             percolator.stub(:valid?).and_return(false)
-            ::Sensit::Topic::Percolator.should_receive(:update).with({"id" => percolator.id, "type" => percolator.type, "body" => {"query" => { "query_string" => { "query" => 'foo' } } }  }).and_return(percolator)
+            ::Sensit::Topic::Percolator.should_receive(:update).with({"name" => percolator.name, "topic_id" => percolator.topic_id, "user_id" => @user.to_param, "query" => {"query" => { "query_string" => { "query" => 'foo' } } }  }).and_return(percolator)
 
-            put :update, valid_request(:id => percolator.id, :percolator => { :body => {query: { query_string: { query: 'foo' } } }  } ), valid_session(user_id: @user.to_param)
+            put :update, valid_request(:id => percolator.name, :percolator => { :query => {query: { query_string: { query: 'foo' } } }  } ), valid_session(user_id: @user.to_param)
             response.status.should == 422
           end
         end
@@ -133,18 +133,18 @@ module Sensit
 
       describe "DELETE destroy" do
         it "destroys the requested percolator" do
-          percolator = ::Sensit::Topic::Percolator.create valid_attributes(id:9)
+          percolator = ::Sensit::Topic::Percolator.create valid_attributes(user_id: @user.to_param, name:9)
           client = ::Elasticsearch::Client.new
           client.indices.refresh(:index => @user.to_param)
           expect {
-            delete :destroy, valid_request(:id => percolator.id), valid_session(user_id: @user.to_param)
+            delete :destroy, valid_request(:id => percolator.name), valid_session(user_id: @user.to_param)
             client.indices.refresh(:index => @user.to_param)
-          }.to change{::Sensit::Topic::Percolator.count({type: "topic_type"})}.by(-1)
+          }.to change{::Sensit::Topic::Percolator.count({topic_id: "topic_type", user_id: @user.to_param})}.by(-1)
         end
 
         it "redirects to the percolators list" do
-          percolator = ::Sensit::Topic::Percolator.create valid_attributes(id:10)
-          delete :destroy, valid_request(:id => percolator.id), valid_session(user_id: @user.to_param)
+          percolator = ::Sensit::Topic::Percolator.create valid_attributes(user_id: @user.to_param, name:10)
+          delete :destroy, valid_request(:id => percolator.name), valid_session(user_id: @user.to_param)
           response.status.should == 204
         end
       end
@@ -156,39 +156,39 @@ module Sensit
         context "match queries" do
           context "boolean type" do
             # it "no properties" do
-            #   controller.params = {percolator: {id: 1, body: {query: {match: {message: "this is a test"}}}}}
+            #   controller.params = {percolator: {name: 1, query:{query: {match: {message: "this is a test"}}}}}
             #   @new_params = controller.send(:percolator_params)
             # end
             it "with operator and minimum_should_match" do
-              controller.params = {percolator: {id: 1, body: {query: {match: {message: {query: "this is a test", operator: "and", minimum_should_match: 1, zero_terms_query: "all", cutoff_frequency: 0.0001}}}}}}
+              controller.params = {percolator: {name: 1, query:{query: {match: {message: {query: "this is a test", operator: "and", minimum_should_match: 1, zero_terms_query: "all", cutoff_frequency: 0.0001}}}}}}
               @new_params = controller.send(:percolator_params)
             end
           end
           context "phrase type" do
             # it "no properties" do
-            #   controller.params = {percolator: {id: 1, body: {query: {match_phrase: {message: "this is a test"}}}}}
+            #   controller.params = {percolator: {name: 1, query:{query: {match_phrase: {message: "this is a test"}}}}}
             #   @new_params = controller.send(:percolator_params)
             # end
             it "with analyzer" do
-              controller.params = {percolator: {id: 1, body: {query: {match_phrase: {message: {query: "this is a test", analyzer:"my_analyzer"}}}}}}
+              controller.params = {percolator: {name: 1, query:{query: {match_phrase: {message: {query: "this is a test", analyzer:"my_analyzer"}}}}}}
               @new_params = controller.send(:percolator_params)
             end
             it "specifying type" do
-              controller.params = {percolator: {id: 1, body: {query: {match: {message: {query: "this is a test", type: "phrase"}}}}}}
+              controller.params = {percolator: {name: 1, query:{query: {match: {message: {query: "this is a test", type: "phrase"}}}}}}
               @new_params = controller.send(:percolator_params)
             end
           end
           context "match phrase prefix type" do
             # it "no properties" do
-            #   controller.params = {percolator: {id: 1, body: {query: {match_phrase_prefix: {message: "this is a test"}}}}}
+            #   controller.params = {percolator: {name: 1, query:{query: {match_phrase_prefix: {message: "this is a test"}}}}}
             #   @new_params = controller.send(:percolator_params)
             # end
             it "with max_expansions" do
-              controller.params = {percolator: {id: 1, body: {query: {match_phrase_prefix: {message: {query: "this is a test", max_expansions:10}}}}}}
+              controller.params = {percolator: {name: 1, query:{query: {match_phrase_prefix: {message: {query: "this is a test", max_expansions:10}}}}}}
               @new_params = controller.send(:percolator_params)
             end
             it "specifying type" do
-              controller.params = {percolator: {id: 1, body: {query: {match: {message: {query: "this is a test", type: "phrase_prefix"}}}}}}
+              controller.params = {percolator: {name: 1, query:{query: {match: {message: {query: "this is a test", type: "phrase_prefix"}}}}}}
               @new_params = controller.send(:percolator_params)
             end
           end   
@@ -196,22 +196,22 @@ module Sensit
 
         context "multi_match queries" do
             it "default" do
-              controller.params = {percolator: {id: 1, body: {query: {multi_match: {query: "this is a test", fields: ["subject", "message"]}}}}}
+              controller.params = {percolator: {name: 1, query:{query: {multi_match: {query: "this is a test", fields: ["subject", "message"]}}}}}
               @new_params = controller.send(:percolator_params)
             end
             it "with use_dis_max" do
-              controller.params = {percolator: {id: 1, body: {query: {multi_match: {query: "this is a test", fields: ["subject", "message"], use_dis_max: true}}}}}
+              controller.params = {percolator: {name: 1, query:{query: {multi_match: {query: "this is a test", fields: ["subject", "message"], use_dis_max: true}}}}}
               @new_params = controller.send(:percolator_params)
             end
         end
 
         context "bool queries" do
             it "default" do
-              controller.params = {percolator: {id: 1, body: {query: {"bool" => { "must" => { "term" => { "user" => "kimchy" } }, "must_not" => { "range" => { "age" => { "from" => 10, "to" => 20 } } }, "should" => [{"term" => { "tag" => "wow" }},{"term" => { "tag" => "elasticsearch" }}],"minimum_should_match" => 1}}}}}
+              controller.params = {percolator: {name: 1, query:{query: {"bool" => { "must" => { "term" => { "user" => "kimchy" } }, "must_not" => { "range" => { "age" => { "from" => 10, "to" => 20 } } }, "should" => [{"term" => { "tag" => "wow" }},{"term" => { "tag" => "elasticsearch" }}],"minimum_should_match" => 1}}}}}
               @new_params = controller.send(:percolator_params)
             end
             it "common term alternative" do
-              controller.params = {percolator: {id: 1, body: {query: {"bool"=> { "must"=> [ { "term"=> { "body"=> "nelly"}}, { "term"=> { "body"=> "elephant"}}, { "term"=> { "body"=> "cartoon"}}],"should"=> [{ "term"=> { "body"=> "the"}}, { "term"=> { "body"=> "as"}},{ "term"=> { "body"=> "a"}}], "minimum_should_match"=> 2}}}}}
+              controller.params = {percolator: {name: 1, query:{query: {"bool"=> { "must"=> [ { "term"=> { "body"=> "nelly"}}, { "term"=> { "body"=> "elephant"}}, { "term"=> { "body"=> "cartoon"}}],"should"=> [{ "term"=> { "body"=> "the"}}, { "term"=> { "body"=> "as"}},{ "term"=> { "body"=> "a"}}], "minimum_should_match"=> 2}}}}}
               @new_params = controller.send(:percolator_params)
             end
 
@@ -220,36 +220,36 @@ module Sensit
 
         context "common queries" do
             it "default" do
-              controller.params = {percolator: {id: 1, body: {query: {"common" => {"body" => {"query" => "nelly the elephant as a cartoon", "cutoff_frequency" => 0.001, "low_freq_operator" => "and", "minimum_should_match"=> 2}}}}}}
+              controller.params = {percolator: {name: 1, query:{query: {"common" => {"body" => {"query" => "nelly the elephant as a cartoon", "cutoff_frequency" => 0.001, "low_freq_operator" => "and", "minimum_should_match"=> 2}}}}}}
               @new_params = controller.send(:percolator_params)
             end
             it "minimum_should_match with low and high freq" do
-              controller.params = {percolator: {id: 1, body: {query: {"common" => {"body" => {"query" => "nelly the elephant as a cartoon", "cutoff_frequency" => 0.001, "low_freq_operator" => "and", "minimum_should_match"=> {"low_freq" => 2, "high_freq" => 3}}}}}}}
+              controller.params = {percolator: {name: 1, query:{query: {"common" => {"body" => {"query" => "nelly the elephant as a cartoon", "cutoff_frequency" => 0.001, "low_freq_operator" => "and", "minimum_should_match"=> {"low_freq" => 2, "high_freq" => 3}}}}}}}
               @new_params = controller.send(:percolator_params)
             end
         end
 
         context "dis max queries" do
             it "default" do
-              controller.params = {percolator: {id: 1, body: {query: { "dis_max" => {"tie_breaker" => 0.7, "queries" => [{"term" => { "age" => 34 }}, { "term" => { "age" => 35 }}]}}}}}
+              controller.params = {percolator: {name: 1, query:{query: { "dis_max" => {"tie_breaker" => 0.7, "queries" => [{"term" => { "age" => 34 }}, { "term" => { "age" => 35 }}]}}}}}
               @new_params = controller.send(:percolator_params)
             end
         end
         
         context "match_all query" do
             it "default" do
-              controller.params = {percolator: {id: 1, body: {query: {"match_all" => {}}}}}
+              controller.params = {percolator: {name: 1, query:{query: {"match_all" => {}}}}}
               @new_params = controller.send(:percolator_params)
             end
         end
 
         context "prefix query" do
             # it "default" do
-            #   controller.params = {percolator: {id: 1, body: {query: {"prefix" => { "user" => "ki" }}}}}
+            #   controller.params = {percolator: {name: 1, query:{query: {"prefix" => { "user" => "ki" }}}}}
             #   @new_params = controller.send(:percolator_params)
             # end
             it "long form" do
-              controller.params = {percolator: {id: 1, body: {query: {"prefix" => { "user" => {"prefix" => "ki"} }}}}}
+              controller.params = {percolator: {name: 1, query:{query: {"prefix" => { "user" => {"prefix" => "ki"} }}}}}
               @new_params = controller.send(:percolator_params)
             end            
         end     
@@ -257,43 +257,43 @@ module Sensit
         
         context "query_string query" do
             it "default_field" do
-              controller.params = {percolator: {id: 1, body: {query: {"query_string" => { "default_field" => "content", "query" => "this AND that OR thus", "default_operator" => "OR", "allow_leading_wildcard" => true }}}}}
+              controller.params = {percolator: {name: 1, query:{query: {"query_string" => { "default_field" => "content", "query" => "this AND that OR thus", "default_operator" => "OR", "allow_leading_wildcard" => true }}}}}
               @new_params = controller.send(:percolator_params)
             end
             it "multi_field" do
-              controller.params = {percolator: {id: 1, body: {query: {"query_string" => { "fields" => ["content", "name"], "query" => "this AND that OR thus", "use_dis_max" => true }}}}}
+              controller.params = {percolator: {name: 1, query:{query: {"query_string" => { "fields" => ["content", "name"], "query" => "this AND that OR thus", "use_dis_max" => true }}}}}
               @new_params = controller.send(:percolator_params)
             end       
         end
 
         context "range query" do
             it "gte and lte" do
-              controller.params = {percolator: {id: 1, body: {query: {"range" => {"age" => {"gte" => 10,"lte" => 20}}}}}}
+              controller.params = {percolator: {name: 1, query:{query: {"range" => {"age" => {"gte" => 10,"lte" => 20}}}}}}
               @new_params = controller.send(:percolator_params)
             end
             it "gt and lt" do
-              controller.params = {percolator: {id: 1, body: {query: {"range" => {"age" => {"gt" => 10,"lt" => 20}}}}}}
+              controller.params = {percolator: {name: 1, query:{query: {"range" => {"age" => {"gt" => 10,"lt" => 20}}}}}}
               @new_params = controller.send(:percolator_params)
             end  
         end
 
         context "span first query" do
             it "default" do
-              controller.params = {percolator: {id: 1, body: {query: {"span_first" => {"match" => {"span_term" => { "user" => "kimchy" }},"end" => 3}}}}}
+              controller.params = {percolator: {name: 1, query:{query: {"span_first" => {"match" => {"span_term" => { "user" => "kimchy" }},"end" => 3}}}}}
               @new_params = controller.send(:percolator_params)
             end
         end  
 
         context "span-multi query" do
             it "default" do
-              controller.params = {percolator: {id: 1, body: {query: {"span_multi" => {"match" => {"prefix" => { "user" =>  { "value" => "ki" } }}}}}}}
+              controller.params = {percolator: {name: 1, query:{query: {"span_multi" => {"match" => {"prefix" => { "user" =>  { "value" => "ki" } }}}}}}}
               @new_params = controller.send(:percolator_params)
             end
         end
 
         context "span-near query" do
             it "default" do
-              controller.params = {percolator: {id: 1, body: {query: {"span_near" => {"clauses" => [{ "span_term" => { "field" => "value1" } },{ "span_term" => { "field" => "value2" } },{ "span_term" => { "field" => "value3" } }],"slop" => 12,"in_order" => false,"collect_payloads" => false}}}}}
+              controller.params = {percolator: {name: 1, query:{query: {"span_near" => {"clauses" => [{ "span_term" => { "field" => "value1" } },{ "span_term" => { "field" => "value2" } },{ "span_term" => { "field" => "value3" } }],"slop" => 12,"in_order" => false,"collect_payloads" => false}}}}}
               @new_params = controller.send(:percolator_params)
             end
         end
@@ -301,50 +301,50 @@ module Sensit
 
         context "span-not query" do
             it "default" do
-              controller.params = {percolator: {id: 1, body: {query: {"span_not" => {"include" => {"span_term" => { "field1" => "value1" }},"exclude" => {"span_term" => { "field2" => "value2" }}}}}}}
+              controller.params = {percolator: {name: 1, query:{query: {"span_not" => {"include" => {"span_term" => { "field1" => "value1" }},"exclude" => {"span_term" => { "field2" => "value2" }}}}}}}
               @new_params = controller.send(:percolator_params)
             end
         end 
 
         context "span-or query" do
             it "default" do
-              controller.params = {percolator: {id: 1, body: {query: {"span_or" => {"clauses" => [{ "span_term" => { "field" => "value1" } },{ "span_term" => { "field" => "value2" } },{ "span_term" => { "field" => "value3" } }]}}}}}
+              controller.params = {percolator: {name: 1, query:{query: {"span_or" => {"clauses" => [{ "span_term" => { "field" => "value1" } },{ "span_term" => { "field" => "value2" } },{ "span_term" => { "field" => "value3" } }]}}}}}
               @new_params = controller.send(:percolator_params)
             end
         end
 
         context "span-term query" do
             # it "default" do
-            #   controller.params = {percolator: {id: 1, body: {query: {"span_term" => { "user" => "kimchy" }}}}}
+            #   controller.params = {percolator: {name: 1, query:{query: {"span_term" => { "user" => "kimchy" }}}}}
             #   @new_params = controller.send(:percolator_params)
             # end
 
             it "long form" do
-              controller.params = {percolator: {id: 1, body: {query: {"span_term" => { "user" => { "term" => "kimchy"} }}}}}
+              controller.params = {percolator: {name: 1, query:{query: {"span_term" => { "user" => { "term" => "kimchy"} }}}}}
               @new_params = controller.send(:percolator_params)
             end            
         end          
 
         context "term queries" do
           it "with key value pairs" do
-            controller.params = {percolator: {id: 1, body: {query: {term: {user: "kimchy"}}}}}
+            controller.params = {percolator: {name: 1, query:{query: {term: {user: "kimchy"}}}}}
             @new_params = controller.send(:percolator_params)
           end
 
           it "with a key and a value" do
-            controller.params = {percolator: {id: 1, body: {query: {term: {user: {value: "kimchy"}}}}}}
+            controller.params = {percolator: {name: 1, query:{query: {term: {user: {value: "kimchy"}}}}}}
             @new_params = controller.send(:percolator_params)
           end
         end
 
         context "terms queries" do
           it "with array of values" do
-            controller.params = {percolator: {id: 1, body: {query: {terms: {tags: [ "blue", "pill" ], minimum_should_match: 1}}}}}
+            controller.params = {percolator: {name: 1, query:{query: {terms: {tags: [ "blue", "pill" ], minimum_should_match: 1}}}}}
             @new_params = controller.send(:percolator_params)
           end
 
           it "with array of values using `in` alias" do
-            controller.params = {percolator: {id: 1, body: {query: {in: {tags: [ "blue", "pill" ], minimum_should_match: 1}}}}}
+            controller.params = {percolator: {name: 1, query:{query: {in: {tags: [ "blue", "pill" ], minimum_should_match: 1}}}}}
             @new_params = controller.send(:percolator_params)
           end
         end

@@ -1,0 +1,1 @@
+require 'sensit/core/test/request_helpers'

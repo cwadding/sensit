@@ -2,11 +2,11 @@ require 'spec_helper'
 
 describe "sensit/percolators/show" do
   before(:each) do
-  	@percolator = assign(:feed, ::Sensit::Topic::Percolator.create({ type: "topic_type", id: "3", body: { query: { query_string: { query: 'foo' } } } }))
+  	@percolator = assign(:feed, ::Sensit::Topic::Percolator.create({ topic_id: "topic_type", user_id: @user.to_param, name: "3", query: { query: { query_string: { query: 'foo' } } } }))
   end
   it "renders the json data" do
     render
-    [:id, :body].each do |key|
+    [:name, :query].each do |key|
       rendered.should have_json_path("#{key.to_s}")
     end
   end
