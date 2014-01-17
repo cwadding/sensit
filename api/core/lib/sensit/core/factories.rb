@@ -16,18 +16,17 @@ FactoryGirl.define do
     factory :topic_with_feeds do
 
       ignore do
-        feeds_count 1
+        feeds_count 3
       end
       
       after(:create) do |topic, evaluator|
         key_arr = []
         evaluator.feeds_count.times do |i|
           client = ::Elasticsearch::Client.new
-          Sensit::Topic::Feed.create({index: topic.user.id, type: topic.to_param, at: Time.now, :tz => "UTC", values: {value1: i}})
-          client.indices.refresh(:index => topic.user.id)
+          Sensit::Topic::Feed.create({index: topic.user.to_param, type: topic.to_param, at: Time.now, :tz => "UTC", values: {value1: i}})
+          client.indices.refresh(:index => topic.user.to_param)
         end
       end
     end
   end
-
 end

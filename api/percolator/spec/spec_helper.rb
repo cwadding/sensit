@@ -6,16 +6,10 @@ require File.expand_path("../dummy/config/environment.rb",  __FILE__)
 
 load "#{Rails.root.to_s}/db/schema.rb" unless ENV['from_file']
 
-require "rails/test_help"
-require 'rspec/rails'
-require 'rspec/autorun'
-require 'factory_girl'
-require 'shoulda-matchers'
 # require 'database_cleaner'
 require 'sensit_percolator'
-require 'json_spec'
-require "sensit/core/factories"
 require "sensit/core/test/all"
+require "sensit/core/factories"
 
 Rails.backtrace_cleaner.remove_silencers!
 
@@ -43,48 +37,4 @@ RSpec.configure do |config|
   # automatically. This will be the default behavior in future versions of
   # rspec-rails.
   config.infer_base_class_for_anonymous_controllers = false
-
-  config.around do |example|
-      ActiveRecord::Base.transaction do
-        example.run
-        raise ActiveRecord::Rollback
-      end
-  end
-
-  config.before(:all) do
-    Sensit::User.destroy_all
-    @user = Sensit::User.create(:name => "test_user", :password => "foobar")
-    client = ::Elasticsearch::Client.new
-    client.indices.delete index: @user.to_param if client.indices.exists index: @user.to_param
-    client.indices.create({index: @user.to_param, :body => {:settings => {:index => {:store => {:type => :memory}}}}}) 
-  end
-
-  config.before(:each, :type => :request) do
-    post "/api/sessions", valid_request({name: @user.name, password: @user.password}), valid_session
-  end
-
-  config.after(:each) do
-    client = ::Elasticsearch::Client.new
-    client.indices.flush(index: @user.to_param, refresh: true)
-  end
-
-
-  config.after(:all) do
-    client = ::Elasticsearch::Client.new
-    client.indices.delete(index: @user.to_param)
-    @user.destroy
-  end
-
-  # config.before(:suite) do
-  #   DatabaseCleaner.strategy = :transaction
-  #   DatabaseCleaner.clean_with(:truncation)
-  # end
-
-  # config.before(:each) do
-  #   DatabaseCleaner.start
-  # end
-
-  # config.after(:each) do
-  #   DatabaseCleaner.clean
-  # end
 end

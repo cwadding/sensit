@@ -4,18 +4,14 @@ require File.expand_path("../dummy/config/environment.rb",  __FILE__)
 
 load "#{Rails.root.to_s}/db/schema.rb" unless ENV['from_file']
 
-require "rails/test_help"
-require 'rspec/rails'
-require 'rspec/autorun'
-require 'factory_girl'
-require 'shoulda-matchers'
-# require 'database_cleaner'
 require 'sensit_subscriptions'
-require 'json_spec'
+require "sensit/core/test/dependencies"
+require "sensit/core/test/request_helpers"
+require "sensit/core/test/user_cleaner"
+require "sensit/core/factories"
+
 Rails.backtrace_cleaner.remove_silencers!
 
-# Load support files
-Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
 
 Dir["#{File.dirname(__FILE__)}/factories/*.rb"].each { |f| require f }
 
@@ -44,43 +40,4 @@ RSpec.configure do |config|
   # rspec-rails.
   config.infer_base_class_for_anonymous_controllers = false
 
-  config.around do |example|
-      ActiveRecord::Base.transaction do
-        example.run
-        raise ActiveRecord::Rollback
-      end
-  end
-
-  config.around do |example|
-      ActiveRecord::Base.transaction do
-        example.run
-        raise ActiveRecord::Rollback
-      end
-  end
-
-  config.before(:all) do
-    Sensit::User.destroy_all
-    @user = Sensit::User.create(:name => "test_user", :password => "foobar")
-  end
-
-  config.before(:each, :type => :request) do
-    post "/api/sessions", valid_request({name: @user.name, password: @user.password}), valid_session
-  end
-
-  config.after(:all) do
-    @user.destroy
-  end
-
-  # config.before(:suite) do
-  #   DatabaseCleaner.strategy = :transaction
-  #   DatabaseCleaner.clean_with(:truncation)
-  # end
-
-  # config.before(:each) do
-  #   DatabaseCleaner.start
-  # end
-
-  # config.after(:each) do
-  #   DatabaseCleaner.clean
-  # end
 end
