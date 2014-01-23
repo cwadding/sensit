@@ -30,16 +30,20 @@ module Sensit
     end
 
     def save
-      if @feeds.map(&:valid?).all?
-        response = elastic_client.bulk(index: self.index, type: self.type, body: bulk_body)
-        response["items"].map {|item| item.values.first["ok"]}.all? || false
-      else
-        @feeds.each_with_index do |feed, index|
-          feed.errors.full_messages.each do |message|
-            errors.add :base, "Row #{index+2}: #{message}"
+      unless @feeds.empty?
+        if @feeds.map(&:valid?).all?
+          response = elastic_client.bulk(index: self.index, type: self.type, body: bulk_body)
+          response["items"].map {|item| item.values.first["ok"]}.all? || false
+        else
+          @feeds.each_with_index do |feed, index|
+            feed.errors.full_messages.each do |message|
+              errors.add :base, "Row #{index+2}: #{message}"
+            end
           end
+          false
         end
-        false
+      else
+        true
       end
     end
 

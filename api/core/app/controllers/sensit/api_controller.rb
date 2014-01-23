@@ -1,34 +1,42 @@
 module Sensit
 	class ApiController < ActionController::Base
-		# before_filter :restrict_access
 
 		# force_ssl
 
-		def elastic_index_name
-			session[:user_id]
+		def current_user
+			if doorkeeper_token
+				@current_user ||= ::Sensit::User.find(doorkeeper_token.resource_owner_id)
+			end
 		end
+
+		def current_application
+			if doorkeeper_token
+				@current_application ||= ::DoorKeeper::Application.find(doorkeeper_token.application_id)
+			end
+		end
+
+		def user_id
+			doorkeeper_token ? doorkeeper_token.resource_owner_id : session[:user_id]
+		end
+
+		def elastic_index_name
+			doorkeeper_token.resource_owner_id.to_s
+		end
+
 		def elastic_type_name
 			params[:topic_id].to_s
 		end
 
-		# def restrict_access
-		#   api_key = ApiKey.find_by_access_token(params[:access_token])
-		#   head :unauthorized unless api_key
-		# end
+		def scoped_owner(scope)
+			has_scope?(scope) ? current_user : current_application
+		end
 
-		def restrict_access
-			authenticate_or_request_with_http_token do |token, options|
-				ApiKey.exists?(access_token: token)
+		def has_scope?(scope)
+			if doorkeeper_token
+				doorkeeper_token.scopes.include?(scope)
+			else
+				false
 			end
-		end
-
-		def current_user
-			@current_user ||= User.find(session[:user_id]) if session[:user_id]
-		end
-		helper_method :current_user
-
-		def authorize
-			redirect_to login_url, alert: "Not authorized" if current_user.nil?
 		end
 	end
 end

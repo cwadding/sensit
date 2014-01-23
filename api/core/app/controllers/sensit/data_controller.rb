@@ -2,6 +2,8 @@ require_dependency "sensit/api_controller"
 
 module Sensit
   class DataController < ApiController
+    include ::DoorkeeperDataAuthorization
+    
     respond_to :json
 
     # GET topics/1/feeds/1/data/:key

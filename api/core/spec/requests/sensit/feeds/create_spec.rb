@@ -16,7 +16,7 @@ describe "POST sensit/feeds#create"  do
    end
 
    def process_request(topic, params)
-      post "/api/topics/#{topic.to_param}/feeds", valid_request(params), valid_session(:user_id => topic.user.to_param)
+      oauth_post "/api/topics/#{topic.to_param}/feeds", valid_request(params), valid_session
    end
 
    context "multiple feeds" do
@@ -49,8 +49,8 @@ describe "POST sensit/feeds#create"  do
                }
             ]
             }
-            status = process_request(@topic, params)
-            status.should == 201
+            response = process_request(@topic, params)
+            response.status.should == 201
          end
 
          it "returns the expected json" do
@@ -81,8 +81,7 @@ describe "POST sensit/feeds#create"  do
                }
             ]
             }
-            process_request(@topic, params)
-            expect(response).to render_template(:index)
+            response = process_request(@topic, params)
             response.body.should be_json_eql("{\"feeds\":[{\"at\": \"2013-12-12T21:00:15.000Z\",\"data\": #{value_set1.to_json}, \"tz\": \"Eastern Time (US & Canada)\"}, {\"at\": \"2013-12-13T21:00:15.000Z\",\"data\": #{value_set2.to_json}, \"tz\": \"Eastern Time (US & Canada)\"}, {\"at\": \"2013-12-14T21:00:15.000Z\",\"data\": #{value_set3.to_json}, \"tz\": \"Eastern Time (US & Canada)\"}]}")
          end
       end
@@ -95,8 +94,8 @@ describe "POST sensit/feeds#create"  do
          params = {
             :feeds => fixture_file_upload("#{RSpec.configuration.fixture_path}/files/feeds.csv", 'text/csv')
          }
-         status = process_request(@topic, params)
-         status.should == 201
+         response = process_request(@topic, params)
+         response.status.should == 201
       end
    end
 
@@ -104,12 +103,12 @@ describe "POST sensit/feeds#create"  do
       before(:each) do
       @topic = FactoryGirl.create(:topic_with_feeds, user: @user)
       end
-      it "returns a 200 status code" do
+      it "returns a 201 status code", :current => true do
          params = {
             :feeds => fixture_file_upload("#{RSpec.configuration.fixture_path}/files/feeds.zip")
          }
-         status = process_request(@topic, params)
-         status.should == 201
+         response = process_request(@topic, params)
+         response.status.should == 201
       end
    end
 
@@ -157,8 +156,8 @@ describe "POST sensit/feeds#create"  do
                   :values => values
                }
             }
-            status = process_request(@topic, params)
-            status.should == 201
+            response = process_request(@topic, params)
+            response.status.should == 201
          end
 
          it "returns the expected json" do
@@ -173,9 +172,7 @@ describe "POST sensit/feeds#create"  do
                   :values => values
                }
             }
-            process_request(@topic, params)
-            expect(response).to render_template(:show)
-            
+            response = process_request(@topic, params)
             response.body.should be_json_eql("{\"at\": \"2013-11-14T03:56:06.000Z\",\"data\": #{values.to_json},\"tz\": \"UTC\"}")
          end
 
@@ -200,13 +197,19 @@ describe "POST sensit/feeds#create"  do
          end
 
          it "is an unprocessable entity" do
-            status = process_request(@topic, @params)
-            status.should == 422
+            expect{
+               response = process_request(@topic, @params)
+               response.status.should == 422
+            }.to raise_error(OAuth2::Error)
+            
+            
          end
 
          it "returns the expected json" do
-            process_request(@topic, @params)
-            response.body.should be_json_eql("{\"errors\":{\"at\":[\"can't be blank\"]}}")
+            expect{
+               response = process_request(@topic, @params)
+               response.body.should be_json_eql("{\"errors\":{\"at\":[\"can't be blank\"]}}")
+            }.to raise_error(OAuth2::Error)
          end
       end
 
@@ -225,9 +228,7 @@ describe "POST sensit/feeds#create"  do
                   :values => values
                }
             }
-            process_request(@topic, params)
-            expect(response).to render_template(:show)
-            
+            response = process_request(@topic, params)
             response.body.should be_json_eql("{\"at\": \"2013-11-14T03:56:06.000Z\",\"data\": #{values.to_json}, \"tz\": \"Eastern Time (US & Canada)\"}")
          end
       end   

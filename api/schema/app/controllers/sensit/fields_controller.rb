@@ -2,22 +2,27 @@ require_dependency "sensit/api_controller"
 
 module Sensit
   class FieldsController < ApiController
-    before_action :set_field, only: [:show, :update, :destroy]
+    include ::DoorkeeperDataAuthorization    
     respond_to :json
     # GET /topics/1/fields
     def index
-      @fields = Topic::Field.joins(:topic, :topic => :user).where(:sensit_topics => {:slug => params[:topic_id]}, :sensit_users => {:id => session[:user_id]}).page(params[:page] || 1).per(params[:per] || 10)
+      if has_scope?(:read_any_data)
+        @fields = Topic::Field.joins(:topic, :topic => :user).where(:sensit_topics => {:slug => params[:topic_id]}, :sensit_users => {:id => user_id}).page(params[:page] || 1).per(params[:per] || 10)
+      else
+        @fields = Topic::Field.joins(:topic).where(:sensit_topics => {:slug => params[:topic_id], application_id: doorkeeper_token.application_id}).page(params[:page] || 1).per(params[:per] || 10)
+      end
       respond_with(@fields)
     end
 
     # GET /topics/1/fields/1
     def show
+      @field = set_field_in_scope(:read_any_data)
       respond_with(@field)
     end
 
     # POST /topics/1/fields
     def create
-      topic = current_user.topics.find(params[:topic_id])
+      topic = scoped_owner(:write_any_data).topics.find(params[:topic_id])
       @field = topic.fields.build(field_params)
       if @field.save
         respond_with(@field,:status => :created, :template => "sensit/fields/show")
@@ -28,6 +33,7 @@ module Sensit
 
     # PATCH/PUT /topics/1/fields/1
     def update
+      @field = set_field_in_scope(:write_any_data)
       if @field.update(field_params)
         respond_with(@field,:status => :ok, :template => "sensit/fields/show")
       else
@@ -37,14 +43,15 @@ module Sensit
 
     # DELETE topics/1/fields/1
     def destroy
+      @field = set_field_in_scope(:delete_any_data)
       @field.destroy
       head :status => :no_content
     end
 
     private
       # Use callbacks to share common setup or constraints between actions.
-      def set_field
-        topic = current_user.topics.find(params[:topic_id])
+      def set_field_in_scope(scope)
+        topic = scoped_owner(scope).topics.find(params[:topic_id])
         raise ActiveRecord::RecordNotFound if topic.blank?
         @field = topic.fields.find(params[:id])
         raise ActiveRecord::RecordNotFound if @field.blank?

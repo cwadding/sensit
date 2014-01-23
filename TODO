@@ -1,8 +1,15 @@
 API
+	OAuth
+		- generator to run the doorkeeper generator
+		- generator will generate the new doorkeeper configuration file for sensit
+		- customize views for sensit application
+		- create user sessions html version
 	Core
 		- Be able to search feeds (use the the subset of queries from the percolator for strong parameters)
 		- parent child relationships (ancestry gem)		
-		- Importing of data in XML, OR CSV		
+		- Importing of data in XML, OR CSV
+		- Amount of time to hold on to data or remove data
+		(On a topic (time in days to hold on to certain data))		
 	Schema
 		- Creating field keys on initial feed request
 	Reports
@@ -18,11 +25,7 @@ API
 			Socket.io
 			Faye
 			ROS
-	DataRetention
-		- Amount of time to hold on to data or remove data
-		(On a topic (time in days to hold on to certain data))
 	Security
-		- Securing the API with API KEYS
 		- Feed Security (Public (No API Key), Shared (multi-tennant),	Private (single api key single user))
 		-whitelist or black list of ip's
 		- Authorization based on User or api key?

@@ -9,6 +9,8 @@ require 'zip'
 require 'friendly_id'
 require 'kaminari'
 require 'authority'
+require 'doorkeeper'
+require 'devise'
 
 module Sensit
 	module Core
@@ -29,7 +31,7 @@ module Sensit
 
 			config.view_versions = [1]
 			config.view_version_extraction_strategy = :http_header
-
+			config.default_version = 1
 			# config.to_prepare do
 			# 	::Sensit::Topic.send :include, TopicApiKeyConcern
 			# end
@@ -44,7 +46,6 @@ module Sensit
 			  # kaminari.page_method_name = :page
 			  # kaminari.param_name = :page
 			end
-
 
 			::Authority.configure do |config|
 

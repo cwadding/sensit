@@ -15,8 +15,6 @@ Gem::Specification.new do |s|
 
 
   s.add_dependency 'sensit_core', Sensit::VERSION
-  s.add_dependency 'rabl', '0.8.4'
-  s.add_dependency 'versioncake', '1.0.0'
   s.add_dependency 'sidekiq', '2.17.0'  
   # s.add_dependency 'em-websocket'# , '0.0.3'
   s.add_dependency 'socketio-client'# , '0.0.3'

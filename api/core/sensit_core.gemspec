@@ -15,19 +15,21 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'authority', "~>2.9.0"
   s.add_dependency "rails", "~> 4.0.1"
-  s.add_dependency 'rabl', '0.8.4'
-  s.add_dependency 'versioncake', '1.0.0'
+  s.add_dependency 'rabl', '~> 0.9.3'
+  s.add_dependency 'versioncake', '~>1.3.0'
   s.add_dependency 'kaminari', '~>0.15.0'
   s.add_dependency 'foreigner', '~>1.6.0'  
   s.add_dependency 'rubyzip', '~> 1.1.0'
   s.add_dependency "elasticsearch", "~> 0.4.1"
   s.add_dependency 'roo', "~> 1.13.0"
   s.add_dependency 'friendly_id', '~> 5.0.2'
-  s.add_dependency 'bcrypt-ruby', "~> 3.1.2"
+  s.add_dependency 'doorkeeper', '~> 1.0.0'
+  s.add_dependency 'devise', '~> 3.2.2'
 
   s.add_development_dependency "sqlite3"
   s.add_development_dependency 'rspec-rails'
   s.add_development_dependency 'shoulda-matchers'#, '~> 2.10.0'
   s.add_development_dependency "factory_girl_rails"
   s.add_development_dependency "json_spec"
+  s.add_development_dependency "oauth2"
 end
