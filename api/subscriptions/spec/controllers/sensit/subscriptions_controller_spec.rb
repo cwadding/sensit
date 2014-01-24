@@ -22,6 +22,7 @@ module Sensit
   describe SubscriptionsController do
 
     before(:each) do
+      controller.stub(:doorkeeper_token).and_return(@access_grant)
       @topic = Topic.create(:name => "MyTopic", user: @user)
     end
 

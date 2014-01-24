@@ -2,7 +2,7 @@ require 'spec_helper'
 describe "PUT sensit/fields#update" do
 
 	before(:each) do
-		@topic = FactoryGirl.create(:topic_with_feeds_and_fields, user: @user)
+		@topic = FactoryGirl.create(:topic_with_feeds_and_fields, user: @user, application: @application)
 		@field = @topic.fields.first
 	end
 

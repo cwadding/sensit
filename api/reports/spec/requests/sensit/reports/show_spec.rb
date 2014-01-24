@@ -8,7 +8,7 @@ describe "GET sensit/reports#show" do
 
 	context "when the report exists" do
 		before(:each) do
-			@report = FactoryGirl.create(:report, :name => "MyReport-1", :topic => FactoryGirl.create(:topic_with_feeds, user: @user))
+			@report = FactoryGirl.create(:report, :name => "MyReport-1", :topic => FactoryGirl.create(:topic_with_feeds, user: @user, application: @application))
 		end
 
 		it "is successful" do

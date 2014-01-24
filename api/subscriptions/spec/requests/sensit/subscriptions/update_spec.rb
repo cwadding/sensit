@@ -2,7 +2,7 @@ require 'spec_helper'
 describe "PUT sensit/subscriptions#update" do
 
 		before(:each) do
-			topic = FactoryGirl.create(:topic, :user => @user)
+			topic = FactoryGirl.create(:topic, :user => @user, application: @application)
 			@subscription = FactoryGirl.create(:subscription, :topic => topic)
 		end
 

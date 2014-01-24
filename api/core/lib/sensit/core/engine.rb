@@ -32,9 +32,9 @@ module Sensit
 			config.view_versions = [1]
 			config.view_version_extraction_strategy = :http_header
 			config.default_version = 1
-			# config.to_prepare do
-			# 	::Sensit::Topic.send :include, TopicApiKeyConcern
-			# end
+			config.to_prepare do
+				::Doorkeeper::Application.send :include, ::SensibleApplication
+			end
 
 			::Kaminari.configure do |kaminari|
 			  # kaminari.default_per_page = 25

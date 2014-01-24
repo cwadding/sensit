@@ -8,7 +8,7 @@ describe "GET sensit/fields#index" do
 
 	context "when the feed exists" do
 		before(:each) do
-			@topic = FactoryGirl.create(:topic_with_feeds_and_fields, user: @user)
+			@topic = FactoryGirl.create(:topic_with_feeds_and_fields, user: @user, application: @application)
 		end
 		it "is successful" do
 			status = process_request(@topic)

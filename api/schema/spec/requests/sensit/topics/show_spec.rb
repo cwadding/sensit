@@ -1,74 +1,20 @@
 require 'spec_helper'
 describe "GET sensit/topics#show" do
-# {
-#    "topic":{
-#          "id":2,
-#          "name":"my_topic2",
-#          "fields":[
-#             {
-#                "field":{
-#                   "name":"col3",
-#                   "key":"c3",
-#                   "unit":"mm",
-#                   "datatype":"integer"
-#                },
-#                "field":{
-#                   "name":"col5",
-#                   "key":"c5",
-#                   "unit":"filename",
-#                   "datatype":"string"
-#                },
-#                "field":{
-#                   "name":"col4",
-#                   "key":"c4",
-#                   "unit":"s",
-#                   "datatype":"float"
-#                }
-#             }
-#          ],
-#          "feeds":[
-#             {
-#                "feed":{
-#                   "id": 3,
-#                   "timestamp":1383794969.654,
-#                   "data":{
-#                      "c3":0,
-#                      "c4":"val",
-#                      "c5":23
-#                   }
-#                },
-#                "feed":{
-#                   "id": 4,
-#                   "timestamp":1383794970.456,
-#                   "data":{
-#                      "c3":0,
-#                      "c4":"val32",
-#                      "c5":45
-#                   }
-#                }
-#             }
-#          ]
-#       }
-#    }   
-# }
-
-
-
 	def process_request(topic)
-		get "/api/topics/#{topic.to_param}", valid_request, valid_session(user_id: topic.user.to_param)
+		oauth_get "/api/topics/#{topic.to_param}", valid_request, valid_session(user_id: topic.user.to_param)
 	end
 
 	context "when the node exists" do
 		before(:each) do
-			@topic = FactoryGirl.create(:topic_with_feeds_and_fields, :user => @user)
+			@topic = FactoryGirl.create(:topic_with_feeds_and_fields, :user => @user, application: @application)
 		end
 		it "is successful" do
-			status = process_request(@topic)
-			status.should == 200
+			response = process_request(@topic)
+			response.status.should == 200
 		end
 
 		it "returns the expected json" do
-			process_request(@topic)
+			response = process_request(@topic)
 			feeds_arr = []
 
 			@topic.feeds.each do |feed|
@@ -89,16 +35,17 @@ describe "GET sensit/topics#show" do
 	context "when the node does not exists" do
 		it "is unsuccessful" do
 			expect{
-				status = get "/api/topics/101", valid_request, valid_session(user_id: @user.to_param)
+				response = oauth_get "/api/topics/101", valid_request, valid_session(user_id: @user.to_param)
+				response.status.should == 400
 			}.to raise_error(ActiveRecord::RecordNotFound)
-			#status.should == 400
+			#
 		end
 
 		it "returns the expected json" do
 			expect{
-				get "/api/topics/101", valid_request, valid_session(user_id: @user.to_param)
+				response = oauth_get "/api/topics/101", valid_request, valid_session(user_id: @user.to_param)
+				response.body.should be_json_eql("{\"id\":1,\"name\":\"Test node\",\"description\":\"A description of my node\",\"topics\":[]}")
 			}.to raise_error(ActiveRecord::RecordNotFound)
-			#response.body.should be_json_eql("{\"id\":1,\"name\":\"Test node\",\"description\":\"A description of my node\",\"topics\":[]}")
 		end
 	end    
 end

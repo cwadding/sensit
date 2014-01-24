@@ -11,7 +11,7 @@ module Sensit
 
 		def current_application
 			if doorkeeper_token
-				@current_application ||= ::DoorKeeper::Application.find(doorkeeper_token.application_id)
+				@current_application ||= ::Doorkeeper::Application.find(doorkeeper_token.application_id)
 			end
 		end
 

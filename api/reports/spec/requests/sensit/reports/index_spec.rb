@@ -8,7 +8,7 @@ describe "GET sensit/reports#index" do
 
 	context "with 1 report" do
 		before(:each) do
-			@report = FactoryGirl.create(:report, :name => "My Report", :topic => FactoryGirl.create(:topic_with_feeds, user: @user))
+			@report = FactoryGirl.create(:report, :name => "My Report", :topic => FactoryGirl.create(:topic_with_feeds, user: @user, application: @application))
 		end
 		it "is successful" do
 			status = process_request(@report)
@@ -27,7 +27,7 @@ describe "GET sensit/reports#index" do
 
 	context "with > 1 report" do
 		before(:each) do
-			topic = FactoryGirl.create(:topic_with_feeds, user: @user)
+			topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @application)
 			@reports = [FactoryGirl.create(:report, :name => "R1", :topic => topic), FactoryGirl.create(:report, :name => "R2", :topic => @topic), FactoryGirl.create(:report, :name => "R3", :topic => topic)]
 		end
 

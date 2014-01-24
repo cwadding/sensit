@@ -2,7 +2,7 @@ require 'spec_helper'
 describe "POST sensit/topics#create" do
 
    before(:each) do
-      @topic = FactoryGirl.create(:topic, user: @user)
+      @topic = FactoryGirl.create(:topic, user: @user, application: @application)
    end
 
    def process_request(params)
@@ -11,7 +11,7 @@ describe "POST sensit/topics#create" do
 
    context "without a unique name for an APIKey" do
       before(:each) do
-         FactoryGirl.create(:topic, :name => "Existing Topic")
+         FactoryGirl.create(:topic, :name => "Existing Topic", application: @application)
       end
       before(:all) do
          @params = {
@@ -33,7 +33,7 @@ describe "POST sensit/topics#create" do
 
    context "without a unique name attribute across api_keys" do
       before(:each) do
-         FactoryGirl.create(:topic, :name => "Existing Topic")
+         FactoryGirl.create(:topic, :name => "Existing Topic", application: @application)
       end
       before(:all) do
          @params = {

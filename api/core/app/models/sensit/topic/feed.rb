@@ -93,6 +93,7 @@ module Sensit
   	# delegate :fields, :to => :topic, :prefix => false
 	delegate :name, :to => :topic, :prefix => true
 	delegate :node_name, :to => :topic, :prefix => false
+	delegate :ttl, :to => :topic, :prefix => false
 
 	# need a custom validation to ensure that the data value is the datatype that is expected based on the field value type and that the key is correct as well
 

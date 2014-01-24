@@ -1,22 +1,12 @@
 require 'spec_helper'
 describe "POST sensit/feeds#create"  do
-   # {
-   #    "feed":{
-   #       "timestamp":1383794969.654,
-   #       "data":{
-   #          "c3":0,
-   #          "c4":"val",
-   #          "c5":23
-   #       }
-   #    }
-   # }
-
+   
    before(:each) do
-      @topic = FactoryGirl.create(:topic_with_feeds_and_fields, user: @user) 
+      @topic = FactoryGirl.create(:topic_with_feeds_and_fields, user: @user, application: @application) 
    end
 
    def process_request(topic, params)
-      post "/api/topics/#{topic.to_param}/feeds", valid_request(params), valid_session(:user_id => topic.user.to_param)
+      oauth_post "/api/topics/#{topic.to_param}/feeds", valid_request(params), valid_session(:user_id => topic.user.to_param)
    end
 
    context "multiple feeds" do
@@ -49,8 +39,8 @@ describe "POST sensit/feeds#create"  do
                }
             ]
             }
-            status = process_request(@topic, params)
-            status.should == 200
+            response = process_request(@topic, params)
+            response.status.should == 200
          end
 
          it "returns the expected json" do
@@ -81,7 +71,7 @@ describe "POST sensit/feeds#create"  do
                }
             ]
             }
-            process_request(@topic, params)
+            response = process_request(@topic, params)
             expect(response).to render_template(:index)
             
             field_arr = @topic.fields.inject([]) do |arr, field|
@@ -99,8 +89,8 @@ describe "POST sensit/feeds#create"  do
          params = {
             :feeds => fixture_file_upload("#{RSpec.configuration.fixture_path}/files/feeds.csv", 'text/csv')
          }
-         status = process_request(@topic, params)
-         status.should == 200
+         response = process_request(@topic, params)
+         response.status.should == 200
       end
    end
 
@@ -112,8 +102,8 @@ describe "POST sensit/feeds#create"  do
          params = {
             :feeds => fixture_file_upload("#{RSpec.configuration.fixture_path}/files/feeds.zip")
          }
-         status = process_request(@topic, params)
-         status.should == 200
+         response = process_request(@topic, params)
+         response.status.should == 200
       end
    end
 
@@ -161,8 +151,8 @@ describe "POST sensit/feeds#create"  do
                   :values => values
                }
             }
-            status = process_request(@topic, params)
-            status.should == 200
+            response = process_request(@topic, params)
+            response.status.should == 200
          end
 
          it "returns the expected json" do
@@ -177,7 +167,7 @@ describe "POST sensit/feeds#create"  do
                   :values => values
                }
             }
-            process_request(@topic, params)
+            response = process_request(@topic, params)
             expect(response).to render_template(:show)
             
             field_arr = @topic.fields.inject([]) do |arr, field|
@@ -207,12 +197,12 @@ describe "POST sensit/feeds#create"  do
          end
 
          it "is an unprocessable entity" do
-            status = process_request(@topic, @params)
-            status.should == 422
+            response = process_request(@topic, @params)
+            response.status.should == 422
          end
 
          it "returns the expected json" do
-            process_request(@topic, @params)
+            response = process_request(@topic, @params)
             response.body.should be_json_eql("{\"errors\":{\"at\":[\"can't be blank\"]}}")
          end
       end
@@ -232,7 +222,7 @@ describe "POST sensit/feeds#create"  do
                   :values => values
                }
             }
-            process_request(@topic, params)
+            response = process_request(@topic, params)
             expect(response).to render_template(:show)
             
             field_arr = @topic.fields.inject([]) do |arr, field|

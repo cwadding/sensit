@@ -2,12 +2,12 @@ require 'spec_helper'
 describe "POST sensit/fields#create" do
 
 	before(:each) do
-		@topic = FactoryGirl.create(:topic_with_feeds_and_fields, user: @user)
+		@topic = FactoryGirl.create(:topic_with_feeds_and_fields, user: @user, application: @application)
 		@field = @topic.fields.first		
 	end
 
    def process_request(topic, params)
-      post "/api/topics/#{topic.to_param}/fields", valid_request(params), valid_session(:user_id => topic.user.to_param)
+      oauth_post "/api/topics/#{topic.to_param}/fields", valid_request(params), valid_session(:user_id => topic.user.to_param)
    end
 
    context "with correct attributes" do
@@ -21,19 +21,19 @@ describe "POST sensit/fields#create" do
       end
       
       it "returns a 200 status code" do
-         status = process_request(@topic, @params)
-         status.should == 201
+         response = process_request(@topic, @params)
+         response.status.should == 201
       end
 
       it "returns the expected json" do
-         process_request(@topic, @params)
+         response = process_request(@topic, @params)
          expect(response).to render_template(:show)
          response.body.should be_json_eql("{\"key\":\"my_field\",\"name\":\"My Field\"}")
       end
 
       it "creates a new Field" do
           expect {
-            process_request(@topic, @params)
+            response = process_request(@topic, @params)
           }.to change(Sensit::Topic::Field, :count).by(1)
         end
    end
@@ -48,8 +48,8 @@ describe "POST sensit/fields#create" do
       end
 
       it "is an unprocessable entity" do
-         status = process_request(@topic, @params)
-         status.should == 422
+         response = process_request(@topic, @params)
+         response.status.should == 422
       end
 
       it "returns the expected json" do
@@ -68,12 +68,12 @@ describe "POST sensit/fields#create" do
       end
 
       it "is an unprocessable entity" do
-         status = process_request(@topic, @params)
-         status.should == 422
+         response = process_request(@topic, @params)
+         response.status.should == 422
       end
 
       it "returns the expected json" do
-         process_request(@topic, @params)
+         response = process_request(@topic, @params)
          response.body.should be_json_eql("{\"errors\":{\"key\":[\"can't be blank\"]}}")
       end
    end   
@@ -91,12 +91,12 @@ describe "POST sensit/fields#create" do
          }
       end
       it "is an unprocessable entity" do
-         status = process_request(@topic, @params)
-         status.should == 422
+         response = process_request(@topic, @params)
+         response.status.should == 422
       end
 
       it "returns the expected json" do
-         process_request(@topic, @params)
+         response = process_request(@topic, @params)
          response.body.should be_json_eql("{\"errors\":{\"name\":[\"has already been taken\"]}}")
       end
    end
@@ -114,12 +114,12 @@ describe "POST sensit/fields#create" do
          }
       end
       it "is an unprocessable entity" do
-         status = process_request(@topic, @params)
-         status.should == 422
+         response = process_request(@topic, @params)
+         response.status.should == 422
       end
 
       it "returns the expected json" do
-         process_request(@topic, @params)
+         response = process_request(@topic, @params)
          response.body.should be_json_eql("{\"errors\":{\"key\":[\"has already been taken\"]}}")
       end
    end
@@ -127,7 +127,7 @@ describe "POST sensit/fields#create" do
 
    context "with a non-unique name between topics" do
       before(:each) do
-         new_topic = FactoryGirl.create(:topic, user: @user)
+         new_topic = FactoryGirl.create(:topic, user: @user, application: @application)
          FactoryGirl.create(:field, :name => "Existing Field", :key => "my_key", topic: new_topic)
       end
       before(:all) do
@@ -139,18 +139,18 @@ describe "POST sensit/fields#create" do
          }
       end
       it "is a success" do
-         status = process_request(@topic, @params)
-         status.should == 201
+         response = process_request(@topic, @params)
+         response.status.should == 201
       end
 
       it "creates a new Field" do
           expect {
-            process_request(@topic, @params)
+            response = process_request(@topic, @params)
           }.to change(Sensit::Topic::Field, :count).by(1)
         end
 
       it "returns the expected json" do
-         process_request(@topic, @params)
+         response = process_request(@topic, @params)
          response.body.should be_json_eql('{"key": "a_new_key","name": "Existing Field"}')
       end
    end

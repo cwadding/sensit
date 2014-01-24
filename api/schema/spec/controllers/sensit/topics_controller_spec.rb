@@ -21,6 +21,10 @@ require 'spec_helper'
 module Sensit
     describe TopicsController do
 
+      before(:each) do
+        controller.stub(:doorkeeper_token).and_return(@access_grant)
+      end
+
 
       def valid_request(h = {})
         h.merge!({:use_route => :sensit_api, :format => "json", :api_version => 1})
@@ -41,7 +45,7 @@ module Sensit
 
       describe "GET index" do
         it "assigns all topics as @topics" do
-          topic = FactoryGirl.create(:topic, :user => @user)
+          topic = FactoryGirl.create(:topic, user: @user, application: @application)
           get :index, valid_request, valid_session(user_id: @user.to_param)
           assigns(:topics).should eq([topic])
         end
@@ -49,7 +53,7 @@ module Sensit
 
       describe "GET show" do
         it "assigns the requested topic as @topic" do
-          topic = FactoryGirl.create(:topic, :user => @user)
+          topic = FactoryGirl.create(:topic, :user => @user, application: @application)
           get :show, valid_request({:id => topic.to_param}), valid_session(user_id: @user.to_param)
           assigns(:topic).should eq(topic)
         end
@@ -95,7 +99,7 @@ module Sensit
       describe "PUT update" do
         describe "with valid params" do
           it "updates the requested topic" do
-            topic = FactoryGirl.create(:topic, :user => @user)
+            topic = FactoryGirl.create(:topic, :user => @user, application: @application)
             # Assuming there are no other topics in the database, this
             # specifies that the Topic created on the previous line
             # receives the :update_attributes message with whatever params are
@@ -105,13 +109,13 @@ module Sensit
           end
 
           it "assigns the requested topic as @topic" do
-            topic = FactoryGirl.create(:topic, :user => @user)
+            topic = FactoryGirl.create(:topic, :user => @user, application: @application)
             put :update, valid_request({:id => topic.to_param, :topic => { "name" => "1" }}), valid_session(user_id: @user.to_param)
             assigns(:topic).should eq(topic)
           end
 
           it "redirects to the topic" do
-            topic = FactoryGirl.create(:topic, :user => @user)
+            topic = FactoryGirl.create(:topic, :user => @user, application: @application)
             put :update, valid_request({:id => topic.to_param, :topic => { "name" => "1" }}), valid_session(user_id: @user.to_param)
             response.should render_template("sensit/topics/show")
           end
@@ -119,7 +123,7 @@ module Sensit
 
         describe "with invalid params" do
           it "assigns the topic as @topic" do
-            topic = FactoryGirl.create(:topic, :user => @user)
+            topic = FactoryGirl.create(:topic, :user => @user, application: @application)
             # Trigger the behavior that occurs when invalid params are submitted
             Topic.any_instance.stub(:save).and_return(false)
             put :update, valid_request({:id => topic.to_param, :topic => { "name" => "invalid value" }}), valid_session(user_id: @user.to_param)
@@ -127,7 +131,7 @@ module Sensit
           end
 
           it "re-renders the 'edit' template" do
-            topic = FactoryGirl.create(:topic, :user => @user)
+            topic = FactoryGirl.create(:topic, :user => @user, application: @application)
             # Trigger the behavior that occurs when invalid params are submitted
             Topic.any_instance.stub(:save).and_return(false)
             put :update, valid_request({:id => topic.to_param, :topic => { "name" => "invalid value" }}), valid_session(user_id: @user.to_param)
@@ -138,14 +142,14 @@ module Sensit
 
       describe "DELETE destroy" do
         it "destroys the requested topic" do
-          topic = FactoryGirl.create(:topic, :user => @user)
+          topic = FactoryGirl.create(:topic, :user => @user, application: @application)
           expect {
             delete :destroy, valid_request({:id => topic.to_param}), valid_session(user_id: @user.to_param)
           }.to change(Topic, :count).by(-1)
         end
 
         it "redirects to the topics list" do
-          topic = FactoryGirl.create(:topic, :user => @user)
+          topic = FactoryGirl.create(:topic, :user => @user, application: @application)
           delete :destroy, valid_request({:id => topic.to_param}), valid_session(user_id: @user.to_param)
           response.status.should == 204
         end

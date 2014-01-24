@@ -21,6 +21,9 @@ require 'spec_helper'
 module Sensit
   describe UsersController do
 
+    before(:each) do
+      controller.stub(:doorkeeper_token).and_return(@access_grant)
+    end
 
     def valid_request(h = {})
       h.merge!({:use_route => :sensit_api, :format => "json", :api_version => 1})

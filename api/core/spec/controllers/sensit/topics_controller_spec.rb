@@ -21,6 +21,9 @@ require 'spec_helper'
 module Sensit
     describe TopicsController do
 
+      before(:each) do
+        controller.stub(:doorkeeper_token).and_return(@access_grant)
+      end
 
       def valid_request(h = {})
         h.merge!({:use_route => :sensit_api, :format => "json", :api_version => 1})
@@ -41,7 +44,7 @@ module Sensit
 
       describe "GET index" do
         it "assigns all topics as @topics" do
-          topic = FactoryGirl.create(:topic, user: @user)
+          topic = FactoryGirl.create(:topic, user: @user, application: @application)
           get :index, valid_request, valid_session(user_id: @user.to_param)
           assigns(:topics).should eq([topic])
         end
@@ -49,7 +52,7 @@ module Sensit
 
       describe "GET show" do
         it "assigns the requested topic as @topic" do
-          topic = FactoryGirl.create(:topic, user: @user)
+          topic = FactoryGirl.create(:topic, user: @user, application: @application)
           get :show, valid_request({:id => topic.to_param}), valid_session(user_id: @user.to_param)
           assigns(:topic).should eq(topic)
         end
@@ -94,7 +97,7 @@ module Sensit
 
       describe "PUT update" do
         before(:each) do
-          @topic = FactoryGirl.create(:topic, user: @user)
+          @topic = FactoryGirl.create(:topic, user: @user, application: @application)
         end
         describe "with valid params" do
           it "updates the requested topic" do
@@ -136,7 +139,7 @@ module Sensit
 
       describe "DELETE destroy" do
         before(:each) do
-          @topic = FactoryGirl.create(:topic, user: @user)
+          @topic = FactoryGirl.create(:topic, user: @user, application: @application)
         end
         it "destroys the requested topic" do
           expect {

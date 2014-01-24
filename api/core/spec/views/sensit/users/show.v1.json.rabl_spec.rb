@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-describe "sensit/topics/show" do
+describe "sensit/users/show" do
   before(:each) do
-    @user = assign(:user, @user)
+    assign(:user, @user)
   end
   it "renders the json data" do
     render

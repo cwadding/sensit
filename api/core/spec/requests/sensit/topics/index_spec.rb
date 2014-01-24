@@ -2,27 +2,27 @@ require 'spec_helper'
 describe "GET sensit/topics#index" do
 
   	def process_request(params = {})
-		get "/api/topics/", valid_request(params), valid_session
+		oauth_get "/api/topics/", valid_request(params), valid_session
 	end
 
 	context "with no topics" do
 		it "returns the expected json" do
-			process_request
+			response = process_request
 			response.body.should be_json_eql("{\"topics\":[]}")
 		end  
 	end
 
 	context "with a single topic" do
 		before(:each) do
-			@topic = FactoryGirl.create(:topic_with_feeds, :description => "topic description", user: @user)
+			@topic = FactoryGirl.create(:topic_with_feeds, :description => "topic description", user: @user, application: @application)
 		end
 		it "is successful" do
-			status = process_request
-			status.should == 200
+			response = process_request
+			response.status.should == 200
 		end
 
 		it "returns the expected json" do
-			process_request
+			response = process_request
 			# feeds_arr = @topic.feeds.inject([]) do |arr1, feed|
 			# 	data_arr = feed.values.inject([]) do |arr2, (key, value)|
 			# 		arr2 << "\"#{key}\":#{value}"
@@ -35,10 +35,10 @@ describe "GET sensit/topics#index" do
 
 	context "with > 1 topic" do
 		before(:each) do
-			@topics = [FactoryGirl.create(:topic, :name => "T1", user: @user), FactoryGirl.create(:topic, :name => "T2", user: @user), FactoryGirl.create(:topic, :name => "T3", user: @user)]
+			@topics = [FactoryGirl.create(:topic, :name => "T1", user: @user, application: @application), FactoryGirl.create(:topic, :name => "T2", user: @user, application: @application), FactoryGirl.create(:topic, :name => "T3", user: @user, application: @application)]
 		end
 		it "returns the expected json" do
-			process_request({page:3, per:1})
+			response = process_request({page:3, per:1})
 			topic = @topics.last
 			feeds_arr = topic.feeds.inject([]) do |arr1, feed|
 				data_arr = feed.values.inject([]) do |arr2, (key, value)|

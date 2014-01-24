@@ -2,7 +2,7 @@ require 'spec_helper'
 describe "GET sensit/data#show" do
 
 	# before(:each) do
-	# 	@topic = FactoryGirl.create(:topic_with_feeds_and_fields, user: @user)
+	# 	@topic = FactoryGirl.create(:topic_with_feeds_and_fields, user: @user, application: @application)
 	# 	@feed = @topic.feeds.first
 	# 	@values = @feed.values.first
 	# end

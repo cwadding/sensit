@@ -2,11 +2,11 @@ require 'spec_helper'
 describe "PUT sensit/topics#update" do
 
    before(:each) do
-      @topic = FactoryGirl.create(:topic_with_feeds, user: @user)
+      @topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @application)
    end
 
    def process_request(topic, params)
-      put "/api/topics/#{topic.id}", valid_request(params), valid_session
+      oauth_put "/api/topics/#{topic.id}", valid_request(params), valid_session
    end
 
    context "with updated attributes" do
@@ -20,12 +20,12 @@ describe "PUT sensit/topics#update" do
       end
 
       it "returns a 200 status code" do
-         status = process_request(@topic, @params)
-         status.should == 200
+         response = process_request(@topic, @params)
+         response.status.should == 200
       end
 
       it "returns the expected json" do
-         process_request(@topic, @params)
+         response = process_request(@topic, @params)
          feeds_arr = []
 
          @topic.feeds.each do |feed|
@@ -40,7 +40,7 @@ describe "PUT sensit/topics#update" do
       end
 
       it "updates the existing Topic" do
-			process_request(@topic, @params)
+			response = process_request(@topic, @params)
 			updated_topic = Sensit::Topic.find(@topic.id)
 			updated_topic.name.should == "New topic name"
 			updated_topic.description.should == "new description"

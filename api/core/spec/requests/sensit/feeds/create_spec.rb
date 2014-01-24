@@ -12,7 +12,7 @@ describe "POST sensit/feeds#create"  do
    # }
 
    before(:each) do
-      @topic = FactoryGirl.create(:topic_with_feeds, user: @user)
+      @topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @application)
    end
 
    def process_request(topic, params)
@@ -88,7 +88,7 @@ describe "POST sensit/feeds#create"  do
    end
    context "csv file" do
       before(:each) do
-      @topic = FactoryGirl.create(:topic_with_feeds, user: @user)
+      @topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @application)
       end
       it "returns a 200 status code" do
          params = {
@@ -101,7 +101,7 @@ describe "POST sensit/feeds#create"  do
 
    context "zipped csv file" do
       before(:each) do
-      @topic = FactoryGirl.create(:topic_with_feeds, user: @user)
+      @topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @application)
       end
       it "returns a 201 status code", :current => true do
          params = {
@@ -114,28 +114,28 @@ describe "POST sensit/feeds#create"  do
 
    context "xls file" do
       before(:each) do
-      @topic = FactoryGirl.create(:topic_with_feeds, user: @user)
+      @topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @application)
       end
       it "returns a 200 status code"
    end
 
    context "google spreadsheet file" do
       before(:each) do
-      @topic = FactoryGirl.create(:topic_with_feeds, user: @user)
+      @topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @application)
       end
       it "returns a 201 status code"
    end
 
    context "OpenOffice file" do
       before(:each) do
-      @topic = FactoryGirl.create(:topic_with_feeds, user: @user)
+      @topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @application)
       end
       it "returns a 201 status code"
    end
 
    context "LibreOffice" do
       before(:each) do
-      @topic = FactoryGirl.create(:topic_with_feeds, user: @user)
+      @topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @application)
       end
       it "returns a 201 status code"
    end

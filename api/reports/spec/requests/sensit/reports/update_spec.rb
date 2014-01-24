@@ -2,7 +2,7 @@ require 'spec_helper'
 describe "PUT sensit/reports#update" do
 
 	before(:each) do
-		@report = FactoryGirl.create(:report, :name => "My Report", :topic => FactoryGirl.create(:topic_with_feeds, user: @user))
+		@report = FactoryGirl.create(:report, :name => "My Report", :topic => FactoryGirl.create(:topic_with_feeds, user: @user, application: @application))
 	end
 
 

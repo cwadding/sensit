@@ -3,23 +3,23 @@ describe "DELETE sensit/feeds#destroy" do
 
 	def process_request(topic)
 		feed = topic.feeds.first
-		delete "/api/topics/#{topic.to_param}/feeds/#{feed.id}", valid_request, valid_session(:user_id => topic.user.to_param)
+		oauth_delete "/api/topics/#{topic.to_param}/feeds/#{feed.id}", valid_request, valid_session(:user_id => topic.user.to_param)
 	end
 
 	context "when the field exists" do
 		before(:each) do
-			@topic = FactoryGirl.create(:topic_with_feeds_and_fields, user: @user)
+			@topic = FactoryGirl.create(:topic_with_feeds_and_fields, user: @user, application: @application)
 			@feed = @topic.feeds.first
 		end
 		it "is successful" do
-			status = process_request(@topic)
-			status.should == 204
+			response = process_request(@topic)
+			response.status.should == 204
 		end
 
 		it "deletes the Feed" do
 			client = ::Elasticsearch::Client.new
 			expect {
-				process_request(@topic)
+				response = process_request(@topic)
 				client.indices.refresh(:index => @user.to_param)
 			}.to change(Sensit::Topic::Feed, :count).by(-1)
         end
@@ -31,9 +31,9 @@ describe "DELETE sensit/feeds#destroy" do
 	context "when the field does not exist" do
 		it "is unsuccessful" do
 			expect{
-				status = delete "/api/topics/1/feeds/1", valid_request, valid_session(:user_id => @user.to_param)
+				response = delete "/api/topics/1/feeds/1", valid_request, valid_session(:user_id => @user.to_param)
+				response.status.should == 404
 			}.to raise_error(Elasticsearch::Transport::Transport::Errors::NotFound)
-			#status.should == 404
 		end
 	end	
 end

@@ -8,11 +8,16 @@ FactoryGirl.define do
     end
   end
 
+  factory :application, :class => ::Doorkeeper::Application do
+    
+  end
+
 	factory :topic, :class => Sensit::Topic do
 	  sequence :name do |n|
 	    "Topic#{n}"
 	  end
     user
+    application
     factory :topic_with_feeds do
 
       ignore do

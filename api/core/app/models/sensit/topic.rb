@@ -5,7 +5,7 @@ module Sensit
 	friendly_id :name, use: [:slugged, :finders]
   	after_destroy :destroy_feeds
   	belongs_to :user, class_name: "Sensit::User"
-  	belongs_to :application, class_name: "::Doorkeeper::Application"
+  	belongs_to :application, class_name: "::Doorkeeper::Application", foreign_key: "application_id"
 	
 	validates :name, presence: true, uniqueness: true
 

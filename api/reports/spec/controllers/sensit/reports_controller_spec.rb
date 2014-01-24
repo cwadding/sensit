@@ -22,7 +22,8 @@ module Sensit
   describe ReportsController do
 
     before(:each) do
-      @topic = FactoryGirl.create(:topic_with_feeds, user: @user)
+      controller.stub(:doorkeeper_token).and_return(@access_grant)
+      @topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @application)
     end
 
     def valid_request(h = {})

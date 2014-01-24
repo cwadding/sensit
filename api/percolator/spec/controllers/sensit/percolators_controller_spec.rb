@@ -20,6 +20,12 @@ require 'spec_helper'
 
 module Sensit
     describe PercolatorsController do
+
+      before(:each) do
+        controller.stub(:doorkeeper_token).and_return(@access_grant)
+      end
+
+      
       def valid_request(h = {})
         h.merge!({:use_route => :sensit_percolator, :format => "json", :topic_id => "topic_type", :api_version => 1})
       end

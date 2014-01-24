@@ -2,7 +2,7 @@ require 'spec_helper'
 describe "GET sensit/topics#index" do
 
   	def process_request(user)
-		get "/api/topics/", valid_request, valid_session(user_id: user.to_param)
+		oauth_get "/api/topics/", valid_request, valid_session(user_id: user.to_param)
 	end
 
 	context "when the topic exists" do
@@ -10,12 +10,12 @@ describe "GET sensit/topics#index" do
 			@topic = FactoryGirl.create(:topic_with_feeds_and_fields, :user => @user, :description => "topic description")
 		end
 		it "is successful" do
-			status = process_request(@user)
-			status.should == 200
+			response = process_request(@user)
+			response.status.should == 200
 		end
 
 		it "returns the expected json" do
-			process_request(@user)
+			response =process_request(@user)
 			fields_arr = @topic.fields.inject([]) do |arr, field|
 				arr << "{\"name\":\"#{field.name}\",\"key\":\"#{field.key}\"}"
 			end
