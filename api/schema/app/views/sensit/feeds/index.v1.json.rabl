@@ -2,11 +2,10 @@ object false
 
 child @feeds => :feeds do
 	collection @feeds
-	
 	attributes :id
 
 	node :at do |u|
-		u.at.utc.to_f
+		u.at.utc.strftime("%Y-%m-%dT%H:%M:%S.%3NZ")
 	end
 
 	node :tz do |u|
@@ -17,7 +16,6 @@ child @feeds => :feeds do
 	end
 end
 
-child @fields => :fields do
-  collection @fields
-  extends "sensit/fields/show"
+child @fields => "fields" do
+	extends "sensit/fields/show"
 end

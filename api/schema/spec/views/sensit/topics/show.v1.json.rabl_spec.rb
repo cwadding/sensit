@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe "sensit/topics/show" do
   before(:each) do
-    @topic = assign(:topic, FactoryGirl.create(:topic_with_feeds_and_fields, user: @user, application: @application))
+    @topic = assign(:topic, FactoryGirl.create(:topic_with_feeds_and_fields, user: @user))
   end
   it "renders the json data" do
     render

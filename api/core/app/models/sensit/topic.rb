@@ -84,7 +84,7 @@ private
 	end
 
 	def elastic_index_name
-		user.id
+		user.name
 	end
 	def elastic_type_name
 		self.to_param

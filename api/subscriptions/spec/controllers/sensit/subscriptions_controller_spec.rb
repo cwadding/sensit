@@ -22,6 +22,7 @@ module Sensit
   describe SubscriptionsController do
 
     before(:each) do
+      @access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "read_any_subscriptions write_any_subscriptions delete_any_subscriptions")
       controller.stub(:doorkeeper_token).and_return(@access_grant)
       @topic = Topic.create(:name => "MyTopic", user: @user)
     end
@@ -47,6 +48,7 @@ module Sensit
     describe "GET index" do
       it "assigns all subscriptions as @subscriptions" do
         subscription = FactoryGirl.create(:subscription, :topic => @topic)
+        # debugger
         get :index, valid_request({:topic_id => @topic.to_param}), valid_session(user_id: @user.to_param)
         assigns(:subscriptions).to_a.should eq([subscription])
       end

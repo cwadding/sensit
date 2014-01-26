@@ -9,19 +9,19 @@ module Sensit
     respond_to :json
     # GET /percolators
     def index
-      @percolators = Topic::Percolator.search(topic_id: params[:topic_id], user_id: user_id, body: {:query => {"match_all" => {  }}}, size: (params[:per] || 10), from: (params[:page] || 0) * (params[:per] || 10))
+      @percolators = Topic::Percolator.search(topic_id: params[:topic_id], user_id: elastic_index_name, body: {:query => {"match_all" => {  }}}, size: (params[:per] || 10), from: (params[:page] || 0) * (params[:per] || 10))
       respond_with(@percolators)
     end
 
     # GET /percolators/1
     def show
-      @percolator = Topic::Percolator.find(topic_id: params[:topic_id], user_id: user_id, name: params[:id])
+      @percolator = Topic::Percolator.find(topic_id: params[:topic_id], user_id: elastic_index_name, name: params[:id])
       respond_with(@percolator)
     end
 
     # POST /percolators
     def create
-      @percolator = Topic::Percolator.new(percolator_params.merge!(topic_id: params[:topic_id], user_id: user_id))
+      @percolator = Topic::Percolator.new(percolator_params.merge!(topic_id: params[:topic_id], user_id: elastic_index_name))
       if @percolator.save
         respond_with(@percolator,:status => :created, :template => "sensit/percolators/show")
       else
@@ -31,7 +31,7 @@ module Sensit
 
     # PATCH/PUT /percolators/1
     def update
-      @percolator = Topic::Percolator.update(percolator_params.merge!(topic_id: params[:topic_id], user_id: user_id,:name => params[:id]))
+      @percolator = Topic::Percolator.update(percolator_params.merge!(topic_id: params[:topic_id], user_id: elastic_index_name,:name => params[:id]))
       if @percolator.present? && @percolator.valid?
         respond_with(@percolator,:status => :ok, :template => "sensit/percolators/show")
       else
@@ -41,7 +41,7 @@ module Sensit
 
     # DELETE /percolators/1
     def destroy
-      Topic::Percolator.destroy(topic_id: params[:topic_id], user_id: user_id, name: params[:id])
+      Topic::Percolator.destroy(topic_id: params[:topic_id], user_id: elastic_index_name, name: params[:id])
       head :status => :no_content
     end
 
@@ -49,13 +49,6 @@ module Sensit
 
     private
 
-    def elastic_index_name
-      Rails.env.test? ? @user.to_param : "_percolator"
-    end
-
-    def elastic_type_name
-      "#{current_user.name}-#{params[:topic_id].to_s}"
-    end
       # Use callbacks to share common setup or constraints between actions.
     def elastic_client
       @client ||= ::Elasticsearch::Client.new

@@ -1,13 +1,14 @@
 require 'spec_helper'
 describe "POST sensit/percolators#create"  do
 
-	def process_request(topic, params)
-		oauth_post "/api/topics/#{topic.to_param}/percolators", valid_request(params), valid_session(:user_id => topic.user.to_param)
+	def process_oauth_request(access_grant,topic, params)
+		oauth_post access_grant, "/api/topics/#{topic.to_param}/percolators", valid_request(params), valid_session(:user_id => topic.user.to_param)
 	end
 
 	context "with correct attributes" do
 		before(:each) do
-			@topic = FactoryGirl.create(:topic, user: @user, application: @application)
+			@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "write_any_percolations")
+			@topic = FactoryGirl.create(:topic, user: @user, application: @access_grant.application)
 		end
 		it "returns a 200 status code" do
 			@params = {
@@ -16,7 +17,7 @@ describe "POST sensit/percolators#create"  do
 					:query => { query: { query_string: { query: 'foo' } } }
 				}
 			}
-			response =  process_request(@topic, @params)
+			response =  process_oauth_request(@access_grant,@topic, @params)
 			response.status.should == 201
 		end
 
@@ -27,8 +28,7 @@ describe "POST sensit/percolators#create"  do
 					:query => { query: { query_string: { query: 'bar' } } }
 				}
 			}
-			response = process_request(@topic, @params)
-			expect(response).to render_template(:show)
+			response = process_oauth_request(@access_grant,@topic, @params)
 			response.body.should be_json_eql("{\"name\": \"#{@params[:percolator][:name]}\",\"query\": #{@params[:percolator][:query].to_json}}")
 		end
 	end

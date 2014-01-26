@@ -22,8 +22,9 @@ module Sensit
   describe FieldsController do
 
     before(:each) do
+      @access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "read_any_data write_any_data delete_any_data")
       controller.stub(:doorkeeper_token).and_return(@access_grant)
-      @topic = FactoryGirl.create(:topic, user: @user, application: @application)
+      @topic = FactoryGirl.create(:topic, user: @user, application: @access_grant.application)
     end
 
     # This should return the minimal set of attributes required to create a valid
@@ -68,7 +69,7 @@ module Sensit
 
     describe "POST create" do
       before(:each) do
-        Topic.any_instance.stub(:find).with(1).and_return(FactoryGirl.create(:topic, user: @user, application: @application))
+        Topic.any_instance.stub(:find).with(1).and_return(FactoryGirl.create(:topic, user: @user, application: @access_grant.application))
       end
       describe "with valid params" do
         it "creates a new ::Sensit::Topic::Field" do

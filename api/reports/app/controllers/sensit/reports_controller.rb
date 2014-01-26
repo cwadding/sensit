@@ -12,13 +12,11 @@ module Sensit
     # accepts additional parameters which will be merged into each report
     def index
       # TODO  Also join with user
-      @reports = Topic::Report.joins(:topic)
-      if has_scope?(:read_any_reports)
-        @reports.where(:sensit_topics => {:slug => params[:topic_id]})
+      if has_scope?("read_any_reports")
+        @reports = Topic::Report.joins(:topic).where(:sensit_topics => {:slug => params[:topic_id]}).page(params[:page] || 1).per(params[:per] || 10)
       else
-        @reports.where(:sensit_topics => {:application_id => doorkeeper_token.application_id})
+        @reports = Topic::Report.joins(:topic).where(:sensit_topics => {:application_id => doorkeeper_token.application_id}).page(params[:page] || 1).per(params[:per] || 10)
       end
-      @reports.page(params[:page] || 1).per(params[:per] || 10)
       respond_with(@reports)
     end
 

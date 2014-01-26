@@ -37,7 +37,7 @@ module Sensit
 		context "with valid params" do
 			context "when the record exists" do
 				before(:each) do
-					@params = {index: @user.to_param, type: "atm", id: 'cOsusCVJQUabbfZcIdDyAg' }
+					@params = {index: ELASTIC_INDEX_NAME, type: "atm", id: 'cOsusCVJQUabbfZcIdDyAg' }
 					@result1 = {"_index"=>"transactions", "_type"=>"atm", "_id"=>"cOsusCVJQUabbfZcIdDyAg", "_score"=>1.0, "_source"=>{"at"=> 1384487733.546266, "qwe"=>123}}
 				end
 				it "executes the elastic get query" do
@@ -55,7 +55,7 @@ module Sensit
 			end
 			context "when the record doesn't exist" do
 				before(:each) do
-					@params = {index: @user.to_param, type: "atm", id: 'cOsusCVJQUabbfZcIdDyAg' }
+					@params = {index: ELASTIC_INDEX_NAME, type: "atm", id: 'cOsusCVJQUabbfZcIdDyAg' }
 					@client.stub(:get).and_raise(::Elasticsearch::Transport::Transport::Errors::NotFound)
 				end
 				it "throws an exception that it is not found" do
@@ -68,7 +68,7 @@ module Sensit
 		end
 		context "with invalid params" do
 			before(:each) do
-				@params = {index: @user.to_param, type: "fsd", id: 'cOsusCVJQUabbfZcIdDyAg' }
+				@params = {index: ELASTIC_INDEX_NAME, type: "fsd", id: 'cOsusCVJQUabbfZcIdDyAg' }
 				@client.stub(:get).and_raise(::Elasticsearch::Transport::Transport::Errors::NotFound)
 			end
 			it "throws an exception that it is not found" do
@@ -82,7 +82,7 @@ module Sensit
 
 	describe ".create" do
 		before(:each) do
-			@params = {index: @user.to_param, type: 'mytype', at: Time.now, values: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}}
+			@params = {index: ELASTIC_INDEX_NAME, type: 'mytype', at: Time.now, values: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}}
 			@feed = Topic::Feed.new(@params)
 		end
 		it "executes the create instance" do
@@ -101,7 +101,7 @@ module Sensit
 
 	describe ".search" do
 		before(:each) do
-			@params = {index: @user.to_param, type: "atm", body: { :query => {"match_all" => {  }} }}
+			@params = {index: ELASTIC_INDEX_NAME, type: "atm", body: { :query => {"match_all" => {  }} }}
 			@result1 = {"_index"=>"3","_type"=>"3","_id"=>"vVHkzUTuThOTpl-tstkzhg","_score"=>1.0, "_source" => {"at"=>1384743416.433696}}
 			@result2 = {"_index"=>"3","_type"=>"3","_id"=>"1ZiRp7VHSHK_-3NmoJjusQ","_score"=>1.0, "_source" => {"at"=>1384743416.530578}}
 			@results = {"took" => 2,"timed_out" => false, "_shards" => {"total" => 5,"successful" => 5,"failed" => 0},"hits" => {"total"=>2,"max_score"=>1.0,"hits"=>[@result1,@result2]}}
@@ -130,7 +130,7 @@ module Sensit
 
 	describe ".percolate" do
 		before(:each) do
-			@params = {index: @user.to_param, type: "atm", body: { query: {"match_all" => {  }} } }
+			@params = {index: ELASTIC_INDEX_NAME, type: "atm", body: { query: {"match_all" => {  }} } }
 		end
 		it "executes the elastic percolate query" do
 			@client.should_receive(:percolate).with(@params).and_return({})
@@ -150,7 +150,7 @@ module Sensit
 
 	describe ".destroy" do
 		before(:each) do
-			@params = {index: @user.to_param,type: 'mytype', id: '1'}
+			@params = {index: ELASTIC_INDEX_NAME,type: 'mytype', id: '1'}
 		end
 		context "when the record exists" do
 			it "executes the elastic delete" do
@@ -176,19 +176,19 @@ module Sensit
 		end
 		context "when the index exists" do
 			it "executes the elastic index delete" do
-				@indices_client.should_receive(:delete).with({:index => @user.to_param}).and_return({"ok"=>true, "acknowledged"=>true})
+				@indices_client.should_receive(:delete).with({index: ELASTIC_INDEX_NAME}).and_return({"ok"=>true, "acknowledged"=>true})
 				@client.stub(:indices).and_return(@indices_client)
 				Topic::Feed.stub(:elastic_client).and_return(@client)
-				Topic::Feed.destroy_all({:index => @user.to_param})
+				Topic::Feed.destroy_all({index: ELASTIC_INDEX_NAME})
 			end
 		end
 		context "when the index does not exist" do
 			it "throws an exception that it is not found" do
-				@indices_client.should_receive(:delete).with({:index => @user.to_param}).and_raise(::Elasticsearch::Transport::Transport::Errors::NotFound)
+				@indices_client.should_receive(:delete).with({index: ELASTIC_INDEX_NAME}).and_raise(::Elasticsearch::Transport::Transport::Errors::NotFound)
 				@client.stub(:indices).and_return(@indices_client)
 				Topic::Feed.stub(:elastic_client).and_return(@client)
 				expect{
-					Topic::Feed.destroy_all({:index => @user.to_param})
+					Topic::Feed.destroy_all({index: ELASTIC_INDEX_NAME})
 				}.to raise_error(Elasticsearch::Transport::Transport::Errors::NotFound)
 			end
 		end
@@ -218,9 +218,9 @@ module Sensit
 
 		before(:each) do
 			@indices_client = Elasticsearch::API::Indices::IndicesClient.new(@client)
-			@feed = Topic::Feed.new({index: @user.to_param, type: 'mytype', at: Time.now, values: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}})
-			# @params = {index: @user.to_param, type: 'mytype', at: Time.now, values: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}}
-			# {index: @user.to_param,type: 'mytype', body: {title: 'Test 1',tags: ['y', 'z'], published: true, published_at: Time.now.utc.iso8601, counter: 1}}
+			@feed = Topic::Feed.new({index: ELASTIC_INDEX_NAME, type: 'mytype', at: Time.now, values: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}})
+			# @params = {index: ELASTIC_INDEX_NAME, type: 'mytype', at: Time.now, values: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}}
+			# {index: ELASTIC_INDEX_NAME,type: 'mytype', body: {title: 'Test 1',tags: ['y', 'z'], published: true, published_at: Time.now.utc.iso8601, counter: 1}}
 		end
 		# context "when the index doesn't exist (called for first time)" do
 		# 	before(:each) do
@@ -240,7 +240,7 @@ module Sensit
 			end
 			context "with valid response" do
 				it "executes the elastic create action" do
-					@client.should_receive(:create).with({:index=> @user.to_param, :type=>"mytype", :body=>{:title=>"Test 1", :tags=>["y", "z"], :published=>true, :counter=>1, :at=>@feed.at.utc.to_f, :tz=>"UTC"}}).and_return({"ok"=>true, "_index"=> @user.to_param, "_type"=>'mytype', "_id"=>"8eI2kKfwSymCrhqkjnGYiA", "_version"=>1})
+					@client.should_receive(:create).with({index: ELASTIC_INDEX_NAME, :type=>"mytype", :body=>{:title=>"Test 1", :tags=>["y", "z"], :published=>true, :counter=>1, :at=>@feed.at.utc.to_f, :tz=>"UTC"}}).and_return({"ok"=>true, "_index"=> @user.to_param, "_type"=>'mytype', "_id"=>"8eI2kKfwSymCrhqkjnGYiA", "_version"=>1})
 					Topic::Feed.stub(:elastic_client).and_return(@client)
 					@feed.send(:create)
 				end
@@ -271,12 +271,12 @@ module Sensit
 
 	describe "#update" do
 		before(:each) do
-			@feed = Topic::Feed.new({index: @user.to_param, type: 'mytype', at: Time.now, values: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}})
+			@feed = Topic::Feed.new({index: ELASTIC_INDEX_NAME, type: 'mytype', at: Time.now, values: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}})
 			@feed.stub(:id).and_return(3)
 			@feed.stub(:new_record?).and_return(false)
 		end
 		it "executes the update class action" do
-			@client.should_receive(:update).with({index: @user.to_param, type: 'mytype', id: 3, body:{ doc:{ at: @feed.at.utc.to_f, :tz=>"UTC", title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}}}).and_return({"ok"=>true, "_index"=>"#{@user.to_param}", "_type"=>'mytype', "_id"=>"8eI2kKfwSymCrhqkjnGYiA", "_version"=>2})
+			@client.should_receive(:update).with({index: ELASTIC_INDEX_NAME, type: 'mytype', id: 3, body:{ doc:{ at: @feed.at.utc.to_f, :tz=>"UTC", title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}}}).and_return({"ok"=>true, "_index"=>"#{@user.to_param}", "_type"=>'mytype', "_id"=>"8eI2kKfwSymCrhqkjnGYiA", "_version"=>2})
 			@feed.stub(:elastic_client).and_return(@client)
 			success = @feed.send(:update)
 		end
@@ -293,7 +293,7 @@ module Sensit
 
 	describe "#destroy" do
 		before(:each) do
-			@feed = Topic::Feed.new({index: @user.to_param, type: 'mytype', at: Time.now, values: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}})
+			@feed = Topic::Feed.new({index: ELASTIC_INDEX_NAME, type: 'mytype', at: Time.now, values: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}})
 		end
 		context "when the record is not a new record" do
 			before(:each) do
@@ -301,7 +301,7 @@ module Sensit
 				@feed.stub(:new_record?).and_return(false)
 			end
 			it "executes the elastic delete" do
-				Topic::Feed.should_receive(:destroy).with({index: @user.to_param, type: 'mytype', id: 1}).and_return(true)
+				Topic::Feed.should_receive(:destroy).with({index: ELASTIC_INDEX_NAME, type: 'mytype', id: 1}).and_return(true)
 				@feed.destroy.should be_true
 			end
 		end
@@ -316,7 +316,7 @@ module Sensit
 
 	describe "#save" do
 		before(:each) do
-			@feed = Topic::Feed.new({index: @user.to_param, type: 'mytype', at: Time.now, values: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}})
+			@feed = Topic::Feed.new({index: ELASTIC_INDEX_NAME, type: 'mytype', at: Time.now, values: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}})
 		end
 		context "when the record is not a new record" do
 			before(:each) do

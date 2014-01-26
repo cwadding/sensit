@@ -6,8 +6,8 @@ module Sensit
     respond_to :json
     # GET /topics/1/fields
     def index
-      if has_scope?(:read_any_data)
-        @fields = Topic::Field.joins(:topic, :topic => :user).where(:sensit_topics => {:slug => params[:topic_id]}, :sensit_users => {:id => user_id}).page(params[:page] || 1).per(params[:per] || 10)
+      if has_scope?("read_any_data")
+        @fields = Topic::Field.joins(:topic, :topic => :user).where(:sensit_topics => {:slug => params[:topic_id]}, :sensit_users => {:id => doorkeeper_token.resource_owner_id}).page(params[:page] || 1).per(params[:per] || 10)
       else
         @fields = Topic::Field.joins(:topic).where(:sensit_topics => {:slug => params[:topic_id], application_id: doorkeeper_token.application_id}).page(params[:page] || 1).per(params[:per] || 10)
       end
@@ -16,13 +16,13 @@ module Sensit
 
     # GET /topics/1/fields/1
     def show
-      @field = set_field_in_scope(:read_any_data)
+      @field = set_field_in_scope("read_any_data")
       respond_with(@field)
     end
 
     # POST /topics/1/fields
     def create
-      topic = scoped_owner(:write_any_data).topics.find(params[:topic_id])
+      topic = scoped_owner("write_any_data").topics.find(params[:topic_id])
       @field = topic.fields.build(field_params)
       if @field.save
         respond_with(@field,:status => :created, :template => "sensit/fields/show")
@@ -33,7 +33,7 @@ module Sensit
 
     # PATCH/PUT /topics/1/fields/1
     def update
-      @field = set_field_in_scope(:write_any_data)
+      @field = set_field_in_scope("write_any_data")
       if @field.update(field_params)
         respond_with(@field,:status => :ok, :template => "sensit/fields/show")
       else
@@ -43,7 +43,7 @@ module Sensit
 
     # DELETE topics/1/fields/1
     def destroy
-      @field = set_field_in_scope(:delete_any_data)
+      @field = set_field_in_scope("delete_any_data")
       @field.destroy
       head :status => :no_content
     end
@@ -53,8 +53,9 @@ module Sensit
       def set_field_in_scope(scope)
         topic = scoped_owner(scope).topics.find(params[:topic_id])
         raise ActiveRecord::RecordNotFound if topic.blank?
-        @field = topic.fields.find(params[:id])
-        raise ActiveRecord::RecordNotFound if @field.blank?
+        field = topic.fields.find(params[:id])
+        raise ActiveRecord::RecordNotFound if field.blank?
+        field
       end
 
       # Only allow a trusted parameter "white list" through.

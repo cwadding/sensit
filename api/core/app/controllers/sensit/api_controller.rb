@@ -15,12 +15,12 @@ module Sensit
 			end
 		end
 
-		def user_id
-			doorkeeper_token ? doorkeeper_token.resource_owner_id : session[:user_id]
-		end
+		# def user_id
+		# 	doorkeeper_token ? doorkeeper_token.resource_owner_id : session[:user_id]
+		# end
 
 		def elastic_index_name
-			doorkeeper_token.resource_owner_id.to_s
+			current_user.name
 		end
 
 		def elastic_type_name

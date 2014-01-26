@@ -5,7 +5,7 @@ module Sensit
 	describe Topic::Feed::Importer do
 		before(:each) do
 			@client = ::Elasticsearch::Client.new log: true
-			@topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @application)
+			@topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @access_grant.application)
 		end
 
 		# describe "#load_feeds" do

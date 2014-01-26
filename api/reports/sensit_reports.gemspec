@@ -16,8 +16,10 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'sensit_schema', Sensit::VERSION
 
+  s.add_development_dependency "sqlite3"
   s.add_development_dependency 'rspec-rails'
   s.add_development_dependency "json_spec"
   s.add_development_dependency "factory_girl_rails"
   s.add_development_dependency 'shoulda-matchers'#, '~> 2.10.0'
+  s.add_development_dependency "oauth2"
 end

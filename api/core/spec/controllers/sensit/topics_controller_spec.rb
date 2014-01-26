@@ -22,6 +22,7 @@ module Sensit
     describe TopicsController do
 
       before(:each) do
+        @access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "read_any_data write_any_data delete_any_data")
         controller.stub(:doorkeeper_token).and_return(@access_grant)
       end
 
@@ -44,7 +45,7 @@ module Sensit
 
       describe "GET index" do
         it "assigns all topics as @topics" do
-          topic = FactoryGirl.create(:topic, user: @user, application: @application)
+          topic = FactoryGirl.create(:topic, user: @user, application: @access_grant.application)
           get :index, valid_request, valid_session(user_id: @user.to_param)
           assigns(:topics).should eq([topic])
         end
@@ -52,7 +53,7 @@ module Sensit
 
       describe "GET show" do
         it "assigns the requested topic as @topic" do
-          topic = FactoryGirl.create(:topic, user: @user, application: @application)
+          topic = FactoryGirl.create(:topic, user: @user, application: @access_grant.application)
           get :show, valid_request({:id => topic.to_param}), valid_session(user_id: @user.to_param)
           assigns(:topic).should eq(topic)
         end
@@ -97,7 +98,7 @@ module Sensit
 
       describe "PUT update" do
         before(:each) do
-          @topic = FactoryGirl.create(:topic, user: @user, application: @application)
+          @topic = FactoryGirl.create(:topic, user: @user, application: @access_grant.application)
         end
         describe "with valid params" do
           it "updates the requested topic" do
@@ -139,7 +140,7 @@ module Sensit
 
       describe "DELETE destroy" do
         before(:each) do
-          @topic = FactoryGirl.create(:topic, user: @user, application: @application)
+          @topic = FactoryGirl.create(:topic, user: @user, application: @access_grant.application)
         end
         it "destroys the requested topic" do
           expect {

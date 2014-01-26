@@ -57,7 +57,7 @@ private
 	end
 
 	def elastic_index_name
-		self.topic.user.to_param
+		self.topic.user.name
 	end
 
 	def elastic_type_name

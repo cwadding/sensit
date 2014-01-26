@@ -15,6 +15,8 @@ Dir["#{File.dirname(__FILE__)}/factories/*.rb"].each { |f| require f }
 RSpec.configure do |config|
   config.include ::Sensit::Schema::Engine.routes.url_helpers
   config.include RequestHelpers, :type => :request
+  config.include OAuthHelpers, :type => :request
+  config.include OAuthHelpers, :type => :controller
   # == Mock Framework
   #
   # If you prefer to use mocha, flexmock or RR, uncomment the appropriate line:

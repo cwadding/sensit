@@ -10,13 +10,6 @@ require "sensit/core/factories"
 
 Rails.backtrace_cleaner.remove_silencers!
 
-
-OAUTH2_UID = "e072c008ab1f1c99b91a503f8e038836e1e5451f843c5443f29eccc27f1a7d63"
-OAUTH2_SECRET = "95b63199f75e780fb787549a9551582878181afd15db19c3835daafb6a265ca6"
-OAUTH2_TOKEN = "my_token"
-OAUTH2_REDIRECT_URI = "http://localhost:8080/oauth2/callback"
-ELASTIC_INDEX_NAME = ""
-
 # Load support files
 
 RSpec.configure do |config|
@@ -24,6 +17,7 @@ RSpec.configure do |config|
   config.include RequestHelpers, :type => :request
   config.include OAuthHelpers, :type => :request
   config.include OAuthHelpers, :type => :controller
+  # config.include FactoryGirl::Syntax::Methods
     # == Mock Framework
     #
     # If you prefer to use mocha, flexmock or RR, uncomment the appropriate line:

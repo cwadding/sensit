@@ -1,14 +1,16 @@
 RSpec.configure do |config|
-  config.before(:all) do
-    Sensit::User.destroy_all
-    @user = Sensit::User.create(:name => "test_user", :password => "foobar")
+  config.around do |example|
+      ActiveRecord::Base.transaction do
+        example.run
+        raise ActiveRecord::Rollback
+      end
   end
 
-  config.before(:each, :type => :request) do
-    post "/api/sessions", valid_request({name: @user.name, password: @user.password}), valid_session
+  config.before(:each) do
+    @user = Sensit::User.create(:name => "username", :email => "user@example.com", :password => "password", :password_confirmation => "password")
   end
 
-  config.after(:all) do
-    @user.destroy
-  end
+  # config.before(:each, :type => :request) do
+  #   post "/api/sessions", valid_request({name: @user.name, password: @user.password}), valid_session
+  # end
 end

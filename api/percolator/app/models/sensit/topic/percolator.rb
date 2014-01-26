@@ -74,7 +74,7 @@ module Sensit
 
 	def topic=(record)
 		self.topic_id = record.to_param
-		self.user_id = record.user.to_param if record.user
+		self.user_id = record.user.name if record.user
 	end
 
 	def topic

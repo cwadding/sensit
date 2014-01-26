@@ -2,11 +2,12 @@ require 'spec_helper'
 describe "PUT sensit/topics#update" do
 
    before(:each) do
-      @topic = FactoryGirl.create(:topic_with_feeds_and_fields, :user => @user, application: @application)
+      @access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "write_any_data")
+      @topic = FactoryGirl.create(:topic_with_feeds_and_fields, :user => @user, application: @access_grant.application)
    end
 
-   def process_request(topic, params)
-      oauth_put "/api/topics/#{topic.id}", valid_request(params), valid_session(:user_id => topic.user.to_param)
+   def process_oauth_request(access_grant,topic, params)
+      oauth_put access_grant, "/api/topics/#{topic.id}", valid_request(params), valid_session(:user_id => topic.user.to_param)
    end
 
    context "with updated attributes" do
@@ -20,12 +21,12 @@ describe "PUT sensit/topics#update" do
       end
 
       it "returns a 200 status code" do
-         response = process_request(@topic, @params)
+         response = process_oauth_request(@access_grant,@topic, @params)
          response.status.should == 200
       end
 
       it "returns the expected json" do
-         response = process_request(@topic, @params)
+         response = process_oauth_request(@access_grant,@topic, @params)
          feeds_arr = []
 
          @topic.feeds.each do |feed|
@@ -33,7 +34,7 @@ describe "PUT sensit/topics#update" do
             feed.values.each do |key, value|
                data_arr << "\"#{key}\": #{value}"
             end
-            feeds_arr << "{\"at\":#{feed.at.utc.to_f}, \"data\":{#{data_arr.join(',')}}}"
+            feeds_arr << "{\"at\":\"#{feed.at.utc.strftime("%Y-%m-%dT%H:%M:%S.%3NZ")}\", \"data\":{#{data_arr.join(',')}}}"
          end
          fields_arr = []
          @topic.fields.each do |field|
@@ -44,7 +45,7 @@ describe "PUT sensit/topics#update" do
       end
 
       it "updates the existing Topic" do
-			response = process_request(@topic, @params)
+			response = process_oauth_request(@access_grant,@topic, @params)
 			updated_topic = Sensit::Topic.find(@topic.id)
 			updated_topic.name.should == "New topic name"
 			updated_topic.description.should == "new description"
@@ -59,7 +60,7 @@ describe "PUT sensit/topics#update" do
             @params[:topic].merge!({:fields => fields_arr})
          end
          it "returns the expected json" do
-            response = process_request(@topic, @params)
+            response = process_oauth_request(@access_grant,@topic, @params)
             feeds_arr = []
 
             @topic.feeds.each do |feed|
@@ -67,7 +68,7 @@ describe "PUT sensit/topics#update" do
                feed.values.each do |key, value|
                   data_arr << "\"#{key}\": #{value}"
                end
-               feeds_arr << "{\"at\":#{feed.at.utc.to_f}, \"data\":{#{data_arr.join(',')}}}"
+               feeds_arr << "{\"at\":\"#{feed.at.utc.strftime("%Y-%m-%dT%H:%M:%S.%3NZ")}\", \"data\":{#{data_arr.join(',')}}}"
             end
             fields_arr = []
             @topic.fields.each do |field|

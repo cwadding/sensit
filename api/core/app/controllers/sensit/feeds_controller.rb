@@ -44,7 +44,6 @@ module Sensit
 
     # DELETE /topics/1/feeds/1
     def destroy
-      @feed = Topic::Feed.find({index: elastic_index_name, type: elastic_type_name, id: params[:id].to_s})
       Topic::Feed.destroy({index: elastic_index_name, type: elastic_type_name, id:  params[:id].to_s})
       head :status => :no_content
     end

@@ -4,15 +4,12 @@
 		included do
 		    # POST 1/topics
 		    def create
-		      @topic = current_user.topics.build(topic_params)
+		      @topic = current_user.topics.build(topic_params.merge!(application_id: doorkeeper_token.application_id))
 		      fields_params.each do |field_set|
 		        @topic.fields.build(field_set)
 		      end unless fields_params.blank?
 		      if @topic.save
-		        # create the elasticsearch index
-		        client = ::Elasticsearch::Client.new        
 		        respond_with(@topic,:status => :created, :template => "sensit/topics/show")
-		        # render(:json => "{\"location\":#{sensit_topic_url(@topic)}}", :status => :created)
 		      else
 		        render(:json => "{\"errors\":#{@topic.errors.to_json}}", :status => :unprocessable_entity)
 		      end
@@ -20,12 +17,13 @@
 
 		    # PATCH/PUT 1/topics/1
 		    def update
+		    	@topic = scoped_owner(:write_any_data).topics.find(params[:id])
 		      fields_params.each do |field_set|
 		        field = @topic.fields.where(:key => field_set[:key]).first
 		        field.name = field_set[:name]
 		        field.save
 		      end unless fields_params.blank?
-
+				
 		      if @topic.update(topic_params)
 		        respond_with(@topic,:status => 200, :template => "sensit/topics/show")
 		      else
