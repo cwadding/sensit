@@ -1,5 +1,7 @@
 API
 	Core
+		-support http compression (config.middleware.use Rack::Deflater)
+			http://calebwoods.github.io/http-compression-rails/
 		- Be able to search feeds (use the the subset of queries from the percolator for strong parameters)
 		- parent child relationships (ancestry gem)		
 		- Importing of data in XML, OR CSV		
