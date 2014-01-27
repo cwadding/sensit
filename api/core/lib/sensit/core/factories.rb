@@ -7,10 +7,12 @@ FactoryGirl.define do
   end
 
   factory :application, :class => ::Doorkeeper::Application do
-    name "Test App"
+    sequence :name do |n|
+      "Application#{n}"
+    end
     redirect_uri OAUTH2_REDIRECT_URI
-    secret "95b63199f75e780fb787549a9551582878181afd15db19c3835daafb6a265ca6"
-    uid "e072c008ab1f1c99b91a503f8e038836e1e5451f843c5443f29eccc27f1a7d63"
+    # secret "95b63199f75e780fb787549a9551582878181afd15db19c3835daafb6a265ca6"
+    # uid "e072c008ab1f1c99b91a503f8e038836e1e5451f843c5443f29eccc27f1a7d63"
   end
 
   factory :access_grant, :class => ::Doorkeeper::AccessGrant do

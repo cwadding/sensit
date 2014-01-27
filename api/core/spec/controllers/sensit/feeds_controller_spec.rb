@@ -102,43 +102,42 @@ module Sensit
 
       describe "PUT update" do
         describe "with valid params" do
+          before(:each) do
+            @feed = ::Sensit::Topic::Feed.create valid_attributes.merge!(index: ELASTIC_INDEX_NAME, type: @topic.to_param)
+          end
           it "updates the requested feed" do
-            feed = ::Sensit::Topic::Feed.create valid_attributes.merge!(index: ELASTIC_INDEX_NAME, type: @topic.to_param)
             # Assuming there are no other feed_feeds in the database, this
             # specifies that the ::Sensit::Topic::Feed created on the previous line
             # receives the :update_attributes message with whatever params are
             # submitted in the request.
             ::Sensit::Topic::Feed.any_instance.should_receive(:update_attributes).with({"assf" => "fssa"})
-            put :update, valid_request(:id => feed.id, :topic_id => @topic.to_param, :feed => { :at => Time.now, :values => {"assf" => "fssa"} }), valid_session(user_id: @user.to_param)
+            put :update, valid_request(:id => @feed.id, :topic_id => @topic.to_param, :feed => { :at => Time.now, :values => {"assf" => "fssa"} }), valid_session(user_id: @user.to_param)
           end
 
           it "assigns the requested feed as @feed" do
-            feed = ::Sensit::Topic::Feed.create valid_attributes.merge!(index: ELASTIC_INDEX_NAME, type: @topic.to_param)
-            put :update, valid_request(:id => feed.id, :topic_id => @topic.to_param, :feed => { :at => Time.now, :values => {"assf" => "fssa"} }), valid_session(user_id: @user.to_param)
-            assigns(:feed).id.should == feed.id
+            put :update, valid_request(:id => @feed.id, :topic_id => @topic.to_param, :feed => { :at => Time.now, :values => {"assf" => "fssa"} }), valid_session(user_id: @user.to_param)
+            assigns(:feed).id.should == @feed.id
           end
 
           it "renders the feed" do
-            feed = ::Sensit::Topic::Feed.create valid_attributes.merge!(index: ELASTIC_INDEX_NAME, type: @topic.to_param)
-            put :update, valid_request(:id => feed.id, :topic_id => @topic.to_param, :feed => { :at => Time.now, :values => {"assf" => "fssa"} }), valid_session(user_id: @user.to_param)
+            put :update, valid_request(:id => @feed.id, :topic_id => @topic.to_param, :feed => { :at => Time.now, :values => {"assf" => "fssa"} }), valid_session(user_id: @user.to_param)
             response.should render_template("sensit/feeds/show")
           end
         end
 
         describe "with invalid params" do
-          it "assigns the feed as @feed" do
-            feed = ::Sensit::Topic::Feed.create valid_attributes.merge!(index: ELASTIC_INDEX_NAME, type: @topic.to_param)
+          before(:each) do
+            @feed = ::Sensit::Topic::Feed.create valid_attributes.merge!(index: ELASTIC_INDEX_NAME, type: @topic.to_param)
             # Trigger the behavior that occurs when invalid params are submitted
             ::Sensit::Topic::Feed.any_instance.stub(:save).and_return(false)
-            put :update, valid_request(:id => feed.id, :topic_id => @topic.to_param, :feed => { :at => Time.now, :values => {"assf" => "fssa"} } ), valid_session(user_id: @user.to_param)
-            assigns(:feed).id.should == feed.id
+          end
+          it "assigns the feed as @feed" do
+            put :update, valid_request(:id => @feed.id, :topic_id => @topic.to_param, :feed => { :at => Time.now, :values => {"assf" => "fssa"} } ), valid_session(user_id: @user.to_param)
+            assigns(:feed).id.should == @feed.id
           end
 
           it "re-renders the 'edit' template" do
-            feed = ::Sensit::Topic::Feed.create valid_attributes.merge!(index: ELASTIC_INDEX_NAME, type: @topic.to_param)
-            # Trigger the behavior that occurs when invalid params are submitted
-            ::Sensit::Topic::Feed.any_instance.stub(:save).and_return(false)
-            put :update, valid_request(:id => feed.id, :topic_id => @topic.to_param, :feed => { :at => Time.now, :values => {"assf" => "fssa"} } ), valid_session(user_id: @user.to_param)
+            put :update, valid_request(:id => @feed.id, :topic_id => @topic.to_param, :feed => { :at => Time.now, :values => {"assf" => "fssa"} } ), valid_session(user_id: @user.to_param)
             response.status.should == 422
           end
         end

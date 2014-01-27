@@ -3,7 +3,7 @@ require_dependency "sensit/api_controller"
 module Sensit
   class FieldsController < ApiController
     include ::DoorkeeperDataAuthorization    
-    respond_to :json
+    respond_to :json, :xml
     # GET /topics/1/fields
     def index
       if has_scope?("read_any_data")

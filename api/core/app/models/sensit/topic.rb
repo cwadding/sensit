@@ -70,9 +70,7 @@ module Sensit
  #                        }
  #                      }
 	end
-
-	# lazily create the index in elastic search upon the first addition of any data to a feed
-private
+	
 	def destroy_feeds
 		client = ::Elasticsearch::Client.new
 
@@ -82,6 +80,10 @@ private
 		end
 		# client.delete_by_query({index: elastic_index_name, type: elastic_type_name, body: { query: { term: { topic_id: self.id } } }})
 	end
+
+	# lazily create the index in elastic search upon the first addition of any data to a feed
+private
+
 
 	def elastic_index_name
 		user.name

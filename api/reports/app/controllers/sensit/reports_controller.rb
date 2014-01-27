@@ -6,7 +6,7 @@ module Sensit
     doorkeeper_for :create, :update, :scopes => [:write_any_reports, :write_application_reports]
     doorkeeper_for :destroy,  :scopes => [:delete_any_reports, :delete_application_reports]
 
-    respond_to :json
+    respond_to :json, :xml
     # GET /reports
     # returns the name and query along with the results of the query
     # accepts additional parameters which will be merged into each report
@@ -24,14 +24,14 @@ module Sensit
     # returns the name and query along with the results of the query
     # accepts additional parameters which will be merged into the desired report
     def show
-      @report = scoped_owner(:read_any_reports).topics.find(params[:topic_id]).reports.find(params[:id])
+      @report = scoped_owner("read_any_reports").topics.find(params[:topic_id]).reports.find(params[:id])
       results = @report.results
       respond_with(@report)
     end
 
     # POST /reports
     def create
-      topic = scoped_owner(:write_any_reports).topics.find(params[:topic_id])
+      topic = scoped_owner("write_any_reports").topics.find(params[:topic_id])
       @report = topic.reports.build(report_params)
       facets_params.each do |facet_params|
         @report.facets.build(facet_params)
@@ -45,7 +45,7 @@ module Sensit
 
     # PATCH/PUT /reports/1
     def update
-      @report = scoped_owner(:write_any_reports).topics.find(params[:topic_id]).reports.find(params[:id])
+      @report = scoped_owner("write_any_reports").topics.find(params[:topic_id]).reports.find(params[:id])
 
       (params[:report][:facets] || []).each do |facet_params|
         facet = @report.facets.where( name: facet_params[:name]).first || nil
@@ -61,7 +61,7 @@ module Sensit
 
     # DELETE /reports/1
     def destroy
-      @report = scoped_owner(:delete_any_reports).topics.find(params[:topic_id]).reports.find(params[:id])
+      @report = scoped_owner("delete_any_reports").topics.find(params[:topic_id]).reports.find(params[:id])
       @report.destroy
       head :status => :no_content
     end

@@ -4,7 +4,7 @@ module Sensit
   class DataController < ApiController
     include ::DoorkeeperDataAuthorization
     
-    respond_to :json
+    respond_to :json, :xml
 
     # GET topics/1/feeds/1/data/:key
     def show

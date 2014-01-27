@@ -17,7 +17,7 @@
 
 		    # PATCH/PUT 1/topics/1
 		    def update
-		    	@topic = scoped_owner(:write_any_data).topics.find(params[:id])
+		    	@topic = scoped_owner("write_any_data").topics.find(params[:id])
 		      fields_params.each do |field_set|
 		        field = @topic.fields.where(:key => field_set[:key]).first
 		        field.name = field_set[:name]

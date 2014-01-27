@@ -3,7 +3,7 @@ require_dependency "sensit/api_controller"
 module Sensit
   class FeedsController < ApiController
     include ::DoorkeeperDataAuthorization
-    respond_to :json
+    respond_to :json, :xml
 
     # GET /topics/1/feeds/1
     def show

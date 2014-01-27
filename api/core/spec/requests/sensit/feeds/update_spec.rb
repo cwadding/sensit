@@ -4,9 +4,9 @@ describe "PUT sensit/feeds#update" do
 
 
 
-	def process_oauth_request(access_grant,topic, params)
+	def process_oauth_request(access_grant,topic, params = {}, format ="json")
 		feed = topic.feeds.first
-		oauth_put access_grant, "/api/topics/#{topic.to_param}/feeds/#{feed.id}", valid_request(params), valid_session(:user_id => topic.user.to_param)
+		oauth_put access_grant, "/api/topics/#{topic.to_param}/feeds/#{feed.id}.#{format}", valid_request(params.merge!(format: format)), valid_session(:user_id => topic.user.to_param)
 	end
 
 
@@ -18,39 +18,35 @@ describe "PUT sensit/feeds#update" do
 
 	context "with correct attributes" do
 
+		before(:each) do
+		fields = @topic.feeds.first.values.keys
+		values = {}
+		fields.each_with_index do |field, i|
+			values.merge!(field => i)
+		end
+		@params = {
+			:feed => {
+			   :values => values
+			}
+		}
+		end
+
 		it "returns a 200 status code" do
-			 fields = @topic.feeds.first.values.keys
-	         values = {}
-	         fields.each_with_index do |field, i|
-	            values.merge!(field => i)
-	         end
-	         params = {
-	            :feed => {
-	               :values => values
-	            }
-	         }
-			response = process_oauth_request(@access_grant,@topic, params)
+			response = process_oauth_request(@access_grant,@topic, @params)
 			response.status.should == 200
 		end
 
 		it "returns the expected json" do
-	         fields = @topic.feeds.first.values.keys
-	         values = {}
-	         fields.each_with_index do |field, i|
-	            values.merge!(field => (i+1).to_s)
-	         end
-	         params = {
-	            :feed => {
-	               :values => values
-	            }
-	         }
-
-			response = process_oauth_request(@access_grant,@topic, params)
-			# values.merge!(@feed.values)
-			data_arr = values.inject([]) do |arr, (key, value)|
+			response = process_oauth_request(@access_grant,@topic, @params)
+			data_arr = @params[:feed][:values].inject([]) do |arr, (key, value)|
 				arr << "\"#{key}\": \"#{value}\""
 			end
 			response.body.should be_json_eql("{\"at\": \"#{@topic.feeds.first.at.utc.strftime("%Y-%m-%dT%H:%M:%S.%3NZ")}\",\"data\": {#{data_arr.join(',')}},\"tz\":\"UTC\"}")
+		end
+
+		it "returns the expected xml" do
+			pending("xml response")			
+			response = process_oauth_request(@access_grant, @topic, @params, "xml")
 		end
 
 

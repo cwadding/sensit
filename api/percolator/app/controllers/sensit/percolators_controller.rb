@@ -6,7 +6,7 @@ module Sensit
     doorkeeper_for :create,:update,  :scopes => [:write_any_percolations, :write_application_percolations]
     doorkeeper_for :destroy,  :scopes => [:delete_any_percolations, :delete_application_percolations]
 
-    respond_to :json
+    respond_to :json, :xml
     # GET /percolators
     def index
       @percolators = Topic::Percolator.search(topic_id: params[:topic_id], user_id: elastic_index_name, body: {:query => {"match_all" => {  }}}, size: (params[:per] || 10), from: (params[:page] || 0) * (params[:per] || 10))

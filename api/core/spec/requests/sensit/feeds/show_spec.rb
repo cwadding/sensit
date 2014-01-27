@@ -1,9 +1,9 @@
 require 'spec_helper'
 describe "GET sensit/feeds#show" do
 
-	def process_oauth_request(access_grant,topic)
+	def process_oauth_request(access_grant,topic, format = "json")
 		feed = topic.feeds.first
-		oauth_get access_grant, "/api/topics/#{topic.to_param}/feeds/#{feed.id}", valid_request, valid_session(:user_id => topic.user.to_param)
+		oauth_get access_grant, "/api/topics/#{topic.to_param}/feeds/#{feed.id}.#{format}", valid_request(format: format), valid_session(:user_id => topic.user.to_param)
 	end
 
 	before(:each) do
@@ -26,6 +26,11 @@ describe "GET sensit/feeds#show" do
 				arr << "{\"#{key}\": #{value}}"
 			end
 			response.body.should be_json_eql("{\"at\": \"#{feed.at.utc.strftime("%Y-%m-%dT%H:%M:%S.%3NZ")}\",\"data\": #{data_arr.join(',')},\"tz\":\"UTC\"}")
+		end
+
+		it "returns the expected xml" do
+			pending("xml response")
+			response = process_oauth_request(@access_grant, @topic, "xml")
 		end
 
 	end

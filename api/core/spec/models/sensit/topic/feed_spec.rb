@@ -6,6 +6,8 @@ module Sensit
 	# it { should validate_uniqueness_of(:at).scoped_to(:topic_id) }
 
 	it { should validate_presence_of(:values) }
+	it { should validate_presence_of(:type) }
+	it { should validate_presence_of(:index) }
 	
 	before(:each) do
 		@client = ::Elasticsearch::Client.new log: true

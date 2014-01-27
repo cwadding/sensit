@@ -80,16 +80,15 @@ module Sensit
         end
 
         describe "with invalid params" do
-          it "assigns a newly created but unsaved topic as @topic" do
-            # Trigger the behavior that occurs when invalid params are submitted
+          before(:each) do
             Topic.any_instance.stub(:save).and_return(false)
+          end
+          it "assigns a newly created but unsaved topic as @topic" do
             post :create, valid_request({:topic => { "name" => "invalid value" }}), valid_session(user_id: @user.to_param)
             assigns(:topic).should be_a_new(Topic)
           end
 
           it "re-renders the 'new' template" do
-            # Trigger the behavior that occurs when invalid params are submitted
-            Topic.any_instance.stub(:save).and_return(false)
             post :create, valid_request({:topic => { "name" => "invalid value" }}), valid_session(user_id: @user.to_param)
             response.status.should == 422
           end
@@ -106,7 +105,7 @@ module Sensit
             # specifies that the Topic created on the previous line
             # receives the :update_attributes message with whatever params are
             # submitted in the request.
-            Topic.any_instance.should_receive(:update).with({ "name" => "1" })
+            Topic.any_instance.should_receive(:update).with({ "name" => "1", "application_id" => @access_grant.application.id })
             put :update, valid_request({:id => @topic.to_param, :topic => { "name" => "1" }}), valid_session(user_id: @user.to_param)
           end
 
@@ -122,16 +121,15 @@ module Sensit
         end
 
         describe "with invalid params" do
-          it "assigns the topic as @topic" do
-            # Trigger the behavior that occurs when invalid params are submitted
+          before(:each) do
             Topic.any_instance.stub(:save).and_return(false)
+          end
+          it "assigns the topic as @topic" do
             put :update, valid_request({:id => @topic.to_param, :topic => { "name" => "invalid value" }}), valid_session(user_id: @user.to_param)
             assigns(:topic).should eq(@topic)
           end
 
           it "re-renders the 'edit' template" do
-            # Trigger the behavior that occurs when invalid params are submitted
-            Topic.any_instance.stub(:save).and_return(false)
             put :update, valid_request({:id => @topic.to_param, :topic => { "name" => "invalid value" }}), valid_session(user_id: @user.to_param)
             response.status.should == 422
           end

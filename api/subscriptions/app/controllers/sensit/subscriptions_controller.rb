@@ -5,7 +5,7 @@ module Sensit
     doorkeeper_for :index, :show, :scopes => [:read_any_subscriptions, :read_application_subscriptions]
     doorkeeper_for :create, :update, :scopes => [:write_any_subscriptions, :write_application_subscriptions]
     doorkeeper_for :destroy,  :scopes => [:delete_any_subscriptions, :delete_application_subscriptions]
-    respond_to :json
+    respond_to :json, :xml
 
     # GET /subscriptions
     def index

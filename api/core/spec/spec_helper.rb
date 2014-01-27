@@ -17,6 +17,7 @@ RSpec.configure do |config|
   config.include RequestHelpers, :type => :request
   config.include OAuthHelpers, :type => :request
   config.include OAuthHelpers, :type => :controller
+  config.include ::ActionDispatch::TestProcess
   # config.include FactoryGirl::Syntax::Methods
     # == Mock Framework
     #

@@ -1,9 +1,9 @@
 require 'spec_helper'
 describe "DELETE sensit/feeds#destroy" do
 
-	def process_oauth_request(access_grant,topic)
+	def process_oauth_request(access_grant,topic, format="json")
 		feed = topic.feeds.first
-		oauth_delete access_grant, "/api/topics/#{topic.to_param}/feeds/#{feed.id}", valid_request, valid_session(:user_id => topic.user.to_param)
+		oauth_delete access_grant, "/api/topics/#{topic.to_param}/feeds/#{feed.id}.#{format}", valid_request(format: format), valid_session(:user_id => topic.user.to_param)
 	end
 
 	before(:each) do
