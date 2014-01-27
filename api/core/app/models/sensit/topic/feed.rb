@@ -10,8 +10,8 @@ module Sensit
 	# include ElasticUniquenessValidator
   	define_model_callbacks :create, :update, :save
 
-  	attr_accessor :at, :values, :type
-	attr_reader :errors, :id, :index
+  	attr_accessor :at, :values, :type, :index
+	attr_reader :errors, :id
 
 	def initialize(params={})
     	@new_record = true
@@ -65,8 +65,6 @@ module Sensit
 		elastic_client.indices.delete arguments
 	end
 
-
-
 	def new_record?
 		@new_record || false
 	end
@@ -95,16 +93,17 @@ module Sensit
   	# delegate :fields, :to => :topic, :prefix => false
 	delegate :name, :to => :topic, :prefix => true
 	delegate :node_name, :to => :topic, :prefix => false
+	delegate :ttl, :to => :topic, :prefix => false
 
 	# need a custom validation to ensure that the data value is the datatype that is expected based on the field value type and that the key is correct as well
 
-	def validate!
-		errors.add(:name, "can not be nil") if name.nil?
-	end
+	# def validate!
+	# 	errors.add(:name, "can not be nil") if name.nil?
+	# end
 
-	def self.human_attribute_name(attr, options = {})
-		"Name"
-	end
+	# def self.human_attribute_name(attr, options = {})
+	# 	"Name"
+	# end
 
 	def update_attributes(params)
 		values.merge!(params)

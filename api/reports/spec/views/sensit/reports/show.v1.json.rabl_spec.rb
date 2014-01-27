@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe "sensit/reports/show" do
   before(:each) do
-    @report = assign(:report, FactoryGirl.create(:report))
+    @report = assign(:report, FactoryGirl.create(:report, :topic => FactoryGirl.create(:topic, user: @user)))
   end
   it "renders the json data" do
     render

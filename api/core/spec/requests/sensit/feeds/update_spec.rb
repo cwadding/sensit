@@ -1,53 +1,52 @@
 require 'spec_helper'
 describe "PUT sensit/feeds#update" do
 
-	before(:each) do
-		@topic = FactoryGirl.create(:topic_with_feeds, user: @user)
-		@feed = @topic.feeds.first
+
+
+
+	def process_oauth_request(access_grant,topic, params = {}, format ="json")
+		feed = topic.feeds.first
+		oauth_put access_grant, "/api/topics/#{topic.to_param}/feeds/#{feed.id}.#{format}", valid_request(params.merge!(format: format)), valid_session(:user_id => topic.user.to_param)
 	end
 
 
-	def process_request(topic, params)
-		feed = topic.feeds.first
-		put "/api/topics/#{topic.to_param}/feeds/#{feed.id}", valid_request(params), valid_session(:user_id => topic.user.to_param)
+	before(:each) do
+		@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "write_any_data")
+		@topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @access_grant.application)
+		@feed = @topic.feeds.first
 	end
 
 	context "with correct attributes" do
 
-		it "returns the expected json" do
-	         fields = @topic.feeds.first.values.keys
-	         values = {}
-	         fields.each_with_index do |field, i|
-	            values.merge!(field => (i+1).to_s)
-	         end
-	         params = {
-	            :feed => {
-	               :values => values
-	            }
-	         }
+		before(:each) do
+		fields = @topic.feeds.first.values.keys
+		values = {}
+		fields.each_with_index do |field, i|
+			values.merge!(field => i)
+		end
+		@params = {
+			:feed => {
+			   :values => values
+			}
+		}
+		end
 
-			process_request(@topic, params)
-			expect(response).to render_template(:show)
-			# values.merge!(@feed.values)
-			data_arr = values.inject([]) do |arr, (key, value)|
+		it "returns a 200 status code" do
+			response = process_oauth_request(@access_grant,@topic, @params)
+			response.status.should == 200
+		end
+
+		it "returns the expected json" do
+			response = process_oauth_request(@access_grant,@topic, @params)
+			data_arr = @params[:feed][:values].inject([]) do |arr, (key, value)|
 				arr << "\"#{key}\": \"#{value}\""
 			end
 			response.body.should be_json_eql("{\"at\": \"#{@topic.feeds.first.at.utc.strftime("%Y-%m-%dT%H:%M:%S.%3NZ")}\",\"data\": {#{data_arr.join(',')}},\"tz\":\"UTC\"}")
 		end
 
-		it "returns a 200 status code" do
-			 fields = @topic.feeds.first.values.keys
-	         values = {}
-	         fields.each_with_index do |field, i|
-	            values.merge!(field => i)
-	         end
-	         params = {
-	            :feed => {
-	               :values => values
-	            }
-	         }
-			status = process_request(@topic, params)
-			status.should == 200
+		it "returns the expected xml" do
+			pending("xml response")			
+			response = process_oauth_request(@access_grant, @topic, @params, "xml")
 		end
 
 
@@ -64,7 +63,7 @@ describe "PUT sensit/feeds#update" do
 	            }
 	         }
 
-			process_request(@topic, params)
+			response = process_oauth_request(@access_grant,@topic, params)
 			# updated_field = Sensit::Topic::Feed.find(:index => @feed.index, :index => @feed.type, :id => @feed.id)
 			# updated_field.at.utc.to_f.should == params[:feed][:at]
 		end

@@ -56,12 +56,13 @@ private
 		self.query = {:match_all => {}} if self.query.blank?
 	end
 
-      def elastic_index_name
-        Rails.env.test? ? topic.user.to_param : params[:topic_id].to_s
-      end
-      def elastic_type_name
-        topic.to_param
-      end      
+	def elastic_index_name
+		self.topic.user.name
+	end
+
+	def elastic_type_name
+		self.topic.to_param
+	end
 
 
   end

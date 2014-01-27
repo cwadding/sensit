@@ -4,7 +4,8 @@ module Sensit
 
 	friendly_id :name, use: [:slugged, :finders]
   	after_destroy :destroy_feeds
-  	belongs_to :user
+  	belongs_to :user, class_name: "Sensit::User"
+  	belongs_to :application, class_name: "::Doorkeeper::Application", foreign_key: "application_id"
 	
 	validates :name, presence: true, uniqueness: true
 
@@ -69,9 +70,7 @@ module Sensit
  #                        }
  #                      }
 	end
-
-	# lazily create the index in elastic search upon the first addition of any data to a feed
-private
+	
 	def destroy_feeds
 		client = ::Elasticsearch::Client.new
 
@@ -82,8 +81,12 @@ private
 		# client.delete_by_query({index: elastic_index_name, type: elastic_type_name, body: { query: { term: { topic_id: self.id } } }})
 	end
 
+	# lazily create the index in elastic search upon the first addition of any data to a feed
+private
+
+
 	def elastic_index_name
-		user.id
+		user.name
 	end
 	def elastic_type_name
 		self.to_param

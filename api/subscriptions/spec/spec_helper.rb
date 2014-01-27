@@ -4,24 +4,26 @@ require File.expand_path("../dummy/config/environment.rb",  __FILE__)
 
 load "#{Rails.root.to_s}/db/schema.rb" unless ENV['from_file']
 
-require "rails/test_help"
-require 'rspec/rails'
-require 'rspec/autorun'
-require 'factory_girl'
-require 'shoulda-matchers'
-# require 'database_cleaner'
+OAUTH2_REDIRECT_URI = "http://localhost:8080/oauth2/callback"
+ELASTIC_INDEX_NAME = "my_index"
+
 require 'sensit_subscriptions'
-require 'json_spec'
+require "sensit/core/test/dependencies"
+require "sensit/core/test/request_helpers"
+require "sensit/core/test/oauth_helpers"
+require "sensit/core/test/user_cleaner"
+require "sensit/core/factories"
+
 Rails.backtrace_cleaner.remove_silencers!
 
-# Load support files
-Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
 
 Dir["#{File.dirname(__FILE__)}/factories/*.rb"].each { |f| require f }
 
 RSpec.configure do |config|
   config.include ::Sensit::Subscriptions::Engine.routes.url_helpers
   config.include RequestHelpers, :type => :request
+  config.include OAuthHelpers, :type => :request
+  config.include OAuthHelpers, :type => :controller
   # == Mock Framework
   #
   # If you prefer to use mocha, flexmock or RR, uncomment the appropriate line:
@@ -44,22 +46,4 @@ RSpec.configure do |config|
   # rspec-rails.
   config.infer_base_class_for_anonymous_controllers = false
 
-  config.around do |example|
-      ActiveRecord::Base.transaction do
-        example.run
-        raise ActiveRecord::Rollback
-      end
-  end
-  # config.before(:suite) do
-  #   DatabaseCleaner.strategy = :transaction
-  #   DatabaseCleaner.clean_with(:truncation)
-  # end
-
-  # config.before(:each) do
-  #   DatabaseCleaner.start
-  # end
-
-  # config.after(:each) do
-  #   DatabaseCleaner.clean
-  # end
 end

@@ -19,10 +19,12 @@ module Sensit
 
 			config.view_versions = [1]
 			config.view_version_extraction_strategy = :http_header
+			config.default_version = 1
 
 			config.to_prepare do
 				::Sensit::Topic.send :include, ::Schematic
 				::Sensit::Topic::Feed.send :include, ::ParentSchematic
+				::Sensit::TopicsController.send :include, ::AcceptFieldsWhenCreatingTopics
 				::Sensit::FeedsController.send :include, ::StrongFeedWithFieldParameters
 				::Sensit::DataController.send :include, ::StrongDataWithFieldParameters
 				::Sensit::Topic::Feed::Importer.send :include, ::FilteredImporter

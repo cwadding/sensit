@@ -22,7 +22,9 @@ module Sensit
   describe ReportsController do
 
     before(:each) do
-      @topic = FactoryGirl.create(:topic_with_feeds, user: @user)
+      @access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "read_any_reports write_any_reports delete_any_reports")
+      controller.stub(:doorkeeper_token).and_return(@access_grant)
+      @topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @access_grant.application)
     end
 
     def valid_request(h = {})
@@ -34,8 +36,6 @@ module Sensit
     def valid_attributes
       { :name => "My Report", :query => {"match_all" => {  }}, :facets => [{"name" => "facet1", "query" => { :terms => { :field => "value1"}}}]}
     end
-
-# :facets => { "terms" => { "field" => "value1"}}
 
     # This should return the minimal set of values that should be in the session
     # in order to pass any filters (e.g. authentication) defined in

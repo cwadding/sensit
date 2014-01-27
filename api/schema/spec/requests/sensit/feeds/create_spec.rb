@@ -1,22 +1,13 @@
 require 'spec_helper'
 describe "POST sensit/feeds#create"  do
-   # {
-   #    "feed":{
-   #       "timestamp":1383794969.654,
-   #       "data":{
-   #          "c3":0,
-   #          "c4":"val",
-   #          "c5":23
-   #       }
-   #    }
-   # }
-
+   
    before(:each) do
-      @topic = FactoryGirl.create(:topic_with_feeds_and_fields, user: @user) 
+      @access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "write_any_data")
+      @topic = FactoryGirl.create(:topic_with_feeds_and_fields, user: @user, application: @access_grant.application) 
    end
 
-   def process_request(topic, params)
-      post "/api/topics/#{topic.to_param}/feeds", valid_request(params), valid_session(:user_id => topic.user.to_param)
+   def process_oauth_request(access_grant,topic, params)
+      oauth_post access_grant, "/api/topics/#{topic.to_param}/feeds", valid_request(params), valid_session(:user_id => topic.user.to_param)
    end
 
    context "multiple feeds" do
@@ -49,8 +40,8 @@ describe "POST sensit/feeds#create"  do
                }
             ]
             }
-            status = process_request(@topic, params)
-            status.should == 200
+            response = process_oauth_request(@access_grant,@topic, params)
+            response.status.should == 200
          end
 
          it "returns the expected json" do
@@ -81,66 +72,65 @@ describe "POST sensit/feeds#create"  do
                }
             ]
             }
-            process_request(@topic, params)
-            expect(response).to render_template(:index)
+            response = process_oauth_request(@access_grant,@topic, params)
             
             field_arr = @topic.fields.inject([]) do |arr, field|
                arr << "{\"key\": \"#{field.key}\",\"name\": \"#{field.name}\"}"
             end
-            response.body.should be_json_eql("{\"fields\":[#{field_arr.join(',')}],\"feeds\":[{\"at\": 1386882015.0,\"data\": #{value_set1.to_json}, \"tz\": \"Eastern Time (US & Canada)\"}, {\"at\": 1386968415.0,\"data\": #{value_set2.to_json}, \"tz\": \"Eastern Time (US & Canada)\"}, {\"at\": 1387054815.0,\"data\": #{value_set3.to_json}, \"tz\": \"Eastern Time (US & Canada)\"}]}")
+            response.body.should be_json_eql("{\"fields\":[#{field_arr.join(',')}],\"feeds\":[{\"at\": \"2013-12-12T21:00:15.000Z\",\"data\": #{value_set1.to_json}, \"tz\": \"Eastern Time (US & Canada)\"}, {\"at\": \"2013-12-13T21:00:15.000Z\",\"data\": #{value_set2.to_json}, \"tz\": \"Eastern Time (US & Canada)\"}, {\"at\": \"2013-12-14T21:00:15.000Z\",\"data\": #{value_set3.to_json}, \"tz\": \"Eastern Time (US & Canada)\"}]}")
          end
       end
    end
    context "csv file" do
       before(:each) do
-      @topic = FactoryGirl.create(:topic_with_feeds_and_fields, field_keys: ["key1", "key2", "key3"], user: @user)
+      @topic = FactoryGirl.create(:topic_with_feeds_and_fields, field_keys: ["key1", "key2", "key3"], user: @user, application: @access_grant.application)
       end
       it "returns a 200 status code" do
          params = {
             :feeds => fixture_file_upload("#{RSpec.configuration.fixture_path}/files/feeds.csv", 'text/csv')
          }
-         status = process_request(@topic, params)
-         status.should == 200
+         response = process_oauth_request(@access_grant,@topic, params)
+         response.status.should == 200
       end
    end
 
    context "zipped csv file" do
       before(:each) do
-      @topic = FactoryGirl.create(:topic_with_feeds_and_fields, field_keys: ["key1", "key2", "key3"], user: @user)
+      @topic = FactoryGirl.create(:topic_with_feeds_and_fields, field_keys: ["key1", "key2", "key3"], user: @user, application: @access_grant.application)
       end
       it "returns a 200 status code" do
          params = {
             :feeds => fixture_file_upload("#{RSpec.configuration.fixture_path}/files/feeds.zip")
          }
-         status = process_request(@topic, params)
-         status.should == 200
+         response = process_oauth_request(@access_grant,@topic, params)
+         response.status.should == 200
       end
    end
 
    context "xls file" do
       before(:each) do
-      @topic = FactoryGirl.create(:topic_with_feeds_and_fields, field_keys: ["key1", "key2", "key3"], user: @user)
+      @topic = FactoryGirl.create(:topic_with_feeds_and_fields, field_keys: ["key1", "key2", "key3"], user: @user, application: @access_grant.application)
       end
       it "returns a 200 status code"
    end
 
    context "google spreadsheet file" do
       before(:each) do
-      @topic = FactoryGirl.create(:topic_with_feeds_and_fields, field_keys: ["key1", "key2", "key3"], user: @user)
+      @topic = FactoryGirl.create(:topic_with_feeds_and_fields, field_keys: ["key1", "key2", "key3"], user: @user, application: @access_grant.application)
       end
       it "returns a 200 status code"
    end
 
    context "OpenOffice file" do
       before(:each) do
-      @topic = FactoryGirl.create(:topic_with_feeds_and_fields, field_keys: ["key1", "key2", "key3"], user: @user)
+      @topic = FactoryGirl.create(:topic_with_feeds_and_fields, field_keys: ["key1", "key2", "key3"], user: @user, application: @access_grant.application)
       end
       it "returns a 200 status code"
    end
 
    context "LibreOffice" do
       before(:each) do
-      @topic = FactoryGirl.create(:topic_with_feeds_and_fields, field_keys: ["key1", "key2", "key3"], user: @user)
+      @topic = FactoryGirl.create(:topic_with_feeds_and_fields, field_keys: ["key1", "key2", "key3"], user: @user, application: @access_grant.application)
       end
       it "returns a 200 status code"
    end
@@ -157,12 +147,12 @@ describe "POST sensit/feeds#create"  do
             end
             params = {
                :feed => {
-                  :at => Time.now.utc.to_f,#Time.new(2013,11,14,3,56,6, "-00:00").utc.to_f,
+                  :at => "2014-01-26T16:04:23.103Z",
                   :values => values
                }
             }
-            status = process_request(@topic, params)
-            status.should == 200
+            response = process_oauth_request(@access_grant,@topic, params)
+            response.status.should == 200
          end
 
          it "returns the expected json" do
@@ -173,17 +163,16 @@ describe "POST sensit/feeds#create"  do
             end
             params = {
                :feed => {
-                  :at => Time.now.utc.to_f,#Time.new(2013,11,14,3,56,6, "-00:00").utc.to_f,
+                  :at => "2014-01-26T16:04:23.103Z",#Time.new(2013,11,14,3,56,6, "-00:00").utc.to_f,
                   :values => values
                }
             }
-            process_request(@topic, params)
-            expect(response).to render_template(:show)
+            response = process_oauth_request(@access_grant,@topic, params)
             
             field_arr = @topic.fields.inject([]) do |arr, field|
                arr << "{\"key\": \"#{field.key}\",\"name\": \"#{field.name}\"}"
             end
-            response.body.should be_json_eql("{\"at\": #{params[:feed][:at]},\"data\": #{values.to_json},\"fields\": [#{field_arr.join(",")}], \"tz\": \"UTC\"}")
+            response.body.should be_json_eql("{\"at\": \"2014-01-26T16:04:23.103Z\",\"data\": #{values.to_json},\"fields\": [#{field_arr.join(",")}], \"tz\": \"UTC\"}")
          end
 
          context "on first commit of fields" do
@@ -192,7 +181,7 @@ describe "POST sensit/feeds#create"  do
 
          # it "creates a new Feed" do
          #     expect {
-         #       process_request(@topic, @params)
+         #       process_oauth_request(@access_grant,@topic, @params)
          #     }.to change(Sensit::Topic::Feed, :count).by(1)
          #   end
       end
@@ -207,13 +196,18 @@ describe "POST sensit/feeds#create"  do
          end
 
          it "is an unprocessable entity" do
-            status = process_request(@topic, @params)
-            status.should == 422
+            expect{
+               response = process_oauth_request(@access_grant,@topic, @params)
+               response.status.should == 422
+            }.to raise_error(OAuth2::Error)
+
          end
 
          it "returns the expected json" do
-            process_request(@topic, @params)
-            response.body.should be_json_eql("{\"errors\":{\"at\":[\"can't be blank\"]}}")
+            expect{
+               response = process_oauth_request(@access_grant,@topic, @params)
+               response.body.should be_json_eql("{\"errors\":{\"at\":[\"can't be blank\"]}}")
+            }.to raise_error(OAuth2::Error)
          end
       end
 
@@ -227,18 +221,17 @@ describe "POST sensit/feeds#create"  do
             end
             params = {
                :feed => {
-                  :at => Time.now.utc.to_f,#Time.new(2013,11,14,3,56,6, "-00:00").utc.to_f,
+                  :at => "2014-01-26T16:04:23.103Z",#Time.new(2013,11,14,3,56,6, "-00:00").utc.to_f,
                   :tz => "Eastern Time (US & Canada)",
                   :values => values
                }
             }
-            process_request(@topic, params)
-            expect(response).to render_template(:show)
+            response = process_oauth_request(@access_grant,@topic, params)
             
             field_arr = @topic.fields.inject([]) do |arr, field|
                arr << "{\"key\": \"#{field.key}\",\"name\": \"#{field.name}\"}"
             end
-            response.body.should be_json_eql("{\"at\": #{params[:feed][:at]},\"data\": #{values.to_json},\"fields\": [#{field_arr.join(",")}], \"tz\": \"Eastern Time (US & Canada)\"}")
+            response.body.should be_json_eql("{\"at\": \"2014-01-26T16:04:23.103Z\",\"data\": #{values.to_json},\"fields\": [#{field_arr.join(",")}], \"tz\": \"Eastern Time (US & Canada)\"}")
          end
       end   
    end

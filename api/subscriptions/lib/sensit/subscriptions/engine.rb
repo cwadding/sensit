@@ -27,6 +27,7 @@ module Sensit
 
 			config.view_versions = [1]
 			config.view_version_extraction_strategy = :http_header
+			config.default_version = 1
 
 
 		end

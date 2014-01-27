@@ -1,2 +1,2 @@
 object @percolator
-attribute :id, :body
+attribute :name, :query

@@ -2,11 +2,13 @@ require_dependency "sensit/api_controller"
 
 module Sensit
   class FeedsController < ApiController
-    before_action :set_feed, only: [:show, :update, :destroy]
-    respond_to :json
+    include ::DoorkeeperDataAuthorization
+    respond_to :json, :xml
 
     # GET /topics/1/feeds/1
     def show
+      # need to add application_id to feed
+      @feed = Topic::Feed.find({index: elastic_index_name, type: elastic_type_name, id: params[:id].to_s})
       respond_with(@feed)
     end
 
@@ -32,6 +34,7 @@ module Sensit
 
     # PATCH/PUT /topics/1/feeds/1
     def update
+      @feed = Topic::Feed.find({index: elastic_index_name, type: elastic_type_name, id: params[:id].to_s})
       if @feed.update_attributes(feed_update_params)
         respond_with(@feed,:status => :ok, :template => "sensit/feeds/show")
       else
@@ -47,9 +50,6 @@ module Sensit
 
     private
       # Use callbacks to share common setup or constraints between actions.
-      def set_feed
-        @feed = Topic::Feed.find({index: elastic_index_name, type: elastic_type_name, id:  params[:id].to_s})
-      end
 
       # Only allow a trusted parameter "white list" through.
       def feed_update_params

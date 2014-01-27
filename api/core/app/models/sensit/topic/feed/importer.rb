@@ -1,16 +1,21 @@
 module Sensit
   class Topic::Feed::Importer
-    # switch to ActiveModel::Model in Rails 4
-    extend ActiveModel::Naming
-    include ActiveModel::Conversion
-    include ActiveModel::Validations
+    include ::ActiveModel::Model
+        #  extend  ActiveModel::Naming
+        # extend  ActiveModel::Translation
+        # include ActiveModel::Validations
+        # include ActiveModel::Conversion
+  extend ::ActiveModel::Callbacks
+  include ::ActiveModel::Dirty
     # include Roo
     attr_reader :feeds
     attr_accessor :index
     attr_accessor :type
 
     def initialize(attributes = {})
-      attributes.each { |name, value| send("#{name}=", value) }
+      @feeds = []
+      super(attributes)
+      @errors = ActiveModel::Errors.new(self)
     end
 
     def feeds=(value)
@@ -18,10 +23,10 @@ module Sensit
           @feeds = value.inject([]) do |arr, body|
             arr << Topic::Feed.new(body.merge!({index: self.index, type: self.type}))
           end
-      elsif value.is_a?(ActionDispatch::Http::UploadedFile)
+      elsif value.is_a?(ActionDispatch::Http::UploadedFile) || value.is_a?(Rack::Test::UploadedFile)
         @feeds = load_feeds(value)
       else
-        @feeds = []
+        raise ::ArgumentError.new("argument must be an Array of feed parameters or a UploadedFile")
       end
     end
 
@@ -30,16 +35,20 @@ module Sensit
     end
 
     def save
-      if @feeds.map(&:valid?).all?
-        response = elastic_client.bulk(index: self.index, type: self.type, body: bulk_body)
-        response["items"].map {|item| item.values.first["ok"]}.all? || false
-      else
-        @feeds.each_with_index do |feed, index|
-          feed.errors.full_messages.each do |message|
-            errors.add :base, "Row #{index+2}: #{message}"
+      unless @feeds.empty?
+        if @feeds.map(&:valid?).all?
+          response = elastic_client.bulk(index: self.index, type: self.type, body: bulk_body)
+          response["items"].map {|item| item.values.first["ok"]}.all? || false
+        else
+          @feeds.each_with_index do |feed, index|
+            feed.errors.full_messages.each do |message|
+              self.errors.add :base, "Row #{index+2}: #{message}"
+            end
           end
+          false
         end
-        false
+      else
+        true
       end
     end
 
@@ -62,9 +71,10 @@ private
 
     def open_spreadsheets(file)
       case File.extname(file.original_filename)
-        when ".csv" then [::Roo::CSV.new(file.path).to_a]
-        when ".xls" then [::Roo::Excel.new(file.path).to_a]
-        when ".xlsx" then [::Roo::Excelx.new(file.path).to_a]
+        when ".csv" then [::Roo::CSV.new(file.path, file_warning: :ignore).to_a]
+        when ".xls" then [::Roo::Excel.new(file.path, file_warning: :ignore).to_a]
+        when ".xlsx" then [::Roo::Excelx.new(file.path, file_warning: :ignore).to_a]
+        when ".ods" then [::Roo::OpenOffice.new(file.path, file_warning: :ignore).to_a]
         when ".zip"
           zf = ::Zip::File.new(file.path)
           spreadsheets = zf.map do |entry|

@@ -12,6 +12,7 @@ module Sensit
     describe ".valid_query" do
     	before(:each) do
     		@report = Topic::Report.new({ :name => "My Report", :query => {:match_all => {}}})
+    		@report.stub(:elastic_index_name).and_return(@user.to_param)
 			@client = ::Elasticsearch::Client.new
 			@indices_client = Elasticsearch::API::Indices::IndicesClient.new(@client)
 			
