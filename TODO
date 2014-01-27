@@ -28,6 +28,7 @@ API
 			Faye
 			ROS
 	Security
+		- Rack-Attack: https://github.com/kickstarter/rack-attack
 		- Feed Security (Public (No API Key), Shared (multi-tennant),	Private (single api key single user))
 		-whitelist or black list of ip's
 		- Authorization based on User or api key?

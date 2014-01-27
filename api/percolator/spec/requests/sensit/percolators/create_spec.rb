@@ -1,9 +1,17 @@
 require 'spec_helper'
 describe "POST sensit/percolators#create"  do
 
-	def process_oauth_request(access_grant,topic, params)
-		oauth_post access_grant, "/api/topics/#{topic.to_param}/percolators", valid_request(params), valid_session(:user_id => topic.user.to_param)
+	def url(topic, format = "json")
+		"/api/topics/#{topic.to_param}/percolators.#{format}"
 	end
+
+	def process_oauth_request(access_grant,topic, params)
+		oauth_post access_grant, url(topic, format), valid_request(params), valid_session(:user_id => topic.user.to_param)
+	end
+
+	def process_request(topic, params)
+		post url(topic, format), valid_request(params), valid_session(:user_id => topic.user.to_param)
+	end	
 
 	context "with correct attributes" do
 		before(:each) do

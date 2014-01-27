@@ -1,19 +1,23 @@
 require 'spec_helper'
 describe "GET sensit/topics#show" do
 
+	def url(topic, format = "json")
+		"/api/topics/#{topic.id}.#{format}"
+	end
+
 	def process_oauth_request(access_grant,topic, format="json")
-		oauth_get access_grant, "/api/topics/#{topic.id}.#{format}", valid_request(format: format), valid_session
+		oauth_get access_grant, url(topic,format), valid_request(format: format), valid_session
 	end
 
 	def process_request(topic, format="json")
-		get "/api/topics/#{topic.id}.#{format}", valid_request(format: format), valid_session
+		get url(topic,format), valid_request(format: format), valid_session
 	end	
 
 	context "oauth authentication" do
-		context "with read access to the users data" do	
+		context "with read access to the users data" do
 			before(:each) do
 				@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "read_any_data")
-			end			
+			end	
 			context "a topic belonging to the current application" do
 				before(:each) do
 					@topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @access_grant.application)
@@ -75,8 +79,8 @@ describe "GET sensit/topics#show" do
 
 			context "a topic belonging to another application" do
 				before(:each) do
-                  @application = FactoryGirl.create(:application)
-                  @topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @application)
+					@application = FactoryGirl.create(:application)
+					@topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @application)
 				end
 				it "is successful" do
 					response = process_oauth_request(@access_grant,@topic)
@@ -87,15 +91,15 @@ describe "GET sensit/topics#show" do
 		context "with read access to only application data" do	
 			before(:each) do
 				@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "read_application_data")
-                  @application = FactoryGirl.create(:application)
-                  @topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @application)				
+				@application = FactoryGirl.create(:application)
+				@topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @application)				
 			end
-            it "cannot read data from another application" do
-               expect{
-                  response = process_oauth_request(@access_grant, @topic)
-                  response.status.should == 404
-               }.to raise_error(ActiveRecord::RecordNotFound)
-            end
+			it "cannot read data from another application" do
+				expect{
+					response = process_oauth_request(@access_grant, @topic)
+					response.status.should == 404
+				}.to raise_error(ActiveRecord::RecordNotFound)
+			end
 		end		
 	end
 	context "no authentication" do

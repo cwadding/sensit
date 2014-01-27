@@ -1,8 +1,16 @@
 require 'spec_helper'
 describe "GET sensit/reports#show" do
 
-	def process_oauth_request(access_grant,report)
-		oauth_get access_grant, "/api/topics/#{report.topic.to_param}/reports/#{report.to_param}", valid_request, valid_session(:user_id => report.topic.user.to_param)
+	def url(report, format = "json")
+		"/api/topics/#{report.topic.to_param}/reports/#{report.to_param}.#{format}"
+	end
+
+	def process_request(report, format = "json")
+		get url(report, format), valid_request, valid_session(:user_id => report.topic.user.to_param)
+	end
+
+	def process_oauth_request(access_grant,report, format = "json")
+		oauth_get access_grant, url(report, format), valid_request, valid_session(:user_id => report.topic.user.to_param)
 	end
 
 	before(:each) do

@@ -1,11 +1,16 @@
 require 'spec_helper'
 describe "GET sensit/topics#index" do
 
-  	def process_oauth_request(access_grant,params = {}, format= "json")
-		oauth_get access_grant, "/api/topics.#{format}", valid_request(params.merge!(format: format)), valid_session
+	def url(format = "json")
+		"/api/topics.#{format}"
 	end
+
+  	def process_oauth_request(access_grant,params = {}, format= "json")
+		oauth_get access_grant, url(format), valid_request(params.merge!(format: format)), valid_session
+	end
+
   	def process_request(params = {}, format= "json")
-		get "/api/topics.#{format}", valid_request(params.merge!(format: format)), valid_session
+		get url(format), valid_request(params.merge!(format: format)), valid_session
 	end	
 
 	context "oauth authentication" do

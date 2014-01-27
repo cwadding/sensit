@@ -1,12 +1,16 @@
 require 'spec_helper'
 describe "POST sensit/topics#create" do
 
+   def url(format = "json")
+      "/api/topics.#{format}"
+   end
+
    def process_oauth_request(access_grant,params ={}, format = "json")
-      oauth_post access_grant, "/api/topics.#{format}", valid_request(params), valid_session
+      oauth_post access_grant, url(format), valid_request(params), valid_session
    end
 
    def process_request(access_grant,params ={}, format = "json")
-      post "/api/topics.#{format}", valid_request(params), valid_session
+      post url(format), valid_request(params), valid_session
    end   
 
    context "with valid attributes" do
@@ -100,11 +104,11 @@ describe "POST sensit/topics#create" do
                   @another_user = Sensit::User.create(:name => ELASTIC_INDEX_NAME, :email => "anouther_user@example.com", :password => "password", :password_confirmation => "password")
                   @topic = FactoryGirl.create(:topic_with_feeds, user: @another_user, application: @access_grant.application)
                end
-               it "cannot read data from another user" do
+               it "cannot write data from another user" do
                   expect{
                      response = process_oauth_request(@access_grant, @params)
-                     response.status.should == 404
-                  }.to raise_error(ActiveRecord::RecordNotFound)
+                     response.status.should == 401
+                  }.to raise_error(OAuth2::Error)
                end
             end
 

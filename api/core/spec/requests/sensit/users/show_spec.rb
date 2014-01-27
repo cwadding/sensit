@@ -1,12 +1,16 @@
 require 'spec_helper'
 describe "GET sensit/users#show" do
 
+	def url(format = "json")
+		"/api/user.#{format}"
+	end
+
 	def process_oauth_request(access_grant, format = "json")
-		oauth_get access_grant, "/api/user.#{format}", valid_request(format: format)
+		oauth_get access_grant, url(format), valid_request(format: format)
 	end
 
 	def process_request(format = "json")
-		get "/api/user.#{format}", valid_request(format: format), valid_session
+		get url(format), valid_request(format: format), valid_session
 	end	
 
 	context "oauth authentication" do

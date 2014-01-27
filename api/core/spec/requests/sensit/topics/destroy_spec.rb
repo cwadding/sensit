@@ -1,16 +1,20 @@
 require 'spec_helper'
 describe "DELETE sensit/topics#destroy" do
 
+	def url(topic, format = "json")
+		"/api/topics/#{topic.to_param}.#{format}"
+	end
+
 	def process_oauth_request(access_grant,topic, format = "json")
-		oauth_delete access_grant, "/api/topics/#{topic.to_param}.#{format}", valid_request(format: format), valid_session
+		oauth_delete access_grant, url(topic, format), valid_request(format: format), valid_session
 	end
 
 	def process_request(topic, format = "json")
-		delete "/api/topics/#{topic.to_param}.#{format}", valid_request(format: format), valid_session
+		delete url(topic, format), valid_request(format: format), valid_session
 	end	
 
 	context "oauth authentication" do
-		context "with delete access to the users data" do	
+		context "with delete access to the users data" do
 			before(:each) do
 				@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "delete_any_data")
 			end
@@ -94,5 +98,5 @@ describe "DELETE sensit/topics#destroy" do
 			status = process_request(topic)
 			status.should == 401
 		end
-	end	
+	end
 end

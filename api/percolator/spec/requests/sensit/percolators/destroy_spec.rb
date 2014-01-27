@@ -1,8 +1,17 @@
 require 'spec_helper'
 describe "DELETE sensit/percolators#destroy" do
 
-	def process_oauth_request(access_grant,percolator)
-		oauth_delete access_grant, "/api/topics/#{percolator.topic.to_param}/percolators/#{percolator.name}", valid_request, valid_session( user_id: percolator.topic.user.to_param)
+
+	def url(percolator, format ="json")
+		"/api/topics/#{percolator.topic.to_param}/percolators/#{percolator.name}"
+	end
+
+	def process_oauth_request(access_grant,percolator, format ="json")
+		oauth_delete access_grant, url(percolator, format), valid_request(format: format), valid_session( user_id: percolator.topic.user.to_param)
+	end
+
+	def process_equest(percolator, format ="json")
+		delete url(percolator, format), valid_request(format: format), valid_session( user_id: percolator.topic.user.to_param)
 	end
 
 	before(:each) do

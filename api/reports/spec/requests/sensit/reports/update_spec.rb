@@ -6,9 +6,16 @@ describe "PUT sensit/reports#update" do
 		@report = FactoryGirl.create(:report, :name => "My Report", :topic => FactoryGirl.create(:topic_with_feeds, user: @user, application: @access_grant.application))
 	end
 
+	def url(report, format= "json")
+		"/api/topics/#{report.topic.to_param}/reports/#{report.to_param}"
+	end
 
-	def process_oauth_request(access_grant,report, params)
-		oauth_put access_grant, "/api/topics/#{report.topic.to_param}/reports/#{report.to_param}", valid_request(params), valid_session(:user_id => report.topic.user.to_param)
+	def process_oauth_request(access_grant,report, params, format= "json")
+		oauth_put access_grant, url(report, format), valid_request(params), valid_session(:user_id => report.topic.user.to_param)
+	end
+
+	def process_request(report, params, format= "json")
+		put url(report, format), valid_request(params), valid_session(:user_id => report.topic.user.to_param)
 	end
 
 	context "with correct attributes" do

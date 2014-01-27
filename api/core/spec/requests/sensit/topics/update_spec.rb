@@ -1,12 +1,16 @@
 require 'spec_helper'
 describe "PUT sensit/topics#update" do
 
+   def url(topic, format = "json")
+      "/api/topics/#{topic.id}.#{format}"
+   end
+
    def process_oauth_request(access_grant,topic, params = {}, format = "json")
-      oauth_put access_grant, "/api/topics/#{topic.id}.#{format}", valid_request(params.merge!(format:format)), valid_session
+      oauth_put access_grant, url(topic,format), valid_request(params.merge!(format:format)), valid_session
    end
 
    def process_request(topic, params = {}, format = "json")
-      put "/api/topics/#{topic.id}.#{format}", valid_request(params.merge!(format:format)), valid_session
+      put url(topic,format), valid_request(params.merge!(format:format)), valid_session
    end
 
    context "with valid attributes" do
@@ -123,7 +127,6 @@ describe "PUT sensit/topics#update" do
                   }.to raise_error(ActiveRecord::RecordNotFound)
                end
             end
-
          end
          context "with write access to only the applications data" do
             before(:each) do

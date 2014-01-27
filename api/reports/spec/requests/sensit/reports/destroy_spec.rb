@@ -1,9 +1,17 @@
 require 'spec_helper'
 describe "DELETE sensit/reports#destroy" do
 
-	def process_oauth_request(access_grant,report)
+	def url(report, format = "json")
+		"/api/topics/#{report.topic_id}/reports/#{report.id}"
+	end
+
+	def process_oauth_request(access_grant,report, format = "json")
 		oauth_delete access_grant, "/api/topics/#{report.topic_id}/reports/#{report.id}", valid_request, valid_session(:user_id => report.topic.user.to_param)
 	end
+
+	def process_request(report, format = "json")
+		delete "/api/topics/#{report.topic_id}/reports/#{report.id}", valid_request, valid_session(:user_id => report.topic.user.to_param)
+	end	
 
 	before(:each) do
 		@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "delete_any_reports")

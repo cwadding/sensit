@@ -1,9 +1,17 @@
 require 'spec_helper'
 describe "GET sensit/reports#index" do
 
-	def process_oauth_request(access_grant,report, params = {})
-		oauth_get access_grant, "/api/topics/#{report.topic.to_param}/reports", valid_request(params), valid_session(:user_id => report.topic.user.to_param)
+	def url(report, format = "json")
+		"/api/topics/#{report.topic.to_param}/reports.#{format}"
 	end
+
+	def process_oauth_request(access_grant,report, params = {}, format = "json")
+		oauth_get access_grant, url(report, format), valid_request(params), valid_session(:user_id => report.topic.user.to_param)
+	end
+
+	def process_request(report, params = {}, format = "json")
+		get url(report, format), valid_request(params), valid_session(:user_id => report.topic.user.to_param)
+	end	
 
 	before(:each) do
 		@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "read_any_reports")
