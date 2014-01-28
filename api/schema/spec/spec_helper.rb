@@ -2,6 +2,9 @@
 ENV["RAILS_ENV"] = "test"
 require File.expand_path("../dummy/config/environment.rb",  __FILE__)
 
+require 'simplecov'
+SimpleCov.start 'rails'
+
 load "#{Rails.root.to_s}/db/schema.rb" unless ENV['from_file']
 
 require 'sensit_schema'

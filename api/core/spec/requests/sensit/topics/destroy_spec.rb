@@ -73,7 +73,7 @@ describe "DELETE sensit/topics#destroy" do
 				end
 				it "is successful" do
 					response = process_oauth_request(@access_grant,@topic)
-					response.status.should == 200
+					response.status.should == 204
 				end
 			end			
 		end

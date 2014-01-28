@@ -1,9 +1,17 @@
 require 'spec_helper'
 describe "GET sensit/subscriptions#index" do
 
-	def process_oauth_request(access_grant,topic)
-		oauth_get access_grant, "/api/topics/#{topic.to_param}/subscriptions", valid_request, valid_session(user_id: topic.user.to_param)
+	def url(topic, format = "json")
+		"/api/topics/#{topic.to_param}/subscriptions.#{format}"
 	end
+
+	def process_oauth_request(access_grant,topic,format = "json")
+		oauth_get access_grant, url(topic, format), valid_request, valid_session(user_id: topic.user.to_param)
+	end
+
+	def process_request(topic,format = "json")
+		get url(topic, format), valid_request, valid_session(user_id: topic.user.to_param)
+	end	
 
 
 	context "with > 1 subscription" do

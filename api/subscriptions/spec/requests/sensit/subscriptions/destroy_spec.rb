@@ -1,9 +1,17 @@
 require 'spec_helper'
 describe "DELETE sensit/subscriptions#destroy" do
 
-	def process_oauth_request(access_grant,subscription)
-		oauth_delete access_grant, "/api/topics/#{subscription.topic.to_param}/subscriptions/#{subscription.to_param}", valid_request, valid_session(user_id: subscription.topic.user.to_param)
+	def url(subscription, format = "json")
+		"/api/topics/#{subscription.topic.to_param}/subscriptions/#{subscription.to_param}.#{format}"
 	end
+
+	def process_oauth_request(access_grant,subscription, format = "json")
+		oauth_delete access_grant, url(subscription, format), valid_request, valid_session(user_id: subscription.topic.user.to_param)
+	end
+
+	def process_request(access_grant,subscription, format = "json")
+		delete url(subscription, format), valid_request, valid_session(user_id: subscription.topic.user.to_param)
+	end	
 
 
 	before(:each) do

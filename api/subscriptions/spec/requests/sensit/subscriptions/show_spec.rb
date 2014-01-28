@@ -1,10 +1,17 @@
 require 'spec_helper'
 describe "GET sensit/subscriptions#show" do
 
-	def process_oauth_request(access_grant,subscription)
-		oauth_get access_grant, "/api/topics/#{subscription.topic.to_param}/subscriptions/#{subscription.to_param}", valid_request, valid_session(user_id: subscription.topic.user.to_param)
+	def url(subscription, format="json")
+		"/api/topics/#{subscription.topic.to_param}/subscriptions/#{subscription.to_param}.#{format}"
 	end
 
+	def process_oauth_request(access_grant,subscription, format="json")
+		oauth_get access_grant, url(subscription, format), valid_request(format: format), valid_session(user_id: subscription.topic.user.to_param)
+	end
+
+	def process_request(subscription, format="json")
+		get url(subscription, format), valid_request(format: format), valid_session(user_id: subscription.topic.user.to_param)
+	end
 
 	before(:each) do
 		@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "read_any_subscriptions")

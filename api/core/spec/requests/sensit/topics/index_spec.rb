@@ -14,7 +14,7 @@ describe "GET sensit/topics#index" do
 	end	
 
 	context "oauth authentication" do
-		context "with read access to the users data" do	
+		context "with read access to the users data" do
 			before(:each) do
 				@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "read_any_data")
 			end	
@@ -97,7 +97,7 @@ describe "GET sensit/topics#index" do
 					# 	end
 					# 	arr1 << "{\"at\":\"#{feed.at.strftime("%Y-%m-%dT%H:%M:%S.%3NZ")}\",\"data\":{#{data_arr.join(',')}}}"
 					# end
-					response.body.should be_json_eql("{\"topics\":[{\"id\":#{@topic.id},\"name\":\"#{@topic.name}\",\"description\":\"topic description\"}]}")
+					response.body.should be_json_eql("{\"topics\":[]}")
 				end
 			end
 		end

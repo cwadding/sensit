@@ -104,7 +104,6 @@ describe "PUT sensit/topics#update" do
                before(:each) do
                   @application = FactoryGirl.create(:application)
                   @topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @application)
-                  @params[:topic].merge!({:application_id =>  @application.to_param})
                end
 
                it "updates the topic in the application" do
@@ -133,7 +132,6 @@ describe "PUT sensit/topics#update" do
                @access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "write_application_data")
                @application = FactoryGirl.create(:application)
                @topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @application)
-               @params[:topic].merge!({:application_id =>  @application.to_param})
             end
             it "cannot update data to another application" do
                expect{
@@ -151,7 +149,7 @@ describe "PUT sensit/topics#update" do
             status = process_request(@topic, @params)
             status.should == 401
          end
-      end      
+      end
    end
 
 end

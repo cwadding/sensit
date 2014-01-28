@@ -1,54 +1,118 @@
 require 'spec_helper'
 describe "GET sensit/reports#index" do
 
-	def url(report, format = "json")
-		"/api/topics/#{report.topic.to_param}/reports.#{format}"
+	def url(topic, format = "json")
+		"/api/topics/#{topic.to_param}/reports.#{format}"
 	end
 
-	def process_oauth_request(access_grant,report, params = {}, format = "json")
-		oauth_get access_grant, url(report, format), valid_request(params), valid_session(:user_id => report.topic.user.to_param)
+	def process_oauth_request(access_grant,topic, params = {}, format = "json")
+		oauth_get access_grant, url(topic, format), valid_request(params), valid_session(:user_id => topic.user.to_param)
 	end
 
-	def process_request(report, params = {}, format = "json")
-		get url(report, format), valid_request(params), valid_session(:user_id => report.topic.user.to_param)
+	def process_request(topic, params = {}, format = "json")
+		get url(topic, format), valid_request(params), valid_session(:user_id => topic.user.to_param)
 	end	
 
-	before(:each) do
-		@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "read_any_reports")
+
+	context "oauth authentication" do
+		context "with write access to the users percolator data" do
+			before(:each) do
+				@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "read_any_reports")
+			end
+
+			context "with no reports" do
+				before(:each) do
+					@topic = FactoryGirl.create(:topic, user: @user, application: @access_grant.application)
+				end
+				it "returns the expected json" do
+					response = process_oauth_request(@access_grant,@topic)
+					response.body.should be_json_eql("{\"reports\": []}")
+				end
+			end
+			context "with 1 report" do
+				before(:each) do
+					@topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @access_grant.application)
+					@report = FactoryGirl.create(:report, :name => "My Report", :topic => topic)
+				end
+				it "is successful" do
+					response = process_oauth_request(@access_grant,@topic)
+					response.status.should == 200
+				end
+
+				it "returns the expected json" do
+					response = process_oauth_request(@access_grant,@topic)
+					# facet_arr = @report.facets.inject([]) do |facet_arr, facet|
+					# 	facet_arr << "{\"query\":#{facet.query.to_json}, \"name\":\"#{facet.name}\"}"
+					# end
+					response.body.should be_json_eql("{\"reports\": [{\"name\":\"#{@report.name}\",\"query\":{\"match_all\":{}},\"total\":3,\"facets\":[{\"missing\": 0,\"name\": \"My Reportfacet\",\"query\": {\"terms\": {\"field\": \"value1\"}},\"results\": [{\"count\": 1,\"term\": 2},{\"count\": 1,\"term\": 1},{\"count\": 1,\"term\": 0}],\"total\": 3}	]}]}")
+				end
+			end
+			context "with > 1 report" do
+				before(:each) do
+					@topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @access_grant.application)
+					@reports = [
+						FactoryGirl.create(:report, :name => "R1", :topic => @topic), 
+						FactoryGirl.create(:report, :name => "R2", :topic => @topic), 
+						FactoryGirl.create(:report, :name => "R3", :topic => @topic)
+					]
+				end
+
+				it "returns the expected json" do
+					response = process_oauth_request(@access_grant,@topic, {page:3, per:1})
+					# facet_arr = report.facets.inject([]) do |facet_arr, facet|
+					# 	facet_arr << "{\"query\":#{facet.query.to_json}, \"name\":\"#{facet.name}\"}"
+					# end
+					response.body.should be_json_eql("{\"reports\": [{\"name\":\"R3\",\"query\":{\"match_all\":{}}, \"total\": 3,\"facets\":[{\"missing\": 0,\"name\": \"R3facet\",\"query\": {\"terms\": {\"field\": \"value1\"}},\"results\": [{\"count\": 1,\"term\": 2},{\"count\": 1,\"term\": 1},{\"count\": 1,\"term\": 0}],\"total\": 3}]}]}")
+				end
+			end
+
+			context "reading reports from another application" do
+				before(:each) do
+					@application = FactoryGirl.create(:application)
+					@topic = FactoryGirl.create(:topic, user: @user, application: @application)
+					@report = FactoryGirl.create(:report, :name => "My Report", :topic => @topic)
+				end
+
+				it "returns the expected json" do
+					response = process_oauth_request(@access_grant,@topic)
+					response.status.should == 200
+					response.body.should be_json_eql("{\"reports\": [{\"name\":\"#{@report.name}\",\"query\":{\"match_all\":{}},\"total\":3,\"facets\":[{\"missing\": 0,\"name\": \"My Reportfacet\",\"query\": {\"terms\": {\"field\": \"value1\"}},\"results\": [{\"count\": 1,\"term\": 2},{\"count\": 1,\"term\": 1},{\"count\": 1,\"term\": 0}],\"total\": 3}	]}]}")
+				end
+			end
+
+			context "with a report owned by another user" do
+				before(:each) do
+					another_user = Sensit::User.create(:name => ELASTIC_INDEX_NAME, :email => "anouther_user@example.com", :password => "password", :password_confirmation => "password")
+					@topic = FactoryGirl.create(:topic, user: another_user, application: @access_grant.application)
+					@report = FactoryGirl.create(:report, :name => "My Report", :topic => @topic)
+				end
+				it "cannot read data from another user" do
+					response = process_oauth_request(@access_grant, @topic)
+					response.body.should be_json_eql("{\"reports\": []}")
+				end
+			end			
+		end
+		context "with read access to only the applications data" do
+			before(:each) do
+				@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "read_application_reports")
+				@application = FactoryGirl.create(:application)
+				@topic = FactoryGirl.create(:topic, user: @user, application: @application)
+				@report = FactoryGirl.create(:report, :name => "My Report", :topic => @topic)
+			end
+			it "cannot read data of other application" do
+				response = process_oauth_request(@access_grant, @percolator)
+				response.body.should be_json_eql("{\"reports\":[]}")
+			end
+		end
 	end
 
-	context "with 1 report" do
+	context "no authentication" do
 		before(:each) do
-			@report = FactoryGirl.create(:report, :name => "My Report", :topic => FactoryGirl.create(:topic_with_feeds, user: @user, application: @access_grant.application))
+			@topic = FactoryGirl.create(:topic, user: @user, application: nil)
 		end
-		it "is successful" do
-			response = process_oauth_request(@access_grant,@report)
-			response.status.should == 200
+		it "is unauthorized" do
+			status = process_request(@topic)
+			status.should == 401
 		end
-
-		it "returns the expected json" do
-			response = process_oauth_request(@access_grant,@report)
-			# facet_arr = @report.facets.inject([]) do |facet_arr, facet|
-			# 	facet_arr << "{\"query\":#{facet.query.to_json}, \"name\":\"#{facet.name}\"}"
-			# end
-			response.body.should be_json_eql("{\"reports\": [{\"name\":\"#{@report.name}\",\"query\":{\"match_all\":{}},\"total\":3,\"facets\":[{\"missing\": 0,\"name\": \"My Reportfacet\",\"query\": {\"terms\": {\"field\": \"value1\"}},\"results\": [{\"count\": 1,\"term\": 2},{\"count\": 1,\"term\": 1},{\"count\": 1,\"term\": 0}],\"total\": 3}	]}]}")
-		end
-	end
-
-
-	context "with > 1 report" do
-		before(:each) do
-			topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @access_grant.application)
-			@reports = [FactoryGirl.create(:report, :name => "R1", :topic => topic), FactoryGirl.create(:report, :name => "R2", :topic => topic), FactoryGirl.create(:report, :name => "R3", :topic => topic)]
-		end
-
-		it "returns the expected json" do
-			report = @reports.last
-			response = process_oauth_request(@access_grant,report, {page:3, per:1})
-			# facet_arr = report.facets.inject([]) do |facet_arr, facet|
-			# 	facet_arr << "{\"query\":#{facet.query.to_json}, \"name\":\"#{facet.name}\"}"
-			# end
-			response.body.should be_json_eql("{\"reports\": [{\"name\":\"R3\",\"query\":{\"match_all\":{}}, \"total\": 3,\"facets\":[{\"missing\": 0,\"name\": \"R3facet\",\"query\": {\"terms\": {\"field\": \"value1\"}},\"results\": [{\"count\": 1,\"term\": 2},{\"count\": 1,\"term\": 1},{\"count\": 1,\"term\": 0}],\"total\": 3}]}]}")
-		end
-	end
+	end		
 end

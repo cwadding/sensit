@@ -13,7 +13,7 @@ describe "PUT sensit/percolators#update" do
 		put url(percolator, format), valid_request(params.merge!(format: format)), valid_session(:user_id => percolator.topic.user.to_param)
 	end	
 
-	context "with correct attributes" do
+	context "with valid attributes" do
 		before(:each) do
 			@params = {
 				:percolator => {
@@ -41,11 +41,10 @@ describe "PUT sensit/percolators#update" do
 						response.body.should be_json_eql("{\"name\": \"#{@percolator.name}\",\"query\": #{@params[:percolator][:query].to_json}}")
 					end
 				end
-				context "writing to another application" do
+				context "updating percolation from another application" do
 					before(:each) do
 						@application = FactoryGirl.create(:application)
 						@topic = FactoryGirl.create(:topic, user: @user, application: @application)
-						@params.merge!({:application_id =>  @application.to_param})
 						@percolator = ::Sensit::Topic::Percolator.create({ topic: @topic, :name => "5",  query: { query: { query_string: { query: 'foo' } } } })
 					end
 
@@ -68,14 +67,13 @@ describe "PUT sensit/percolators#update" do
 							response.status.should == 404
 						}.to raise_error(ActiveRecord::RecordNotFound)
 					end
-				end				
+				end
 			end
 			context "with write access to only the applications data" do
 				before(:each) do
 					@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "write_application_percolations")
 					@application = FactoryGirl.create(:application)
 					@topic = FactoryGirl.create(:topic, user: @user, application: @application)
-					@params.merge!({:application_id =>  @application.to_param})
 					@percolator = ::Sensit::Topic::Percolator.create({ topic: @topic, :name => "5",  query: { query: { query_string: { query: 'foo' } } } })
 				end
 				it "cannot update data to another application" do
@@ -84,7 +82,7 @@ describe "PUT sensit/percolators#update" do
 						response.status.should == 401
 					}.to raise_error(OAuth2::Error)
 				end
-			end			
+			end
 		end
 		context "no authentication" do
 			before(:each) do
