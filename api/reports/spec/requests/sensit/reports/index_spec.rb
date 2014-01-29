@@ -100,7 +100,7 @@ describe "GET sensit/reports#index" do
 				@report = FactoryGirl.create(:report, :name => "My Report", :topic => @topic)
 			end
 			it "cannot read data of other application" do
-				response = process_oauth_request(@access_grant, @percolator)
+				response = process_oauth_request(@access_grant, @report)
 				response.body.should be_json_eql("{\"reports\":[]}")
 			end
 		end

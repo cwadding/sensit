@@ -65,7 +65,7 @@ describe "PUT sensit/percolators#update" do
 						expect{
 							response = process_oauth_request(@access_grant, @percolator, @params)
 							response.status.should == 404
-						}.to raise_error(ActiveRecord::RecordNotFound)
+						}.to raise_error(Elasticsearch::Transport::Transport::Errors::NotFound)
 					end
 				end
 			end
@@ -79,8 +79,8 @@ describe "PUT sensit/percolators#update" do
 				it "cannot update data to another application" do
 					expect{
 						response = process_oauth_request(@access_grant, @percolator, @params)
-						response.status.should == 401
-					}.to raise_error(OAuth2::Error)
+						response.status.should == 404
+					}.to raise_error(Elasticsearch::Transport::Transport::Errors::NotFound)
 				end
 			end
 		end

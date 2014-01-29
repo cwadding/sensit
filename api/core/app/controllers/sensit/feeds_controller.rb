@@ -8,8 +8,12 @@ module Sensit
     # GET /topics/1/feeds/1
     def show
       # need to add application_id to feed
-      @feed = Topic::Feed.find({index: elastic_index_name, type: elastic_type_name, id: params[:id].to_s})
-      respond_with(@feed)
+      if attempting_to_access_topic_from_another_application_without_privilage("read_any_data")
+        raise ::Elasticsearch::Transport::Transport::Errors::NotFound
+      else
+        @feed = Topic::Feed.find({index: elastic_index_name, type: elastic_type_name, id: params[:id].to_s})
+        respond_with(@feed)
+      end
     end
 
     # POST /topic/1/feeds
@@ -23,32 +27,48 @@ module Sensit
           render(:json => "{\"errors\":#{importer.errors.to_json}}", :status => :unprocessable_entity)
         end
       else
-        @feed = Topic::Feed.new(feed_params.merge!({index: elastic_index_name, type: elastic_type_name})) 
-        if @feed.save
-          respond_with(@feed,:status => :created, :template => "sensit/feeds/show")
+        if attempting_to_access_topic_from_another_application_without_privilage("write_any_data")
+          head :unauthorized
         else
-          render(:json => "{\"errors\":#{@feed.errors.to_json}}", :status => :unprocessable_entity)
+          @feed = Topic::Feed.new(feed_params.merge!({index: elastic_index_name, type: elastic_type_name})) 
+          if @feed.save
+            respond_with(@feed,:status => :created, :template => "sensit/feeds/show")
+          else
+            render(:json => "{\"errors\":#{@feed.errors.to_json}}", :status => :unprocessable_entity)
+          end
         end
       end
     end
 
     # PATCH/PUT /topics/1/feeds/1
     def update
-      @feed = Topic::Feed.find({index: elastic_index_name, type: elastic_type_name, id: params[:id].to_s})
-      if @feed.update_attributes(feed_update_params)
-        respond_with(@feed,:status => :ok, :template => "sensit/feeds/show")
-      else
-        render(:json => "{\"errors\":#{@feed.errors.to_json}}", :status => :unprocessable_entity)
+      if attempting_to_access_topic_from_another_application_without_privilage("write_any_data")
+        raise ::Elasticsearch::Transport::Transport::Errors::NotFound
+      else        
+        @feed = Topic::Feed.find({index: elastic_index_name, type: elastic_type_name, id: params[:id].to_s})
+        if @feed.update_attributes(feed_update_params)
+          respond_with(@feed,:status => :ok, :template => "sensit/feeds/show")
+        else
+          render(:json => "{\"errors\":#{@feed.errors.to_json}}", :status => :unprocessable_entity)
+        end
       end
     end
 
     # DELETE /topics/1/feeds/1
     def destroy
-      Topic::Feed.destroy({index: elastic_index_name, type: elastic_type_name, id:  params[:id].to_s})
-      head :status => :no_content
+      if attempting_to_access_topic_from_another_application_without_privilage("delete_any_data")
+        raise ::Elasticsearch::Transport::Transport::Errors::NotFound
+      else
+        Topic::Feed.destroy({index: elastic_index_name, type: elastic_type_name, id:  params[:id].to_s})
+        head :status => :no_content
+      end
     end
 
     private
+
+      def attempting_to_access_topic_from_another_application_without_privilage(scope)
+        (!has_scope?(scope) && !current_application.topics.map(&:slug).include?(params[:topic_id].to_s)) || !current_user.topics.map(&:slug).include?(params[:topic_id].to_s)
+      end
       # Use callbacks to share common setup or constraints between actions.
 
       # Only allow a trusted parameter "white list" through.

@@ -107,10 +107,22 @@ describe "PUT sensit/topics#update" do
                end
 
                it "updates the topic in the application" do
-                     response = process_oauth_request(@access_grant,@topic, @params)
-                     response.status.should == 200
-                     @application.topics.first.name == "New topic name"
-                     @application.topics.first.description == "new description"
+                  response = process_oauth_request(@access_grant,@topic, @params)
+                  response.status.should == 200
+                  
+                  feeds_arr = []
+
+                  @topic.feeds.each do |feed|
+                     data_arr = []
+                     feed.values.each do |key, value|
+                        data_arr << "\"#{key}\": #{value}"
+                     end
+                     feeds_arr << "{\"at\":\"#{feed.at.utc.strftime("%Y-%m-%dT%H:%M:%S.%3NZ")}\", \"data\":{#{data_arr.join(',')}}, \"tz\": \"UTC\"}"
+                  end
+
+                  response.body.should be_json_eql("{\"id\":1,\"description\": \"#{@params[:topic][:description]}\",\"feeds\": [#{feeds_arr.join(',')}],\"name\": \"#{@params[:topic][:name]}\"}")
+                  # @application.topics.first.name == "New topic name"
+                  # @application.topics.first.description == "new description"
                end
             end
 
@@ -136,8 +148,8 @@ describe "PUT sensit/topics#update" do
             it "cannot update data to another application" do
                expect{
                   response = process_oauth_request(@access_grant, @topic, @params)
-                  response.status.should == 401
-               }.to raise_error(OAuth2::Error)
+                  response.status.should == 404
+               }.to raise_error(ActiveRecord::RecordNotFound)
             end
          end
       end

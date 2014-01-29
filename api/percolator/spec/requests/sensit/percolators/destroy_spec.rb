@@ -10,7 +10,7 @@ describe "DELETE sensit/percolators#destroy" do
 		oauth_delete access_grant, url(percolator, format), valid_request(format: format), valid_session( user_id: percolator.topic.user.to_param)
 	end
 
-	def process_equest(percolator, format ="json")
+	def process_request(percolator, format ="json")
 		delete url(percolator, format), valid_request(format: format), valid_session( user_id: percolator.topic.user.to_param)
 	end
 
@@ -76,7 +76,7 @@ describe "DELETE sensit/percolators#destroy" do
 					expect{
 						response = process_oauth_request(@access_grant, @percolator)
 						response.status.should == 404
-					}.to raise_error(ActiveRecord::RecordNotFound)
+					}.to raise_error(Elasticsearch::Transport::Transport::Errors::NotFound)
 				end
 			end
 		end
@@ -92,7 +92,7 @@ describe "DELETE sensit/percolators#destroy" do
 				expect{
 					response = process_oauth_request(@access_grant, @percolator)
 					response.status.should == 404
-				}.to raise_error(ActiveRecord::RecordNotFound)
+				}.to raise_error(Elasticsearch::Transport::Transport::Errors::NotFound)
 			end
 		end
 	end

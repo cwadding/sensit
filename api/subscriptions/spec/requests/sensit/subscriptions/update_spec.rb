@@ -71,6 +71,30 @@ describe "PUT sensit/subscriptions#update" do
 					end
 				end				
 			end
+			context "with write access to only the applications data" do
+				before(:each) do
+					@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "write_application_subscriptions")
+					@application = FactoryGirl.create(:application)
+					@topic = FactoryGirl.create(:topic, user: @user, application: @application)
+					@subscription = FactoryGirl.create(:subscription, :topic => topic)
+				end
+				it "cannot update data to another application" do
+					expect{
+						response = process_oauth_request(@access_grant, @subscription, @params)
+						response.status.should == 401
+					}.to raise_error(OAuth2::Error)
+				end
+			end				
 		end
+		context "no authentication" do
+			before(:each) do
+				@topic = FactoryGirl.create(:topic, user: @user, application: nil)
+				@subscription = FactoryGirl.create(:subscription, :topic => @topic)
+			end
+			it "is unauthorized" do
+				status = process_request(@subscription, @params)
+				status.should == 401
+			end
+		end			
 	end
 end

@@ -80,7 +80,7 @@ describe "PUT sensit/feeds#update" do
 						expect{
 							response = process_oauth_request(@access_grant, @topic, @params)
 							response.status.should == 404
-						}.to raise_error(ActiveRecord::RecordNotFound)
+						}.to raise_error(Elasticsearch::Transport::Transport::Errors::NotFound)
 					end
 				end				
 			end
@@ -95,17 +95,16 @@ describe "PUT sensit/feeds#update" do
 				it "cannot update data to another application" do
 					expect{
 						response = process_oauth_request(@access_grant, @topic, @params)
-						response.status.should == 401
-					}.to raise_error(OAuth2::Error)
+						response.status.should == 404
+					}.to raise_error(Elasticsearch::Transport::Transport::Errors::NotFound)
 				end
 			end			
 		end
-	end
-
-	context "no authentication" do
-		it "is unauthorized" do
-			status = process_request(@topic,@params)
-			status.should == 401
-		end
+		context "no authentication" do
+			it "is unauthorized" do
+				status = process_request(@topic,@params)
+				status.should == 401
+			end
+		end		
 	end
 end

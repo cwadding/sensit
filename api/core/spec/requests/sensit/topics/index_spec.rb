@@ -71,7 +71,7 @@ describe "GET sensit/topics#index" do
 			context "a topic belonging to another application" do
 				before(:each) do
                   @application = FactoryGirl.create(:application)
-                  @topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @application)
+                  @topic = FactoryGirl.create(:topic_with_feeds, user: @user, description: "topic description",  application: @application)
 				end
 				it "returns the expected json" do
 					response = process_oauth_request(@access_grant)

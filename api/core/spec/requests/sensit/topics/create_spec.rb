@@ -98,20 +98,6 @@ describe "POST sensit/topics#create" do
                    }.to change(@application.topics, :count).by(1)
                end
             end
-
-            context "writing a topic owned by another user" do
-               before(:each) do
-                  @another_user = Sensit::User.create(:name => ELASTIC_INDEX_NAME, :email => "anouther_user@example.com", :password => "password", :password_confirmation => "password")
-                  @topic = FactoryGirl.create(:topic_with_feeds, user: @another_user, application: @access_grant.application)
-               end
-               it "cannot write data from another user" do
-                  expect{
-                     response = process_oauth_request(@access_grant, @params)
-                     response.status.should == 401
-                  }.to raise_error(OAuth2::Error)
-               end
-            end
-
          end
          context "with write access to only the applications data" do
             before(:each) do

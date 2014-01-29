@@ -17,7 +17,7 @@ describe "POST sensit/reports#create"  do
 		@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "write_any_reports")
 	end
 
-	context "with correct attributes" do
+	context "with valid attributes" do
 
 		context "with facets" do 
 			before(:each) do

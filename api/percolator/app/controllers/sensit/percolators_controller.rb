@@ -9,45 +9,67 @@ module Sensit
     respond_to :json, :xml
     # GET /percolators
     def index
-      @percolators = Topic::Percolator.search(topic_id: params[:topic_id], user_id: elastic_index_name, body: {:query => {"match_all" => {  }}}, size: (params[:per] || 10), from: (params[:page] || 0) * (params[:per] || 10))
-      respond_with(@percolators)
+      if attempting_to_access_topic_from_another_application_without_privilage("read_any_percolations")
+        raise ::Elasticsearch::Transport::Transport::Errors::NotFound
+      else
+        @percolators = Topic::Percolator.search(topic_id: params[:topic_id], user_id: elastic_index_name, body: {:query => {"match_all" => {  }}}, size: (params[:per] || 10), from: (params[:page] || 0) * (params[:per] || 10))
+        respond_with(@percolators)
+      end
     end
 
     # GET /percolators/1
     def show
-      @percolator = Topic::Percolator.find(topic_id: params[:topic_id], user_id: elastic_index_name, name: params[:id])
-      respond_with(@percolator)
+      if attempting_to_access_topic_from_another_application_without_privilage("read_any_percolations")
+        raise ::Elasticsearch::Transport::Transport::Errors::NotFound
+      else
+        @percolator = Topic::Percolator.find(topic_id: params[:topic_id], user_id: elastic_index_name, name: params[:id])
+        respond_with(@percolator)
+      end
     end
 
     # POST /percolators
     def create
-      @percolator = Topic::Percolator.new(percolator_params.merge!(topic_id: params[:topic_id], user_id: elastic_index_name))
-      if @percolator.save
-        respond_with(@percolator,:status => :created, :template => "sensit/percolators/show")
+      if attempting_to_access_topic_from_another_application_without_privilage("write_any_percolations")
+          head :unauthorized
       else
-        render(:json => "{\"errors\":#{@percolator.errors.to_json}}", :status => :unprocessable_entity)
+        @percolator = Topic::Percolator.new(percolator_params.merge!(topic_id: params[:topic_id], user_id: elastic_index_name))
+        if @percolator.save
+          respond_with(@percolator,:status => :created, :template => "sensit/percolators/show")
+        else
+          render(:json => "{\"errors\":#{@percolator.errors.to_json}}", :status => :unprocessable_entity)
+        end
       end
     end
 
     # PATCH/PUT /percolators/1
     def update
-      @percolator = Topic::Percolator.update(percolator_params.merge!(topic_id: params[:topic_id], user_id: elastic_index_name,:name => params[:id]))
-      if @percolator.present? && @percolator.valid?
-        respond_with(@percolator,:status => :ok, :template => "sensit/percolators/show")
-      else
-        render(:json => "{\"errors\":#{@percolator.errors.to_json}}", :status => :unprocessable_entity)
+      if attempting_to_access_topic_from_another_application_without_privilage("write_any_percolations")
+        raise ::Elasticsearch::Transport::Transport::Errors::NotFound
+      else 
+        @percolator = Topic::Percolator.update(percolator_params.merge!(topic_id: params[:topic_id], user_id: elastic_index_name,:name => params[:id]))
+        if @percolator.present? && @percolator.valid?
+          respond_with(@percolator,:status => :ok, :template => "sensit/percolators/show")
+        else
+          render(:json => "{\"errors\":#{@percolator.errors.to_json}}", :status => :unprocessable_entity)
+        end
       end
     end
 
     # DELETE /percolators/1
     def destroy
-      Topic::Percolator.destroy(topic_id: params[:topic_id], user_id: elastic_index_name, name: params[:id])
-      head :status => :no_content
+      if attempting_to_access_topic_from_another_application_without_privilage("delete_any_percolations")
+        raise ::Elasticsearch::Transport::Transport::Errors::NotFound
+      else
+        Topic::Percolator.destroy(topic_id: params[:topic_id], user_id: elastic_index_name, name: params[:id])
+        head :status => :no_content
+      end
     end
 
-
-
     private
+
+    def attempting_to_access_topic_from_another_application_without_privilage(scope)
+      (!has_scope?(scope) && !current_application.topics.map(&:slug).include?(params[:topic_id].to_s)) || !current_user.topics.map(&:slug).include?(params[:topic_id].to_s)
+    end
 
       # Use callbacks to share common setup or constraints between actions.
     def elastic_client

@@ -126,7 +126,7 @@ describe "POST sensit/feeds#create"  do
                   fields = ["field1", "field2", "field3"]
                   values = {}
                   fields.each_with_index do |field, i|
-                     values.merge!(field => i)
+                     values.merge!(field => i.to_s)
                   end
                   @params = {
                      :feed => {
@@ -152,10 +152,11 @@ describe "POST sensit/feeds#create"  do
                it "creates a new Feed" do
                   client = ::Elasticsearch::Client.new
                   client.indices.refresh(:index => ELASTIC_INDEX_NAME)
-                  expect {
-                     process_oauth_request(@access_grant,@topic, @params)
-                     client.indices.refresh(:index => ELASTIC_INDEX_NAME)
-                  }.to change(@topic.feeds, :count).by(1)
+                  before_count = @topic.feeds.count
+                  process_oauth_request(@access_grant,@topic, @params)
+                  client.indices.refresh(:index => ELASTIC_INDEX_NAME)
+                  after_count = @topic.feeds.count
+                  (after_count - before_count).should == 1
                end
 
                context "with a :tz attribute" do
@@ -164,12 +165,12 @@ describe "POST sensit/feeds#create"  do
                   end
                   it "returns the expected json" do
                      response = process_oauth_request(@access_grant,@topic, @params)
-                     response.body.should be_json_eql("{\"at\": \"2013-11-14T03:56:06.000Z\",\"data\": #{values.to_json}, \"tz\": \"Eastern Time (US & Canada)\"}")
+                     response.body.should be_json_eql("{\"at\": \"2013-11-14T03:56:06.000Z\",\"data\": #{@params[:feed][:values].to_json}, \"tz\": \"Eastern Time (US & Canada)\"}")
                   end
                end
 
                context "but without the :at attribute" do
-                  before(:all) do
+                  before(:each) do
                      @params[:feed].delete(:at)
                   end
 
@@ -191,22 +192,22 @@ describe "POST sensit/feeds#create"  do
                   before(:each) do
                      @application = FactoryGirl.create(:application)
                      @topic.application = @application
-                     @params.merge!(:application_id => @application.id)
                      @topic.save
                   end
 
                   it "is successful" do
                      response = process_oauth_request(@access_grant,@topic, @params)
-                     response.status.should == 200
+                     response.status.should == 201
                   end
 
                   it "creates the feed on the topic of the application" do
                      client = ::Elasticsearch::Client.new
                      client.indices.refresh(:index => ELASTIC_INDEX_NAME)
-                     expect {
-                        process_oauth_request(@access_grant,@topic, @params)
-                        client.indices.refresh(:index => ELASTIC_INDEX_NAME)
-                     }.to change(@topic.feeds, :count).by(1)
+                     before_count = @topic.feeds.count
+                     process_oauth_request(@access_grant,@topic, @params)
+                     client.indices.refresh(:index => ELASTIC_INDEX_NAME)
+                     after_count = @topic.feeds.count
+                     (after_count - before_count).should == 1
                   end                  
                end
 
@@ -228,10 +229,21 @@ describe "POST sensit/feeds#create"  do
 
       context "with write access to only the applications data" do
          before(:each) do
-            @access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "write_application_data")
+            fields = ["field1", "field2", "field3"]
+            values = {}
+            fields.each_with_index do |field, i|
+               values.merge!(field => i.to_s)
+            end
             @application = FactoryGirl.create(:application)
-            @params.merge!({:application_id =>  @application.to_param})
-            @topic.application = @application
+            @params = {
+               :feed => {
+                  :at => Time.new(2013,11,14,3,56,6, "-00:00").utc.to_f,#Time.new(2013,11,14,3,56,6, "-00:00").utc.to_f,
+                  :values => values
+               }
+            }
+
+            @access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "write_application_data")
+            @topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @application)
             @topic.save
          end
          it "cannot update data to another application" do

@@ -51,7 +51,7 @@ describe "DELETE sensit/reports#destroy" do
 			context "deleting report from another application" do
 				before(:each) do
 					@application = FactoryGirl.create(:application)
-					@topic = FactoryGirl.create(:topic, user: @user, application: @application)
+					topic = FactoryGirl.create(:topic, user: @user, application: @application)
 					@report = FactoryGirl.create(:report, :topic => topic)
 				end
 

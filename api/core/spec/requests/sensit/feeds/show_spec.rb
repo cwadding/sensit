@@ -79,7 +79,7 @@ describe "GET sensit/feeds#show" do
 					expect{
 						response = process_oauth_request(@access_grant, @topic)
 						response.status.should == 404
-					}.to raise_error(ActiveRecord::RecordNotFound)
+					}.to raise_error(Elasticsearch::Transport::Transport::Errors::NotFound)
 				end
 			end
 		end
@@ -92,15 +92,15 @@ describe "GET sensit/feeds#show" do
 			it "cannot read data of another application" do
 				expect{
 					response = process_oauth_request(@access_grant, @topic)
-					response.status.should == 401
-				}.to raise_error(OAuth2::Error)
+					response.status.should == 404
+				}.to raise_error(Elasticsearch::Transport::Transport::Errors::NotFound)
 			end
 		end
 	end
 
 	context "no authentication" do
 		before(:each) do
-			@topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @access_grant.application)
+			@topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: nil)
 		end
 		it "is unauthorized" do
 			status = process_request(@topic)

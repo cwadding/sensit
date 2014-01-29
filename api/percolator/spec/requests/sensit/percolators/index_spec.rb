@@ -6,11 +6,11 @@ describe "GET sensit/percolators#index" do
 	end
 
 	def process_oauth_request(access_grant,topic,format = "json")
-		oauth_get access_grant, url(topic,format), valid_request, valid_session(user_id:topic.user.to_param)
+		oauth_get access_grant, url(topic,format), valid_request, valid_session
 	end
 
 	def process_request(topic,format = "json")
-		get url(topic,format), valid_request, valid_session(user_id:topic.user.to_param)
+		get url(topic,format), valid_request, valid_session
 	end
 
 

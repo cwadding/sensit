@@ -5,12 +5,12 @@ describe "POST sensit/percolators#create"  do
 		"/api/topics/#{topic.to_param}/percolators.#{format}"
 	end
 
-	def process_oauth_request(access_grant,topic, params)
-		oauth_post access_grant, url(topic, format), valid_request(params), valid_session(:user_id => topic.user.to_param)
+	def process_oauth_request(access_grant,topic, params = {}, format = "json")
+		oauth_post(access_grant, url(topic, format), valid_request(params), valid_session(:user_id => topic.user.to_param))
 	end
 
-	def process_request(topic, params)
-		post url(topic, format), valid_request(params), valid_session(:user_id => topic.user.to_param)
+	def process_request(topic, params = {}, format = "json")
+		post( url(topic, format), valid_request(params), valid_session(:user_id => topic.user.to_param))
 	end	
 
 	context "with valid attributes" do
@@ -49,7 +49,7 @@ describe "POST sensit/percolators#create"  do
 
 					it "returns the expected json" do
 						response = process_oauth_request(@access_grant,@topic, @params)
-						response.status.should == 200
+						response.status.should == 201
 						response.body.should be_json_eql("{\"name\": \"#{@params[:percolator][:name]}\",\"query\": #{@params[:percolator][:query].to_json}}")
 					end
 				end

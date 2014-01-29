@@ -77,7 +77,7 @@ describe "GET sensit/percolators#show" do
 					expect{
 						response = process_oauth_request(@access_grant, @percolator)
 						response.status.should == 404
-					}.to raise_error(ActiveRecord::RecordNotFound)
+					}.to raise_error(Elasticsearch::Transport::Transport::Errors::NotFound)
 				end
 			end
 		end
@@ -92,7 +92,7 @@ describe "GET sensit/percolators#show" do
 				expect{
 					response = process_oauth_request(@access_grant, @percolator)
 					response.status.should == 404
-				}.to raise_error(ActiveRecord::RecordNotFound)
+				}.to raise_error(Elasticsearch::Transport::Transport::Errors::NotFound)
 			end
 		end
 	end

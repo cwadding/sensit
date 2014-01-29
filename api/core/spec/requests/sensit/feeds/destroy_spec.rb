@@ -58,7 +58,7 @@ describe "DELETE sensit/feeds#destroy" do
 
 				it "is successful" do
 					response = process_oauth_request(@access_grant,@topic)
-					response.status.should == 200
+					response.status.should == 204
 				end
 			end
 
@@ -71,7 +71,7 @@ describe "DELETE sensit/feeds#destroy" do
 					expect{
 						response = process_oauth_request(@access_grant, @topic)
 						response.status.should == 404
-					}.to raise_error(ActiveRecord::RecordNotFound)
+					}.to raise_error(Elasticsearch::Transport::Transport::Errors::NotFound)
 				end
 			end
 		end
@@ -84,8 +84,8 @@ describe "DELETE sensit/feeds#destroy" do
 			it "cannot delete data of another application" do
 				expect{
 					response = process_oauth_request(@access_grant, @topic)
-					response.status.should == 401
-				}.to raise_error(OAuth2::Error)
+					response.status.should == 404
+				}.to raise_error(Elasticsearch::Transport::Transport::Errors::NotFound)
 			end
 		end		
 	end
