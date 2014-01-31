@@ -51,8 +51,8 @@ describe "PUT sensit/reports#update" do
 				context "updating report from another application" do
 					before(:each) do
 						@application = FactoryGirl.create(:application)
-						@topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @application)
-						@report = FactoryGirl.create(:report, :name => "My Report", :topic => @topic)
+						topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @application)
+						@report = FactoryGirl.create(:report, :name => "My Report", :topic => topic)
 					end
 
 					it "returns the expected json" do
@@ -66,7 +66,7 @@ describe "PUT sensit/reports#update" do
 					before(:each) do
 						another_user = Sensit::User.create(:name => ELASTIC_INDEX_NAME, :email => "anouther_user@example.com", :password => "password", :password_confirmation => "password")
 						topic = FactoryGirl.create(:topic, user: another_user, application: @access_grant.application)
-						@report = FactoryGirl.create(:report, :name => "My Report", :topic => @topic)
+						@report = FactoryGirl.create(:report, :name => "My Report", :topic => topic)
 					end
 					it "cannot read data from another user" do
 						expect{
@@ -86,8 +86,8 @@ describe "PUT sensit/reports#update" do
 				it "cannot update data to another application" do
 					expect{
 						response = process_oauth_request(@access_grant, @report, @params)
-						response.status.should == 401
-					}.to raise_error(OAuth2::Error)
+						response.status.should == 404
+					}.to raise_error(ActiveRecord::RecordNotFound)
 				end
 			end				
 		end

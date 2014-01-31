@@ -83,9 +83,9 @@ describe "GET sensit/subscriptions#show" do
 		end
 		context "with read access to only the applications data" do
 			before(:each) do
-				@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "read_application_reports")
+				@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "read_application_subscriptions")
 				@application = FactoryGirl.create(:application)
-				topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @application)
+				topic = FactoryGirl.create(:topic, user: @user, application: @application)
 				@subscription = FactoryGirl.create(:subscription, :topic => topic)
 			end
 			it "cannot read data to another application" do
@@ -99,11 +99,11 @@ describe "GET sensit/subscriptions#show" do
 
 	context "no authentication" do
 		before(:each) do
-				topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: nil)
-				@report = FactoryGirl.create(:report, :name => "MyReport-1", :topic => topic)
+			topic = FactoryGirl.create(:topic, user: @user, application: nil)
+			@subscription = FactoryGirl.create(:subscription, :topic => topic)
 		end
 		it "is unauthorized" do
-			status = process_request(@report)
+			status = process_request(@subscription)
 			status.should == 401
 		end
 	end		

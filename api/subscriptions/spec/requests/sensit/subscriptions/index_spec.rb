@@ -70,13 +70,13 @@ describe "GET sensit/subscriptions#index" do
 		end
 		context "with read access to only the applications data" do
 			before(:each) do
-				@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "read_application_reports")
+				@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "read_application_subscriptions")
 				@application = FactoryGirl.create(:application)
 				@topic = FactoryGirl.create(:topic, user: @user, application: @application)
 				@subscription = FactoryGirl.create(:subscription, :topic => @topic)
 			end
 			it "cannot read data of other application" do
-				response = process_oauth_request(@access_grant, @subscription)
+				response = process_oauth_request(@access_grant, @topic)
 				response.body.should be_json_eql("{\"subscriptions\":[]}")
 			end
 		end		

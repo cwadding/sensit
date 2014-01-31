@@ -65,10 +65,6 @@ module Sensit
     end
 
     private
-
-      def attempting_to_access_topic_from_another_application_without_privilage(scope)
-        (!has_scope?(scope) && !current_application.topics.map(&:slug).include?(params[:topic_id].to_s)) || !current_user.topics.map(&:slug).include?(params[:topic_id].to_s)
-      end
       # Use callbacks to share common setup or constraints between actions.
 
       # Only allow a trusted parameter "white list" through.

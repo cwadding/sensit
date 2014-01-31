@@ -47,10 +47,9 @@ describe "POST sensit/subscriptions#create"  do
 					before(:each) do
 						@application = FactoryGirl.create(:application)
 						@topic = FactoryGirl.create(:topic, user: @user, application: @application)
-						@params.merge!({:application_id =>  @application.to_param})
 					end
 
-					it "returns the expected json" do
+					it "returns the expected json", current:true do
 						response = process_oauth_request(@access_grant,@topic, @params)
 						response.status.should == 201
 						response.body.should be_json_eql("{\"name\": \"#{@params[:subscription][:name]}\",\"host\": \"#{@params[:subscription][:host]}\"}")

@@ -20,7 +20,6 @@ module OAuthHelpers
 
 
 	def oauth_get(access_grant, url, params = {}, session ={})
-		
 		oauth_token(access_grant).get( url, params: params)
 	end
 

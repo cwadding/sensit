@@ -72,7 +72,7 @@ describe "GET sensit/reports#show" do
 			context "reading a report owned by another user" do
 				before(:each) do
 					another_user = Sensit::User.create(:name => ELASTIC_INDEX_NAME, :email => "anouther_user@example.com", :password => "password", :password_confirmation => "password")
-					topic = FactoryGirl.create(:topic_with_feeds, user: another_user, application: @access_grant.application)
+					topic = FactoryGirl.create(:topic, user: another_user, application: @access_grant.application)
 					@report = FactoryGirl.create(:report, :name => "MyReport-1", :topic => topic)
 				end
 				it "cannot read data from another user" do
@@ -87,7 +87,7 @@ describe "GET sensit/reports#show" do
 			before(:each) do
 				@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "read_application_reports")
 				@application = FactoryGirl.create(:application)
-				topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @application)
+				topic = FactoryGirl.create(:topic, user: @user, application: @application)
 				@report = FactoryGirl.create(:report, :name => "MyReport-1", :topic => topic)
 			end
 			it "cannot read data to another application" do
@@ -101,8 +101,8 @@ describe "GET sensit/reports#show" do
 
 	context "no authentication" do
 		before(:each) do
-				topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: nil)
-				@report = FactoryGirl.create(:report, :name => "MyReport-1", :topic => topic)
+			topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: nil)
+			@report = FactoryGirl.create(:report, :name => "MyReport-1", :topic => topic)
 		end
 		it "is unauthorized" do
 			status = process_request(@report)

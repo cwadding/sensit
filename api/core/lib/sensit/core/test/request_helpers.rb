@@ -7,4 +7,10 @@ module RequestHelpers
       {}.merge!(h)
     end
 
+
+    def refresh_index
+    	client = ::Elasticsearch::Client.new
+    	client.indices.refresh(index: ELASTIC_INDEX_NAME)
+    end
+
 end

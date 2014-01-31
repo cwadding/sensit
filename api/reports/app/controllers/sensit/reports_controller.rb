@@ -11,12 +11,9 @@ module Sensit
     # returns the name and query along with the results of the query
     # accepts additional parameters which will be merged into each report
     def index
-      # TODO  Also join with user
-      if has_scope?("read_any_reports")
-        @reports = Topic::Report.joins(:topic).where(:sensit_topics => {:slug => params[:topic_id]}).page(params[:page] || 1).per(params[:per] || 10)
-      else
-        @reports = Topic::Report.joins(:topic).where(:sensit_topics => {:application_id => doorkeeper_token.application_id}).page(params[:page] || 1).per(params[:per] || 10)
-      end
+      joins = {:user_id => doorkeeper_token.resource_owner_id, :slug => params[:topic_id]}
+      joins.merge!(:application_id => doorkeeper_token.application_id) unless has_scope?("read_any_reports")
+      @reports = Topic::Report.joins(:topic).where(:sensit_topics => joins).page(params[:page] || 1).per(params[:per] || 10)
       respond_with(@reports)
     end
 
@@ -24,46 +21,62 @@ module Sensit
     # returns the name and query along with the results of the query
     # accepts additional parameters which will be merged into the desired report
     def show
-      @report = scoped_owner("read_any_reports").topics.find(params[:topic_id]).reports.find(params[:id])
-      results = @report.results
-      respond_with(@report)
+      if attempting_to_access_topic_from_another_application_without_privilage("read_any_reports")
+        raise ::ActiveRecord::RecordNotFound
+      else
+        @report = scoped_owner("read_any_reports").topics.find(params[:topic_id]).reports.find(params[:id])
+        results = @report.results
+        respond_with(@report)
+      end
     end
 
     # POST /reports
     def create
-      topic = scoped_owner("write_any_reports").topics.find(params[:topic_id])
-      @report = topic.reports.build(report_params)
-      facets_params.each do |facet_params|
-        @report.facets.build(facet_params)
-      end
-      if @report.save
-        respond_with(@report,:status => :created, :template => "sensit/reports/show")
+      if attempting_to_access_topic_from_another_application_without_privilage("write_any_reports")
+        head :unauthorized
       else
-        render(:json => "{\"errors\":#{@report.errors.to_json}}", :status => :unprocessable_entity)
+        topic = scoped_owner("write_any_reports").topics.find(params[:topic_id])
+        @report = topic.reports.build(report_params)
+        facets_params.each do |facet_params|
+          @report.facets.build(facet_params)
+        end
+        if @report.save
+          respond_with(@report,:status => :created, :template => "sensit/reports/show")
+        else
+          render(:json => "{\"errors\":#{@report.errors.to_json}}", :status => :unprocessable_entity)
+        end
       end
     end
 
     # PATCH/PUT /reports/1
     def update
-      @report = scoped_owner("write_any_reports").topics.find(params[:topic_id]).reports.find(params[:id])
-
-      (params[:report][:facets] || []).each do |facet_params|
-        facet = @report.facets.where( name: facet_params[:name]).first || nil
-        facet.update(query: facet_params[:query]) unless facet.blank?
-      end
-
-      if @report.update(report_params)
-        respond_with(@report,:status => :ok, :template => "sensit/reports/show")
+      if attempting_to_access_topic_from_another_application_without_privilage("write_any_reports")
+        raise ::ActiveRecord::RecordNotFound
       else
-        render(:json => "{\"errors\":#{@report.errors.to_json}}", :status => :unprocessable_entity)
+        @report = scoped_owner("write_any_reports").topics.find(params[:topic_id]).reports.find(params[:id])
+
+        (params[:report][:facets] || []).each do |facet_params|
+          facet = @report.facets.where( name: facet_params[:name]).first || nil
+          facet.update(query: facet_params[:query]) unless facet.blank?
+        end
+
+        if @report.update(report_params)
+          respond_with(@report,:status => :ok, :template => "sensit/reports/show")
+        else
+          render(:json => "{\"errors\":#{@report.errors.to_json}}", :status => :unprocessable_entity)
+        end
       end
     end
 
     # DELETE /reports/1
     def destroy
-      @report = scoped_owner("delete_any_reports").topics.find(params[:topic_id]).reports.find(params[:id])
-      @report.destroy
-      head :status => :no_content
+      if attempting_to_access_topic_from_another_application_without_privilage("delete_any_reports")
+        raise ::ActiveRecord::RecordNotFound
+      else
+        @report = scoped_owner("delete_any_reports").topics.find(params[:topic_id]).reports.find(params[:id])
+        @report.destroy
+        head :status => :no_content
+      end
     end
 
     private

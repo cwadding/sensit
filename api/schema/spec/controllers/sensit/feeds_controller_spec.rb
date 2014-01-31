@@ -56,7 +56,7 @@ module Sensit
 
       describe "POST create" do
         describe "with valid params" do
-          it "creates a new ::Sensit::Topic::Feed", current:true do
+          it "creates a new ::Sensit::Topic::Feed" do
             client = ::Elasticsearch::Client.new
             expect {
               post :create, valid_request(topic_id: @topic.to_param, :feed => { :at => Time.now, :values => {"assf" => "fssa"} }), valid_session(user_id: @user.to_param)

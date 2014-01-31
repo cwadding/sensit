@@ -50,8 +50,7 @@ describe "POST sensit/reports#create"  do
 					context "creating report for another application" do
 						before(:each) do
 							@application = FactoryGirl.create(:application)
-							@topic = FactoryGirl.create(:topic, user: @user, application: @application)
-							@params.merge!({:application_id =>  @application.to_param})
+							@topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @application)
 						end
 
 						it "returns the expected json" do

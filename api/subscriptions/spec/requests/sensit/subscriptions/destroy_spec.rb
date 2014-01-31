@@ -9,7 +9,7 @@ describe "DELETE sensit/subscriptions#destroy" do
 		oauth_delete access_grant, url(subscription, format), valid_request, valid_session(user_id: subscription.topic.user.to_param)
 	end
 
-	def process_request(access_grant,subscription, format = "json")
+	def process_request(subscription, format = "json")
 		delete url(subscription, format), valid_request, valid_session(user_id: subscription.topic.user.to_param)
 	end	
 

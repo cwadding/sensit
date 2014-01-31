@@ -32,7 +32,7 @@ describe "GET sensit/reports#index" do
 			context "with 1 report" do
 				before(:each) do
 					@topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @access_grant.application)
-					@report = FactoryGirl.create(:report, :name => "My Report", :topic => topic)
+					@report = FactoryGirl.create(:report, :name => "My Report", :topic => @topic)
 				end
 				it "is successful" do
 					response = process_oauth_request(@access_grant,@topic)
@@ -69,7 +69,7 @@ describe "GET sensit/reports#index" do
 			context "reading reports from another application" do
 				before(:each) do
 					@application = FactoryGirl.create(:application)
-					@topic = FactoryGirl.create(:topic, user: @user, application: @application)
+					@topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @application)
 					@report = FactoryGirl.create(:report, :name => "My Report", :topic => @topic)
 				end
 
@@ -97,10 +97,10 @@ describe "GET sensit/reports#index" do
 				@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "read_application_reports")
 				@application = FactoryGirl.create(:application)
 				@topic = FactoryGirl.create(:topic, user: @user, application: @application)
-				@report = FactoryGirl.create(:report, :name => "My Report", :topic => @topic)
+				report = FactoryGirl.create(:report, :name => "My Report", :topic => @topic)
 			end
 			it "cannot read data of other application" do
-				response = process_oauth_request(@access_grant, @report)
+				response = process_oauth_request(@access_grant, @topic)
 				response.body.should be_json_eql("{\"reports\":[]}")
 			end
 		end

@@ -10,7 +10,7 @@ module Sensit
     # GET /percolators
     def index
       if attempting_to_access_topic_from_another_application_without_privilage("read_any_percolations")
-        raise ::Elasticsearch::Transport::Transport::Errors::NotFound
+        respond_with([])
       else
         @percolators = Topic::Percolator.search(topic_id: params[:topic_id], user_id: elastic_index_name, body: {:query => {"match_all" => {  }}}, size: (params[:per] || 10), from: (params[:page] || 0) * (params[:per] || 10))
         respond_with(@percolators)

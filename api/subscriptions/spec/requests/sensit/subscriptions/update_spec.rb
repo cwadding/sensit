@@ -46,7 +46,7 @@ describe "PUT sensit/subscriptions#update" do
 				context "updating subscription from another application" do
 					before(:each) do
 						@application = FactoryGirl.create(:application)
-						@topic = FactoryGirl.create(:topic, user: @user, application: @application)
+						topic = FactoryGirl.create(:topic, user: @user, application: @application)
 						@subscription = FactoryGirl.create(:subscription, :topic => topic)
 					end
 
@@ -75,14 +75,14 @@ describe "PUT sensit/subscriptions#update" do
 				before(:each) do
 					@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "write_application_subscriptions")
 					@application = FactoryGirl.create(:application)
-					@topic = FactoryGirl.create(:topic, user: @user, application: @application)
+					topic = FactoryGirl.create(:topic, user: @user, application: @application)
 					@subscription = FactoryGirl.create(:subscription, :topic => topic)
 				end
 				it "cannot update data to another application" do
 					expect{
 						response = process_oauth_request(@access_grant, @subscription, @params)
-						response.status.should == 401
-					}.to raise_error(OAuth2::Error)
+						response.status.should == 404
+					}.to raise_error(ActiveRecord::RecordNotFound)
 				end
 			end				
 		end

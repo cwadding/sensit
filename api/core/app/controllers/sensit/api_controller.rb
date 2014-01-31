@@ -19,6 +19,10 @@ module Sensit
 		# 	doorkeeper_token ? doorkeeper_token.resource_owner_id : session[:user_id]
 		# end
 
+		def attempting_to_access_topic_from_another_application_without_privilage(scope)
+			(!has_scope?(scope) && !current_application.topics.map(&:slug).include?(params[:topic_id].to_s)) || !current_user.topics.map(&:slug).include?(params[:topic_id].to_s)
+		end
+
 		def elastic_index_name
 			current_user.name
 		end
