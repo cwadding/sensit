@@ -1,17 +1,6 @@
-require "bundler/gem_tasks"
+# Add your own tasks in files placed in lib/tasks ending in .rake,
+# for example lib/tasks/capistrano.rake, and they will automatically be available to Rake.
 
-PROJECTS = %w(api/percolator api/reports api/schema api/subscriptions api/core)
+require File.expand_path('../config/application', __FILE__)
 
-desc 'Run all tests by default'
-task :default => %w(spec)
-
-%w(spec).each do |task_name|
-  desc "Run #{task_name} task for all projects"
-  task task_name do
-    errors = []
-    PROJECTS.each do |project|
-      system(%(cd #{project} && #{$0} #{task_name})) || errors << project
-    end
-    fail("Errors in #{errors.join(', ')}") unless errors.empty?
-  end
-end
+Sensit::Application.load_tasks
