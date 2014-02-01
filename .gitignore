@@ -12,3 +12,15 @@ lib/bundler/man
 pkg
 rdoc
 tmp
+src/api/core/*.lock
+src/api/core/spec/dummy/*.lock
+src/api/percolator/*.lock
+src/api/percolator/spec/dummy/*.lock
+src/api/reports/*.lock
+src/api/reports/spec/dummy/*.lock
+src/api/schema/*.lock
+src/api/schema/spec/dummy/*.lock
+src/api/subscriptions/*.lock
+src/api/subscriptions/spec/dummy/*.lock
+src/modules/sensit_notifications/*.lock
+src/modules/sensit_notifications/spec/dummy/*.lock
