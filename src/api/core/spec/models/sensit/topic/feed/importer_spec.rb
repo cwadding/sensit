@@ -58,7 +58,11 @@ module Sensit
 					importer = Topic::Feed::Importer.new({index: ELASTIC_INDEX_NAME, type: "topic_id"})
 					importer.stub(:bulk_body).and_return('bulk_body')
 
-					client = ::Elasticsearch::Client.new
+					if ENV['ELASTICSEARCH_URL']
+						client = ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL'])
+					else
+						client = ::Elasticsearch::Client.new
+					end
 					client.stub(:bulk).with({index: ELASTIC_INDEX_NAME, type: "topic_id", body: 'bulk_body'}).and_return({"took"=>2, "items"=>[{"create"=>{"_index"=>"my_index", "_type"=>"topic_id", "_id"=>"6aXcLc9TRBaEAsn09DEMLA", "_version"=>1, "ok"=>true}}]})
 					importer.stub(:elastic_client).and_return(client)
 

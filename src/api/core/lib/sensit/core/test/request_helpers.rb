@@ -9,7 +9,11 @@ module RequestHelpers
 
 
     def refresh_index
-    	client = ::Elasticsearch::Client.new
+        if ENV['ELASTICSEARCH_URL']
+          client = ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL'])
+        else
+          client = ::Elasticsearch::Client.new
+        end        
     	client.indices.refresh(index: ELASTIC_INDEX_NAME)
     end
 

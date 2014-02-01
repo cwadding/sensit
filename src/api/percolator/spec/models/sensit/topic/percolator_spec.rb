@@ -8,7 +8,11 @@ module Sensit
     it { should validate_presence_of(:user_id) }
 
     before(:each) do
-        @client = ::Elasticsearch::Client.new log: true
+        if ENV['ELASTICSEARCH_URL']
+            @client = ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL'])
+        else
+            @client = ::Elasticsearch::Client.new
+        end        
     end
 
     describe ".count" do

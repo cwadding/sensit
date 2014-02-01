@@ -73,7 +73,11 @@ module Sensit
 
       # Use callbacks to share common setup or constraints between actions.
     def elastic_client
-      @client ||= ::Elasticsearch::Client.new
+      if ENV['ELASTICSEARCH_URL']
+        @client ||= ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL'])
+      else
+        @client ||= ::Elasticsearch::Client.new
+      end
     end
 
     def query_params

@@ -88,7 +88,11 @@ private
     end
 
     def elastic_client
-      @client ||= ::Elasticsearch::Client.new
+      if ENV['ELASTICSEARCH_URL']
+        @client ||= ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL'])
+      else
+        @client ||= ::Elasticsearch::Client.new
+      end
     end
 
     def bulk_body

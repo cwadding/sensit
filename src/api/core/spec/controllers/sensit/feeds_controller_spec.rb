@@ -57,7 +57,11 @@ module Sensit
       describe "POST create" do
         describe "with valid params" do
           it "creates a new ::Sensit::Topic::Feed" do
-            client = ::Elasticsearch::Client.new
+            if ENV['ELASTICSEARCH_URL']
+              client = ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL'])
+            else
+              client = ::Elasticsearch::Client.new
+            end
             expect {
               post :create, valid_request(topic_id: @topic.to_param, :feed => { :at => Time.now, :values => {"assf" => "fssa"} }), valid_session(user_id: @user.to_param)
               client.indices.refresh(:index => ELASTIC_INDEX_NAME)
@@ -146,7 +150,11 @@ module Sensit
       describe "DELETE destroy" do
         it "destroys the requested feed" do
           feed = ::Sensit::Topic::Feed.create valid_attributes.merge!(index: ELASTIC_INDEX_NAME, type: @topic.to_param)
-          client = ::Elasticsearch::Client.new
+          if ENV['ELASTICSEARCH_URL']
+            client = ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL'])
+          else
+            client = ::Elasticsearch::Client.new
+          end
           client.indices.refresh(index: ELASTIC_INDEX_NAME)
           expect {
             delete :destroy, valid_request(topic_id: @topic.to_param, :id => feed.id), valid_session(user_id: @user.to_param)

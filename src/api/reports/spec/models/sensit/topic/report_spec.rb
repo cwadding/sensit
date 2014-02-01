@@ -13,7 +13,11 @@ module Sensit
     	before(:each) do
     		@report = Topic::Report.new({ :name => "My Report", :query => {:match_all => {}}})
     		@report.stub(:elastic_index_name).and_return(@user.to_param)
-			@client = ::Elasticsearch::Client.new
+			if ENV['ELASTICSEARCH_URL']
+				@client = ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL'])
+			else
+				@client = ::Elasticsearch::Client.new
+			end			
 			@indices_client = Elasticsearch::API::Indices::IndicesClient.new(@client)
 			
     	end

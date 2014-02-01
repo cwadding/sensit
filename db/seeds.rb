@@ -30,8 +30,11 @@ def check_if_created(object, f)
   object.save 
 end
 
-@client = ::Elasticsearch::Client.new
-
+if ENV['ELASTICSEARCH_URL']
+	@client = ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL'])
+else
+	@client = ::Elasticsearch::Client.new
+end
 
 Sensit::User.destroy_all
 Doorkeeper::Application.destroy_all

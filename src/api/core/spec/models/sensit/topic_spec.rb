@@ -13,7 +13,11 @@ module Sensit
             @feed = Sensit::Topic::Feed.create({index: ELASTIC_INDEX_NAME, type: @topic.to_param, at: Time.now, :tz => "UTC", values: {value1: 2}})
         end
     	it "returns the associated feeds" do
-            client = ::Elasticsearch::Client.new
+            if ENV['ELASTICSEARCH_URL']
+              client = ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL'])
+            else
+              client = ::Elasticsearch::Client.new
+            end
             client.indices.refresh(index: ELASTIC_INDEX_NAME)
             feeds = @topic.feeds
             feeds.count.should == 1
@@ -29,7 +33,11 @@ module Sensit
             feed = Sensit::Topic::Feed.create({index: ELASTIC_INDEX_NAME, type: @topic.to_param, at: Time.now, :tz => "UTC", values: {value1: 3}})
         end
         it "returns the associated feeds" do
-          client = ::Elasticsearch::Client.new
+            if ENV['ELASTICSEARCH_URL']
+              client = ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL'])
+            else
+              client = ::Elasticsearch::Client.new
+            end
           client.indices.refresh(index: ELASTIC_INDEX_NAME)
           expect {
             @topic.destroy_feeds
