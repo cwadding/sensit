@@ -1,1 +1,1 @@
-web: RAILS_ENV=production bundle exec rails s Puma
+web: bundle exec puma -p $PORT -e $RACK_ENV -t 2
