@@ -37,6 +37,12 @@ else
 	@client = ::Elasticsearch::Client.new
 end
 
+puts "Creating ElasticSearch index..."
+@client.indices.delete({index: DEFAULT_USERNAME}) if @client.indices.exists({ index: DEFAULT_USERNAME})
+@client.indices.create({index: DEFAULT_USERNAME})
+puts "...Successfully created elasticsearch index"
+
+
 Sensit::User.destroy_all
 Doorkeeper::Application.destroy_all
 Doorkeeper::AccessGrant.destroy_all
@@ -56,11 +62,6 @@ File.open('seed_errors.txt', 'w') do |f|
 	puts "Creating user: #{DEFAULT_USERNAME}..."
 	@user = Sensit::User.new(name: DEFAULT_USERNAME, email: DEFAULT_EMAIL, password: DEFAULT_PASSWORD, password_confirmation: DEFAULT_PASSWORD)
 	check_if_created(@user, f)
-
-	puts "Creating ElasticSearch index..."
-	@client.indices.delete({index: DEFAULT_USERNAME}) if @client.indices.exists({ index: DEFAULT_USERNAME})
-	@client.indices.create({index: DEFAULT_USERNAME})
-	puts "...Successfully created elasticsearch index"
 
 	puts "Creating Default OAuth application"
 	@application = Doorkeeper::Application.new(name: DEFAULT_APP_NAME, redirect_uri: DEFAULT_APP_REDIRECT_URI)
