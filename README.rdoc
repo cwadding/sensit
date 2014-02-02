@@ -1,28 +1,59 @@
-== README
-
-This README would normally document whatever steps are necessary to get the
-application up and running.
+== Running the application
 
 Things you may want to cover:
 
 * Ruby version
+Currently using the latest stable version of ruby MRI which is 2.1.0.
+
+To install on MacOSX using rvm
+	1) Install the latest stable release of rvm
+		curl -sSL https://get.rvm.io | bash -s stable
+	2) Install ruby through rvm
+		rvm install 2.1.0
+	3) Set this version of ruby as the default
+		rvm use 2.1.0 --default
 
 * System dependencies
+ElasticSearch
+	On MacOSX (via homebrew)
+	1) brew install elasticsearch
+
+PostgreSQL
+	On MacOSX (via homebrew)
+	1) brew install postgresql
+	2) initdb /usr/local/var/postgres -E utf8
+	3) pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log start
 
 * Configuration
 
 * Database creation
 
+	1) edit the username and password credentials in config/database.yml
+	2) rake db:create:all
+
 * Database initialization
+	1) Run the database migrations with rake db:migrate
+	2) Seed the database with CNG data using rake db:seed
 
 * How to run the test suite
 
 * Services (job queues, cache servers, search engines, etc.)
+	Make sure ElasticSeach is running with 
+	elasticsearch -f -D es.config=/usr/local/opt/elasticsearch/config/elasticsearch.yml
 
 * Deployment instructions
+	To deploy on to Heroku
+	heroku create sensit
+	git push heroku master
+	heroku run rake db:migrate
+	heroku run rake db:seed
 
-* ...
+== Contributing
 
+Sensit is organized into several gems to make the code more modular. Every major add-on feature is intended to be it's own gem while the core functionality is in the core gem (sensit_core). The UI gems are separated from the API gems.
 
-Please feel free to use a different markup language if you do not plan to run
-<tt>rake doc:app</tt>.
+The main data abstractions are as follows:
+User: This is the master account with which all topics and applications are linked to. An elasticsearch index is created for each user and each topic has its own type within that index.
+Topic: A topic is root name which data is attached to. It is the equivalent of a source in searchlight or a table.
+Field: A topic has many fields and a field defines the column names and the datatypes. It is similar to columninfo and also stores the datatype
+Feed: A topic also has many feeds which represents an event or a row of data at a particular time. The data in feed correspond to fields and their datatypes. Feed data is stored in elasticsearch while all other data is stored in a relational database.

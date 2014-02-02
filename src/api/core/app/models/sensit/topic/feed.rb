@@ -42,7 +42,7 @@ module Sensit
 	end
 
 	def self.percolate(arguments = {})
-		# result = elastic_client.percolate arguments
+		result = elastic_client.percolate arguments
 	end
 
 	def self.count(arguments = {})
@@ -159,7 +159,7 @@ private
 	end
 
 	def percolate
-		# elastic_client.percolate attributes_for_percolate
+		elastic_client.percolate attributes_for_percolate
 	end
 
 	def create

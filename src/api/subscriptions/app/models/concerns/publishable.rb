@@ -2,8 +2,8 @@
 	module Publishable
 		extend ::ActiveSupport::Concern
 		included do
-			# before_create :broadcast_matches
-			# after_create :broadcast_create
+			before_create :broadcast_matches
+			after_create :broadcast_create
 
 			def broadcast_matches
 				response = percolate

@@ -78,5 +78,5 @@ Sensit::Application.configure do
   # Use default logging formatter so that PID and timestamp are not suppressed.
   config.log_formatter = ::Logger::Formatter.new
 
-  ENV['ELASTICSEARCH_URL'] = ENV['BONSAI_URL']
+  ENV['ELASTICSEARCH_URL'] = ENV['SEARCHBOX_URL']
 end
