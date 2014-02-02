@@ -47,3 +47,5 @@ gem 'sensit_subscriptions', :path => "src/api/subscriptions"
 
 gem "foreman"
 gem "puma"
+
+gem 'newrelic_rpm'
