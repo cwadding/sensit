@@ -37,6 +37,12 @@ else
 	@client = ::Elasticsearch::Client.new
 end
 
+DEFAULT_USERNAME = "solink"
+DEFAULT_PASSWORD = "ClhgCk22"
+DEFAULT_EMAIL = "cwaddington@solinkcorp.com"
+DEFAULT_APP_NAME = "demo"
+DEFAULT_APP_REDIRECT_URI = "http://localhost:3000/oauth2/callback"
+
 puts "Creating ElasticSearch index..."
 @client.indices.delete({index: DEFAULT_USERNAME}) if @client.indices.exists({ index: DEFAULT_USERNAME})
 @client.indices.create({index: DEFAULT_USERNAME})
@@ -48,12 +54,6 @@ Doorkeeper::Application.destroy_all
 Doorkeeper::AccessGrant.destroy_all
 Sensit::Topic.destroy_all
 Sensit::Topic::Field.destroy_all
-
-DEFAULT_USERNAME = "solink"
-DEFAULT_PASSWORD = "ClhgCk22"
-DEFAULT_EMAIL = "cwaddington@solinkcorp.com"
-DEFAULT_APP_NAME = "demo"
-DEFAULT_APP_REDIRECT_URI = "http://localhost:3000/oauth2/callback"
 
 path_to_csv = File.dirname(__FILE__) + "/data/ILP_20131009_1801.csv"
 
