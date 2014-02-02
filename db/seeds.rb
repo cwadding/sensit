@@ -31,6 +31,7 @@ def check_if_created(object, f)
 end
 
 if ENV['ELASTICSEARCH_URL']
+	puts ENV['ELASTICSEARCH_URL']
 	@client = ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL'])
 else
 	@client = ::Elasticsearch::Client.new

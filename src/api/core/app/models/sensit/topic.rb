@@ -73,7 +73,7 @@ module Sensit
 	
 	def destroy_feeds
 		# client = ::Elasticsearch::Client.new
-
+		
 		# TODO change to delete_by_query when it works properly
 		feeds.each do |feed|
 			feed.destroy
