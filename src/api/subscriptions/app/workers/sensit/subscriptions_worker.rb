@@ -37,5 +37,23 @@ module Sensit
 		def create_feed(feed_params)
 			feed = Topic::Feed.create(feed_params) 
 		end
+
+		def mqtt_subscribe(subscription)
+			Thread.new do
+				conn_opts = {
+					remote_host: subscription.host,
+					remote_port: subscription.port,
+					username: subscription.user,
+					password: subscription.password,
+				}
+				MQTT::Client.connect(conn_opts) do |c|
+					# The block will be called when you messages arrive to the topic
+					c.get(subscription.name) do |topic, message|
+						puts "#{topic}: #{message}"
+						create_feed(feed_params["feed"].merge!({index: subscription.user.name, type: topic_id, :topic_id => topic_id}))
+					end
+				end
+			end
+		end
 	end
 end

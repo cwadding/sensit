@@ -5,6 +5,17 @@
 			before_create :broadcast_matches
 			after_create :broadcast_create
 
+			def mqtt_connections_opts
+				uri = URI.parse ENV['MQTT_URL']
+				{
+					remote_host: uri.host,
+					remote_port: uri.port,
+					username: uri.user,
+					password: uri.password,
+				}
+			end
+
+
 			def broadcast_matches
 				response = percolate
 				if (response && response["ok"])
@@ -28,6 +39,12 @@
 					Net::HTTP.post_form(uri, :message => message.to_json)
 				rescue Errno::ECONNREFUSED => e
 
+				end
+			end
+
+			def mqtt_publish(channel = nil)
+				MQTT::Client.connect(conn_opts) do |c|
+					c.publish(channel, {:at => self.at.utc.strftime("%Y-%m-%dT%H:%M:%S.%3NZ"), :data => self.values})
 				end
 			end
 
