@@ -133,11 +133,11 @@ private
 	end
 
 	def attributes_to_create
-		{index: elastic_index_name, type: elastic_index_type, id: self.name, body: self.query}
+		{index: elastic_index_name, type: elastic_index_type, id: self.name, body: {query: self.query}}
 	end
 
 	def attributes_to_update
-		{index: elastic_index_name, type: elastic_index_type, id: self.name, body: {doc: self.query} }
+		{index: elastic_index_name, type: elastic_index_type, id: self.name, body: {doc: {query: self.query}} }
 	end
 
 

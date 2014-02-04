@@ -22,7 +22,7 @@ describe "GET sensit/percolators#show" do
 			context "when the percolator exists" do
 				before(:each) do
 					@topic = FactoryGirl.create(:topic, user: @user, application: @access_grant.application)
-					@percolator = ::Sensit::Topic::Percolator.create({ topic: @topic, name: "foo", query: { query: { query_string: { query: 'foo' } } } }) 
+					@percolator = ::Sensit::Topic::Percolator.create({ topic: @topic, name: "foo", query: { query_string: { query: 'foo' } } }) 
 				end
 				it "is successful" do
 					response = process_oauth_request(@access_grant, @percolator)
@@ -57,7 +57,7 @@ describe "GET sensit/percolators#show" do
 				before(:each) do
 					@application = FactoryGirl.create(:application)
 					@topic = FactoryGirl.create(:topic, user: @user, application: @application)
-					@percolator = ::Sensit::Topic::Percolator.create({ topic: @topic, :name => "5",  query: { query: { query_string: { query: 'foo' } } } })
+					@percolator = ::Sensit::Topic::Percolator.create({ topic: @topic, :name => "5",  query: { query_string: { query: 'foo' } } })
 				end
 
 				it "returns the expected json" do
@@ -71,7 +71,7 @@ describe "GET sensit/percolators#show" do
 				before(:each) do
 					another_user = Sensit::User.create(:name => ELASTIC_INDEX_NAME, :email => "anouther_user@example.com", :password => "password", :password_confirmation => "password")
 					topic = FactoryGirl.create(:topic, user: another_user, application: @access_grant.application)
-					@percolator = ::Sensit::Topic::Percolator.create({ topic: topic, :name => "5",  query: { query: { query_string: { query: 'foo' } } } })
+					@percolator = ::Sensit::Topic::Percolator.create({ topic: topic, :name => "5",  query: { query_string: { query: 'foo' } } })
 				end
 				it "cannot read data from another user" do
 					expect{
@@ -86,7 +86,7 @@ describe "GET sensit/percolators#show" do
 				@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "read_application_percolations")
 				@application = FactoryGirl.create(:application)
 				@topic = FactoryGirl.create(:topic, user: @user, application: @application)
-				@percolator = ::Sensit::Topic::Percolator.create({ topic: @topic, :name => "5",  query: { query: { query_string: { query: 'foo' } } } })
+				@percolator = ::Sensit::Topic::Percolator.create({ topic: @topic, :name => "5",  query: { query_string: { query: 'foo' } } })
 			end
 			it "cannot read data to another application" do
 				expect{
@@ -100,7 +100,7 @@ describe "GET sensit/percolators#show" do
 	context "no authentication" do
 		before(:each) do
 			topic = FactoryGirl.create(:topic, user: @user, application: nil)
-			@percolator = ::Sensit::Topic::Percolator.create({ topic: topic, :name => "5",  query: { query: { query_string: { query: 'foo' } } } })
+			@percolator = ::Sensit::Topic::Percolator.create({ topic: topic, :name => "5",  query: { query_string: { query: 'foo' } } })
 		end
 		it "is unauthorized" do
 			status = process_request(@percolator)

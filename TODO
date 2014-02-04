@@ -12,7 +12,6 @@ API
 		- Importing of data in XML, OR CSV
 		- Amount of time to hold on to data or remove data
 		(On a topic (time in days to hold on to certain data))		
-	Schema
 		- Creating field keys on initial feed request
 	Reports
 		- use validate api to validate that queries are correct before saving

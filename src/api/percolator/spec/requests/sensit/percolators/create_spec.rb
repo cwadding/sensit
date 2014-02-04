@@ -18,7 +18,7 @@ describe "POST sensit/percolators#create"  do
 			@params = {
 				:percolator => {
 					:name => "foo",
-					:query => { query: { query_string: { query: 'foo' } } }
+					:query => { query_string: { query: 'foo' } }
 				}
 			}
 		end
