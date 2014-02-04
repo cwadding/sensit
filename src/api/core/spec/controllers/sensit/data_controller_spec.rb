@@ -21,6 +21,14 @@ require 'spec_helper'
 module Sensit
   describe DataController do
 
+      before(:each) do
+        @access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "read_any_data manage_any_data")
+        controller.stub(:doorkeeper_token).and_return(@access_grant)
+        @topic = Topic.create(:name => "MyTopic", :user => @user)
+        field = @topic.fields.build( :key => "assf", :name => "Assf" )
+        field.save
+      end
+
       def valid_request(h = {})
         {:use_route => :sensit_api, :format => "json", :api_version => 1}.merge!(h)
       end

@@ -8,21 +8,32 @@ module Sensit
 
     # GET topics/1/feeds/1/data/:key
     def show
-      # :fields => [:key]
-      feed = Topic::Feed.find({index: elastic_index_name, type: elastic_type_name, id:  params[:feed_id].to_s})
-      render text: feed.values[params[:id]]
+      if attempting_to_access_topic_from_another_application_without_privilage("read_any_data")
+        raise ::Elasticsearch::Transport::Transport::Errors::NotFound
+      else
+        response = elastic_client.get(index: elastic_index_name, type: elastic_type_name,:id => params[:feed_id], :fields => "#{params[:id]}")
+        if response["exists"]
+            render text: response["fields"][params[:id]]
+        else
+            raise ::Elasticsearch::Transport::Transport::Errors::NotFound
+        end
+      end
     end
 
     # PATCH/PUT topics/1/feeds/1/data/1
     def update
-      if (data_param.nil?)
-        head :status => :not_found
+      if attempting_to_access_topic_from_another_application_without_privilage("manage_any_data")
+        raise ::Elasticsearch::Transport::Transport::Errors::NotFound
       else
-        response = elastic_client.update(index: elastic_index_name, type: elastic_type_name,:id => params[:feed_id], :body => {doc: {params[:id] => data_param}})
-        if response["ok"]
-          head :status => :ok
+        if (data_param.blank?)
+          head :status => :not_found
         else
-          head :status => :unprocessable_entity
+          response = elastic_client.update(index: elastic_index_name, type: elastic_type_name,:id => params[:feed_id], :body => {doc: {params[:id] => data_param[:value]}})
+          if response["ok"]
+            head :status => :ok
+          else
+            head :status => :unprocessable_entity
+          end
         end
       end
     end
@@ -38,7 +49,7 @@ module Sensit
       end
       # Only allow a trusted parameter "white list" through.
       def data_param
-        params.permit(fields)
+        params.permit(:value)
       end
   end
 end

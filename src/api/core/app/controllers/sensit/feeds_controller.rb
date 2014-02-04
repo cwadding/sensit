@@ -46,7 +46,7 @@ module Sensit
     def update
       if attempting_to_access_topic_from_another_application_without_privilage("manage_any_data")
         raise ::Elasticsearch::Transport::Transport::Errors::NotFound
-      else        
+      else      
         @feed = Topic::Feed.find({index: elastic_index_name, type: elastic_type_name, id: params[:id].to_s})
         if @feed.update_attributes(feed_update_params(@feed.fields))
           respond_with(@feed,:status => :ok, :template => "sensit/feeds/show")
