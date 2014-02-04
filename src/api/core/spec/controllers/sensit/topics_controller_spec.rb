@@ -22,7 +22,7 @@ module Sensit
     describe TopicsController do
 
       before(:each) do
-        @access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "read_any_data write_any_data delete_any_data")
+        @access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "read_any_data manage_any_data")
         controller.stub(:doorkeeper_token).and_return(@access_grant)
       end
 

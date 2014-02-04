@@ -27,6 +27,7 @@ API
 			Socket.io
 			Faye
 			ROS
+			pubnub(https://devcenter.heroku.com/articles/pubnub#get-pubnub-gem)
 	Security
 		- Rack-Attack: https://github.com/kickstarter/rack-attack
 		- Feed Security (Public (No API Key), Shared (multi-tennant),	Private (single api key single user))
@@ -40,6 +41,28 @@ API
 
 	- filters on whether rows should be added to database or not (like validations on the data) (If query is met then row is not added to the database)
 
+	Publications
+		-support
+			tcp
+			udp
+			http POST
+			Websocket via Pusher (https://devcenter.heroku.com/articles/pusher#install-pusher-gem)
+			pubnub (https://devcenter.heroku.com/articles/pubnub#get-pubnub-gem)
+
+
+	Heroku plugins
+		Notifications (Benbria company notifications)
+		PushNotifications
+			-ZeroPush (need zero push integrated into iOS app a more portable way may be to just use MQTT)
+			-CloudMQTT (can be used as a messaging protocl for push notifications for any plataform)
+		SMS
+			-Blower IO (https://devcenter.heroku.com/articles/blowerio#provisioning-the-add-on)
+		Emails
+			-MailGun (https://devcenter.heroku.com/articles/mailgun#deploying-to-heroku)
+			-Mandril (https://addons.heroku.com/mandrill)
+			-SendGrid (https://addons.heroku.com/sendgrid)
+			-Postmark (https://addons.heroku.com/postmark)
+			-
 	- on create use instead of passing back model render(:json => "{\"location\":#{sensit_topic_url(@topic)}}", :status => :created))
 	- on update use instead of passing back model render(:json => "{\"location\":#{sensit_topic_url(@topic)}}", :status => :ok))
 

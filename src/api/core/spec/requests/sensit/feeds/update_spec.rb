@@ -18,8 +18,8 @@ describe "PUT sensit/feeds#update" do
 	context "with valid attributes" do
 
 		before(:each) do
-			@topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: nil)
-			fields = @topic.feeds.first.values.keys
+			@topic = FactoryGirl.create(:topic_with_feeds_and_fields, user: @user, application: nil)
+			fields = @topic.fields.map(&:key)
 			values = {}
 			fields.each_with_index do |field, i|
 				values.merge!(field => i)
@@ -33,7 +33,7 @@ describe "PUT sensit/feeds#update" do
 		context "oauth authentication" do
 			context "with write access to the users data" do
 				before(:each) do
-					@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "write_any_data")
+					@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "manage_any_data")
 					@topic.application = @access_grant.application
 					@topic.save
 				end
@@ -48,7 +48,11 @@ describe "PUT sensit/feeds#update" do
 					data_arr = @params[:feed][:values].inject([]) do |arr, (key, value)|
 						arr << "\"#{key}\": \"#{value}\""
 					end
-					response.body.should be_json_eql("{\"at\": \"#{@topic.feeds.first.at.utc.strftime("%Y-%m-%dT%H:%M:%S.%3NZ")}\",\"data\": {#{data_arr.join(',')}},\"tz\":\"UTC\"}")
+
+					field_arr = @topic.fields.inject([]) do |arr, field|
+						arr << "{\"key\": \"#{field.key}\",\"name\": \"#{field.name}\"}"
+					end
+					response.body.should be_json_eql("{\"at\": \"#{@topic.feeds.first.at.utc.strftime("%Y-%m-%dT%H:%M:%S.%3NZ")}\",\"data\": {#{data_arr.join(',')}},\"fields\": [#{field_arr.join(',')}],\"tz\":\"UTC\"}")
 				end
 
 				it "returns the expected xml" do
@@ -86,7 +90,7 @@ describe "PUT sensit/feeds#update" do
 			end
 			context "with write access to only the applications data" do
 				before(:each) do
-					@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "write_application_data")
+					@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "manage_application_data")
 					@application = FactoryGirl.create(:application)
 					@params.merge!({:application_id =>  @application.to_param})
 					@topic.application = @application

@@ -41,17 +41,16 @@ describe "POST sensit/feeds#create"  do
    context "oauth authentication" do
       context "with write access to user data" do
          before(:each) do
-            @access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "write_any_data")
-            @topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @access_grant.application)
+            @access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "manage_any_data")
+            @topic = FactoryGirl.create(:topic_with_feeds_and_fields, field_keys: ["key1", "key2", "key3"], user: @user, application: @access_grant.application)
          end
          context "multiple feeds" do
             context "with correct attributes" do
                before(:each) do
-                  fields = ["field1", "field2", "field3"]
                   value_set1 = {}
                   value_set2 = {}
                   value_set3 = {}
-                  fields.each_with_index do |field, i|
+                  ["key1", "key2", "key3"].each_with_index do |field, i|
                      value_set1.merge!(field => i.to_s)
                      value_set2.merge!(field => (i*2).to_s)
                      value_set3.merge!(field => (i*3).to_s)
@@ -83,7 +82,10 @@ describe "POST sensit/feeds#create"  do
 
                it "returns the expected json" do
                   response = process_oauth_request(@access_grant,@topic, @params)
-                  response.body.should be_json_eql("{\"feeds\":[{\"at\": \"2013-12-12T21:00:15.000Z\",\"data\": #{@params[:feeds][0][:values].to_json}, \"tz\": \"Eastern Time (US & Canada)\"}, {\"at\": \"2013-12-13T21:00:15.000Z\",\"data\": #{@params[:feeds][1][:values].to_json}, \"tz\": \"Eastern Time (US & Canada)\"}, {\"at\": \"2013-12-14T21:00:15.000Z\",\"data\": #{@params[:feeds][2][:values].to_json}, \"tz\": \"Eastern Time (US & Canada)\"}]}")
+                  field_arr = @topic.fields.inject([]) do |arr, field|
+                     arr << "{\"key\": \"#{field.key}\",\"name\": \"#{field.name}\"}"
+                  end
+                  response.body.should be_json_eql("{\"fields\":[#{field_arr.join(',')}],\"feeds\":[{\"at\": \"2013-12-12T21:00:15.000Z\",\"data\": #{@params[:feeds][0][:values].to_json}, \"tz\": \"Eastern Time (US & Canada)\"}, {\"at\": \"2013-12-13T21:00:15.000Z\",\"data\": #{@params[:feeds][1][:values].to_json}, \"tz\": \"Eastern Time (US & Canada)\"}, {\"at\": \"2013-12-14T21:00:15.000Z\",\"data\": #{@params[:feeds][2][:values].to_json}, \"tz\": \"Eastern Time (US & Canada)\"}]}")
                end
 
                it "returns the expected xml" do
@@ -123,9 +125,8 @@ describe "POST sensit/feeds#create"  do
 
             context "with correct attributes" do
                before(:each) do
-                  fields = ["field1", "field2", "field3"]
                   values = {}
-                  fields.each_with_index do |field, i|
+                  ["key1", "key2", "key3"].each_with_index do |field, i|
                      values.merge!(field => i.to_s)
                   end
                   @params = {
@@ -142,7 +143,11 @@ describe "POST sensit/feeds#create"  do
 
                it "returns the expected json" do
                   response = process_oauth_request(@access_grant,@topic, @params)
-                  response.body.should be_json_eql("{\"at\": \"2013-11-14T03:56:06.000Z\",\"data\": #{@params[:feed][:values].to_json},\"tz\": \"UTC\"}")
+
+                  field_arr = @topic.fields.inject([]) do |arr, field|
+                     arr << "{\"key\": \"#{field.key}\",\"name\": \"#{field.name}\"}"
+                  end
+                  response.body.should be_json_eql("{\"at\": \"2013-11-14T03:56:06.000Z\",\"data\": #{@params[:feed][:values].to_json},\"fields\": [#{field_arr.join(",")}], \"tz\": \"UTC\"}")                  
                end
 
                context "on first commit of fields" do
@@ -169,7 +174,10 @@ describe "POST sensit/feeds#create"  do
                   end
                   it "returns the expected json" do
                      response = process_oauth_request(@access_grant,@topic, @params)
-                     response.body.should be_json_eql("{\"at\": \"2013-11-14T03:56:06.000Z\",\"data\": #{@params[:feed][:values].to_json}, \"tz\": \"Eastern Time (US & Canada)\"}")
+                     field_arr = @topic.fields.inject([]) do |arr, field|
+                        arr << "{\"key\": \"#{field.key}\",\"name\": \"#{field.name}\"}"
+                     end
+                     response.body.should be_json_eql("{\"at\": \"2013-11-14T03:56:06.000Z\",\"data\": #{@params[:feed][:values].to_json},\"fields\": [#{field_arr.join(",")}], \"tz\": \"Eastern Time (US & Canada)\"}")                     
                   end
                end
 
@@ -237,9 +245,8 @@ describe "POST sensit/feeds#create"  do
 
       context "with write access to only the applications data" do
          before(:each) do
-            fields = ["field1", "field2", "field3"]
             values = {}
-            fields.each_with_index do |field, i|
+            ["key1", "key2", "key3"].each_with_index do |field, i|
                values.merge!(field => i.to_s)
             end
             @application = FactoryGirl.create(:application)
@@ -250,7 +257,7 @@ describe "POST sensit/feeds#create"  do
                }
             }
 
-            @access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "write_application_data")
+            @access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "manage_application_data")
             @topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @application)
             @topic.save
          end

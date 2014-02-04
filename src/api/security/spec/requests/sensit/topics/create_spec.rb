@@ -2,7 +2,7 @@ require 'spec_helper'
 describe "POST sensit/topics#create" do
 
    before(:each) do
-      @access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "write_any_data")
+      @access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "manage_any_data")
       @topic = FactoryGirl.create(:topic, user: @user, application: @access_grant.application)
    end
 

@@ -22,7 +22,7 @@ module Sensit
   describe SubscriptionsController do
 
     before(:each) do
-      @access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "read_any_subscriptions write_any_subscriptions delete_any_subscriptions")
+      @access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "read_any_subscriptions manage_any_subscriptions")
       controller.stub(:doorkeeper_token).and_return(@access_grant)
       @topic = Topic.create(:name => "MyTopic", user: @user)
     end

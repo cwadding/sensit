@@ -3,8 +3,7 @@ require_dependency "sensit/api_controller"
 module Sensit
   class PercolatorsController < ApiController
     doorkeeper_for :index, :show,    :scopes => [:read_any_percolations, :read_application_percolations]
-    doorkeeper_for :create,:update,  :scopes => [:write_any_percolations, :write_application_percolations]
-    doorkeeper_for :destroy,  :scopes => [:delete_any_percolations, :delete_application_percolations]
+    doorkeeper_for :create,:update, :destroy,  :scopes => [:manage_any_percolations, :manage_application_percolations]
 
     respond_to :json, :xml
     # GET /percolators
@@ -29,7 +28,7 @@ module Sensit
 
     # POST /percolators
     def create
-      if attempting_to_access_topic_from_another_application_without_privilage("write_any_percolations")
+      if attempting_to_access_topic_from_another_application_without_privilage("manage_any_percolations")
           head :unauthorized
       else
         @percolator = Topic::Percolator.new(percolator_params.merge!(topic_id: params[:topic_id], user_id: elastic_index_name))
@@ -43,7 +42,7 @@ module Sensit
 
     # PATCH/PUT /percolators/1
     def update
-      if attempting_to_access_topic_from_another_application_without_privilage("write_any_percolations")
+      if attempting_to_access_topic_from_another_application_without_privilage("manage_any_percolations")
         raise ::Elasticsearch::Transport::Transport::Errors::NotFound
       else 
         @percolator = Topic::Percolator.update(percolator_params.merge!(topic_id: params[:topic_id], user_id: elastic_index_name,:name => params[:id]))
@@ -57,7 +56,7 @@ module Sensit
 
     # DELETE /percolators/1
     def destroy
-      if attempting_to_access_topic_from_another_application_without_privilage("delete_any_percolations")
+      if attempting_to_access_topic_from_another_application_without_privilage("manage_any_percolations")
         raise ::Elasticsearch::Transport::Transport::Errors::NotFound
       else
         Topic::Percolator.destroy(topic_id: params[:topic_id], user_id: elastic_index_name, name: params[:id])

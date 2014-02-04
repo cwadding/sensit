@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140121042636) do
+ActiveRecord::Schema.define(version: 20140204170449) do
 
   create_table "oauth_access_grants", force: true do |t|
     t.integer  "resource_owner_id", null: false
@@ -51,6 +51,17 @@ ActiveRecord::Schema.define(version: 20140121042636) do
   end
 
   add_index "oauth_applications", ["uid"], name: "index_oauth_applications_on_uid", unique: true
+
+  create_table "sensit_topic_fields", force: true do |t|
+    t.string   "name"
+    t.string   "key"
+    t.integer  "unit_id"
+    t.integer  "topic_id"
+    t.string   "datatype"
+    t.string   "slug"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "sensit_topics", force: true do |t|
     t.string   "name"

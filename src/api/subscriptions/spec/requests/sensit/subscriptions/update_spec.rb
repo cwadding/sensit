@@ -26,7 +26,7 @@ describe "PUT sensit/subscriptions#update" do
 		context "oauth authentication" do
 			context "with write access to the users data" do
 				before(:each) do
-					@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "write_any_subscriptions")
+					@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "manage_any_subscriptions")
 				end
 				context "writing to own application" do
 					before(:each) do
@@ -73,7 +73,7 @@ describe "PUT sensit/subscriptions#update" do
 			end
 			context "with write access to only the applications data" do
 				before(:each) do
-					@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "write_application_subscriptions")
+					@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "manage_application_subscriptions")
 					@application = FactoryGirl.create(:application)
 					topic = FactoryGirl.create(:topic, user: @user, application: @application)
 					@subscription = FactoryGirl.create(:subscription, :topic => topic)

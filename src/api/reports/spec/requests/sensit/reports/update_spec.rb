@@ -18,7 +18,7 @@ describe "PUT sensit/reports#update" do
 		before(:each) do
 			@params = {
 				:report => {
-					:name => "My New Report"
+					:name => "My New Report",
 				}
 			}
 			# :facets => { "statistical" => { "field" => "num2"}}
@@ -27,7 +27,7 @@ describe "PUT sensit/reports#update" do
 		context "oauth authentication" do
 			context "with write access to the users data" do
 				before(:each) do
-					@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "write_any_reports")
+					@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "manage_any_reports")
 				end
 				context "a report from the application and user" do
 					before(:each) do
@@ -42,9 +42,9 @@ describe "PUT sensit/reports#update" do
 					it "returns the expected json" do
 						response = process_oauth_request(@access_grant,@report, @params)
 						facet_arr = @report.facets.inject([]) do |facet_arr, facet|
-							facet_arr << "{\"query\":#{facet.query.to_json}, \"name\":\"#{facet.name}\"}"
+							facet_arr << "{\"query\":#{facet.query.to_json},\"type\":\"terms\" \"name\":\"#{facet.name}\"}"
 						end
-						response.body.should be_json_eql("{\"name\": \"#{@params[:report][:name]}\",\"query\":{\"match_all\":{}},\"total\": 3,\"facets\": [{\"missing\": 0,\"name\": \"My Reportfacet\",\"query\": {\"terms\": {\"field\": \"value1\"}},\"results\": [{\"count\": 1,\"term\": 2},{\"count\": 1,\"term\": 1},{\"count\": 1,\"term\": 0}],\"total\": 3}]}")
+						response.body.should be_json_eql("{\"name\": \"#{@params[:report][:name]}\",\"query\":{\"match_all\":{}},\"total\": 3,\"facets\": [{\"missing\": 0,\"name\": \"My Reportfacet\",\"type\": \"terms\",\"query\": {\"field\": \"value1\"},\"results\": [{\"count\": 1,\"term\": 2},{\"count\": 1,\"term\": 1},{\"count\": 1,\"term\": 0}],\"total\": 3}]}")
 					end
 				end
 
@@ -58,7 +58,7 @@ describe "PUT sensit/reports#update" do
 					it "returns the expected json" do
 						response = process_oauth_request(@access_grant,@report, @params)
 						response.status.should == 200
-						response.body.should be_json_eql("{\"name\": \"#{@params[:report][:name]}\",\"query\":{\"match_all\":{}},\"total\": 3,\"facets\": [{\"missing\": 0,\"name\": \"My Reportfacet\",\"query\": {\"terms\": {\"field\": \"value1\"}},\"results\": [{\"count\": 1,\"term\": 2},{\"count\": 1,\"term\": 1},{\"count\": 1,\"term\": 0}],\"total\": 3}]}")
+						response.body.should be_json_eql("{\"name\": \"#{@params[:report][:name]}\",\"query\":{\"match_all\":{}},\"total\": 3,\"facets\": [{\"missing\": 0,\"name\": \"My Reportfacet\",\"type\":\"terms\",\"query\": {\"field\": \"value1\"},\"results\": [{\"count\": 1,\"term\": 2},{\"count\": 1,\"term\": 1},{\"count\": 1,\"term\": 0}],\"total\": 3}]}")
 					end
 				end
 
@@ -78,7 +78,7 @@ describe "PUT sensit/reports#update" do
 			end
 			context "with write access to only the applications data" do
 				before(:each) do
-					@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "write_application_reports")
+					@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "manage_application_reports")
 					@application = FactoryGirl.create(:application)
 					@topic = FactoryGirl.create(:topic, user: @user, application: @application)
 					@report = FactoryGirl.create(:report, :name => "My Report", :topic => @topic)

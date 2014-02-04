@@ -29,7 +29,7 @@ describe "GET sensit/topics#index" do
 			context "with a single topic" do
 				before(:each) do
 
-					@topic = FactoryGirl.create(:topic_with_feeds, :description => "topic description", user: @user, application: @access_grant.application)
+					@topic = FactoryGirl.create(:topic_with_feeds_and_fields, :description => "topic description", user: @user, application: @access_grant.application)
 				end
 				it "is successful" do
 					response = process_oauth_request(@access_grant)
@@ -38,12 +38,16 @@ describe "GET sensit/topics#index" do
 
 				it "returns the expected json" do
 					response = process_oauth_request(@access_grant)
+					# fields_arr = @topic.fields.inject([]) do |arr, field|
+					# 	arr << "{\"name\":\"#{field.name}\",\"key\":\"#{field.key}\"}"
+					# end
 					# feeds_arr = @topic.feeds.inject([]) do |arr1, feed|
 					# 	data_arr = feed.values.inject([]) do |arr2, (key, value)|
 					# 		arr2 << "\"#{key}\":#{value}"
 					# 	end
 					# 	arr1 << "{\"at\":\"#{feed.at.strftime("%Y-%m-%dT%H:%M:%S.%3NZ")}\",\"data\":{#{data_arr.join(',')}}}"
 					# end
+					# response.body.should be_json_eql("{\"topics\":[{\"id\":#{@topic.id},\"name\":\"#{@topic.name}\",\"description\":\"topic description\",\"fields\":[#{fields_arr.join(",")}],\"feeds\":[#{feeds_arr.join(",")}]}]}")
 					response.body.should be_json_eql("{\"topics\":[{\"id\":#{@topic.id},\"name\":\"#{@topic.name}\",\"description\":\"topic description\"}]}")
 				end
 				it "returns the expected xml" do

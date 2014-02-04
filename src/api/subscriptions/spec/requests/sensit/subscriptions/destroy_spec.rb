@@ -16,7 +16,7 @@ describe "DELETE sensit/subscriptions#destroy" do
 	context "oauth authentication" do
 		context "with delete access to the users percolator data" do
 			before(:each) do
-				@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "delete_any_subscriptions")
+				@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "manage_any_subscriptions")
 			end
 
 			context "when the subscription exists" do
@@ -74,7 +74,7 @@ describe "DELETE sensit/subscriptions#destroy" do
 
 		context "with delete access to only the applications data" do
 			before(:each) do
-				@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "delete_application_subscriptions")
+				@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "manage_application_subscriptions")
 				@application = FactoryGirl.create(:application)
 				topic = FactoryGirl.create(:topic, user: @user, application: @application)
 				@subscription = FactoryGirl.create(:subscription, :topic => topic)

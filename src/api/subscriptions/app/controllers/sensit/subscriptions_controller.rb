@@ -3,8 +3,8 @@ require_dependency "sensit/api_controller"
 module Sensit
   class SubscriptionsController < ApiController
     doorkeeper_for :index, :show, :scopes => [:read_any_subscriptions, :read_application_subscriptions]
-    doorkeeper_for :create, :update, :scopes => [:write_any_subscriptions, :write_application_subscriptions]
-    doorkeeper_for :destroy,  :scopes => [:delete_any_subscriptions, :delete_application_subscriptions]
+    doorkeeper_for :create, :update, :destroy, :scopes => [:manage_any_subscriptions, :manage_application_subscriptions]
+    
     respond_to :json, :xml
 
     # GET /subscriptions
@@ -27,10 +27,10 @@ module Sensit
 
     # POST /subscriptions
     def create
-      if attempting_to_access_topic_from_another_application_without_privilage("write_any_subscriptions")
+      if attempting_to_access_topic_from_another_application_without_privilage("manage_any_subscriptions")
         head :unauthorized
       else
-        topic = scoped_owner("write_any_subscriptions").topics.find(params[:topic_id])
+        topic = scoped_owner("manage_any_subscriptions").topics.find(params[:topic_id])
         @subscription = topic.subscriptions.build(subscription_params)
         if @subscription.save
           SubscriptionsWorker.perform_async({action: :create, subscription_id: @subscription.to_param})
@@ -43,10 +43,10 @@ module Sensit
 
     # PATCH/PUT /subscriptions/1
     def update
-      if attempting_to_access_topic_from_another_application_without_privilage("write_any_subscriptions")
+      if attempting_to_access_topic_from_another_application_without_privilage("manage_any_subscriptions")
         raise ::ActiveRecord::RecordNotFound
       else
-        @subscription = scoped_owner("write_any_subscriptions").topics.find(params[:topic_id]).subscriptions.find(params[:id])
+        @subscription = scoped_owner("manage_any_subscriptions").topics.find(params[:topic_id]).subscriptions.find(params[:id])
         if @subscription.update(subscription_params)
           # SubscriptionsWorker.perform_async(@subscription.id)
           respond_with(@subscription,:status => :ok, :template => "sensit/subscriptions/show")
@@ -58,10 +58,10 @@ module Sensit
 
     # DELETE /subscriptions/1
     def destroy
-      if attempting_to_access_topic_from_another_application_without_privilage("delete_any_subscriptions")
+      if attempting_to_access_topic_from_another_application_without_privilage("manage_any_subscriptions")
         raise ::ActiveRecord::RecordNotFound
       else      
-        @subscription = scoped_owner("delete_any_subscriptions").topics.find(params[:topic_id]).subscriptions.find(params[:id])
+        @subscription = scoped_owner("manage_any_subscriptions").topics.find(params[:topic_id]).subscriptions.find(params[:id])
         # SubscriptionsWorker kill a job
         @subscription.destroy
         head :status => :no_content

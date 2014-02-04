@@ -25,7 +25,7 @@ describe "POST sensit/topics#create" do
       context "oauth authentication" do
          context "with write access to the users data" do
             before(:each) do
-               @access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "write_any_data")
+               @access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "manage_any_data")
             end
             
             context "writing to own application" do
@@ -36,7 +36,7 @@ describe "POST sensit/topics#create" do
 
                it "returns the expected json" do
                   response = process_oauth_request(@access_grant,@params)
-                  response.body.should be_json_eql('{"description": "A description of my topic","feeds": [],"name": "Test topic"}')
+                  response.body.should be_json_eql('{"description": "A description of my topic","feeds": [],"fields": [],"name": "Test topic"}')
                end
 
                it "returns the expected xml" do
@@ -50,6 +50,22 @@ describe "POST sensit/topics#create" do
                    }.to change(Sensit::Topic, :count).by(1)
                end
 
+               context "with fields" do
+                  before(:each) do
+                     @params[:topic].merge!({:fields => [{name: "NewField1", key: "new_field_1"}, {name: "NewField2", key: "new_field_2"}]})
+                  end
+                  it "returns the expected json" do
+                     response = process_oauth_request(@access_grant,@params)
+                     response.body.should be_json_eql("{\"description\": \"A description of my topic\",\"feeds\": [],\"fields\": [{\"name\":\"NewField1\",\"key\":\"new_field_1\"}, {\"name\":\"NewField2\",\"key\":\"new_field_2\"}],\"name\": \"Test topic\"}")
+                  end
+
+                  it "creates two new fields on the topic" do
+                      expect {
+                        response = process_oauth_request(@access_grant,@params)
+                      }.to change(Sensit::Topic::Field, :count).by(2)
+                  end         
+               end
+
                context "with ttl" do
                   before(:each) do
                      @params[:topic].merge!({:ttl => 90.days.to_i})
@@ -57,7 +73,7 @@ describe "POST sensit/topics#create" do
 
                   it "returns the expected json" do
                      response = process_oauth_request(@access_grant,@params)
-                     response.body.should be_json_eql('{"description": "A description of my topic","feeds": [],"name": "Test topic"}')
+                     response.body.should be_json_eql('{"description": "A description of my topic","feeds": [], "fields": [], "name": "Test topic"}')
                   end
 
                   it "returns the expected xml" do
@@ -101,7 +117,7 @@ describe "POST sensit/topics#create" do
          end
          context "with write access to only the applications data" do
             before(:each) do
-               @access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "write_application_data")
+               @access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "manage_application_data")
                @application = FactoryGirl.create(:application)
                @params[:topic].merge!({:application_id =>  @application.to_param})               
             end

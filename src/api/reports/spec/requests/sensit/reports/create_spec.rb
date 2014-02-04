@@ -14,7 +14,7 @@ describe "POST sensit/reports#create"  do
 	end	
 
 	before(:each) do
-		@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "write_any_reports")
+		@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "manage_any_reports")
 	end
 
 	context "with valid attributes" do
@@ -24,14 +24,14 @@ describe "POST sensit/reports#create"  do
 				@params = {
 					:report => {
 						:name => "My Report",
-						:facets => [{"name" => "facet1", "query" => { :terms => { :field => "value1"}}}]
+						:facets => [{"name" => "facet1", "type" => "terms", "query" => { :field => "value1"}}]
 					}
 				}
 			end
 			context "oauth authentication" do
 				context "with write access to the users data" do
 					before(:each) do
-						@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "write_any_reports")
+						@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "manage_any_reports")
 					end
 					context "creating reports for the current application and user" do
 						before(:each) do
@@ -44,7 +44,7 @@ describe "POST sensit/reports#create"  do
 
 						it "returns the expected json" do
 							response = process_oauth_request(@access_grant,@topic, @params)
-							response.body.should be_json_eql("{\"name\": \"#{@params[:report][:name]}\",\"query\":{\"match_all\":{}},\"facets\":[{\"missing\": 0,\"name\": \"facet1\",\"query\": {\"terms\": {\"field\": \"value1\"}},\"results\": [{\"count\": 1,\"term\": 2},{\"count\": 1,\"term\": 1},{\"count\": 1,\"term\": 0}],\"total\": 3}], \"total\":3}")
+							response.body.should be_json_eql("{\"name\": \"#{@params[:report][:name]}\",\"query\":{\"match_all\":{}},\"facets\":[{\"missing\": 0,\"name\": \"facet1\",\"type\":\"terms\", \"query\": {\"field\": \"value1\"},\"results\": [{\"count\": 1,\"term\": 2},{\"count\": 1,\"term\": 1},{\"count\": 1,\"term\": 0}],\"total\": 3}], \"total\":3}")
 						end
 					end
 					context "creating report for another application" do
@@ -56,7 +56,7 @@ describe "POST sensit/reports#create"  do
 						it "returns the expected json" do
 							response = process_oauth_request(@access_grant,@topic, @params)
 							response.status.should == 201
-							response.body.should be_json_eql("{\"name\": \"#{@params[:report][:name]}\",\"query\":{\"match_all\":{}},\"facets\":[{\"missing\": 0,\"name\": \"facet1\",\"query\": {\"terms\": {\"field\": \"value1\"}},\"results\": [{\"count\": 1,\"term\": 2},{\"count\": 1,\"term\": 1},{\"count\": 1,\"term\": 0}],\"total\": 3}], \"total\":3}")
+							response.body.should be_json_eql("{\"name\": \"#{@params[:report][:name]}\",\"query\":{\"match_all\":{}},\"facets\":[{\"missing\": 0,\"name\": \"facet1\",\"type\":\"terms\",\"query\": {\"field\": \"value1\"},\"results\": [{\"count\": 1,\"term\": 2},{\"count\": 1,\"term\": 1},{\"count\": 1,\"term\": 0}],\"total\": 3}], \"total\":3}")
 						end
 					end
 
@@ -76,7 +76,7 @@ describe "POST sensit/reports#create"  do
 				end
 				context "with write access to only the applications data" do
 					before(:each) do
-						@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "write_application_percolations")
+						@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "manage_application_percolations")
 						@application = FactoryGirl.create(:application)
 						@topic = FactoryGirl.create(:topic, user: @user, application: @application)
 						@params.merge!({:application_id =>  @application.to_param})

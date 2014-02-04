@@ -68,7 +68,7 @@ File.open('seed_errors.txt', 'w') do |f|
 	check_if_created(@application, f)
 
 	puts "Creating OAuth Access Grant for super user"
-	@access_grant = Doorkeeper::AccessGrant.new(application: @application, resource_owner_id:@user.id, expires_in: 6000, redirect_uri: DEFAULT_APP_REDIRECT_URI, scopes: "read_any_data write_any_data delete_any_data read_any_percolations write_any_percolations delete_any_percolations read_any_reports write_any_reports delete_any_reports read_any_subscriptions write_any_subscriptions delete_any_subscriptions")
+	@access_grant = Doorkeeper::AccessGrant.new(application: @application, resource_owner_id:@user.id, expires_in: 6000, redirect_uri: DEFAULT_APP_REDIRECT_URI, scopes: "read_any_data manage_any_data read_any_percolations manage_any_percolations read_any_reports manage_any_reports read_any_subscriptions manage_any_subscriptions")
 	check_if_created(@access_grant, f)
 
 	puts "Creating topic"

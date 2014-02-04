@@ -17,7 +17,7 @@ describe "DELETE sensit/reports#destroy" do
 	context "oauth authentication" do
 		context "with delete access to the users percolator data" do
 			before(:each) do
-				@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "delete_any_reports")
+				@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "manage_any_reports")
 			end
 
 			context "when the report exists" do
@@ -78,7 +78,7 @@ describe "DELETE sensit/reports#destroy" do
 
 		context "with delete access to only the applications data" do
 			before(:each) do
-				@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "delete_application_reports")
+				@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "manage_application_reports")
 				@application = FactoryGirl.create(:application)
 				@topic = FactoryGirl.create(:topic, user: @user, application: @application)
 				@report = FactoryGirl.create(:report, :topic => @topic)

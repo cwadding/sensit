@@ -33,7 +33,7 @@ describe "GET sensit/reports#show" do
 					# facet_arr = @report.facets.inject([]) do |facet_arr, facet|
 					# 	facet_arr << "{\"query\":#{facet.query.to_json}, \"name\":\"#{facet.name}\"}"
 					# end
-					response.body.should be_json_eql("{\"name\":\"#{@report.name}\",\"query\":{\"match_all\":{}},\"total\": 3,\"facets\":[{\"missing\": 0,\"name\": \"#{@report.name}facet\",\"query\": {\"terms\": {\"field\": \"value1\"}},\"results\": [{\"count\": 1,\"term\": 2},{\"count\": 1,\"term\": 1},{\"count\": 1,\"term\": 0}],\"total\": 3}]}")
+					response.body.should be_json_eql("{\"name\":\"#{@report.name}\",\"query\":{\"match_all\":{}},\"total\": 3,\"facets\":[{\"missing\": 0,\"name\": \"#{@report.name}facet\",\"type\": \"terms\",\"query\": {\"field\": \"value1\"},\"results\": [{\"count\": 1,\"term\": 2},{\"count\": 1,\"term\": 1},{\"count\": 1,\"term\": 0}],\"total\": 3}]}")
 				end
 			end
 
@@ -65,7 +65,7 @@ describe "GET sensit/reports#show" do
 				it "returns the expected json" do
 					response = process_oauth_request(@access_grant,@report)
 					response.status.should == 200
-					response.body.should be_json_eql("{\"name\":\"#{@report.name}\",\"query\":{\"match_all\":{}},\"total\": 3,\"facets\":[{\"missing\": 0,\"name\": \"#{@report.name}facet\",\"query\": {\"terms\": {\"field\": \"value1\"}},\"results\": [{\"count\": 1,\"term\": 2},{\"count\": 1,\"term\": 1},{\"count\": 1,\"term\": 0}],\"total\": 3}]}")
+					response.body.should be_json_eql("{\"name\":\"#{@report.name}\",\"query\":{\"match_all\":{}},\"total\": 3,\"facets\":[{\"missing\": 0,\"name\": \"#{@report.name}facet\",\"type\": \"terms\",\"query\": {\"field\": \"value1\"},\"results\": [{\"count\": 1,\"term\": 2},{\"count\": 1,\"term\": 1},{\"count\": 1,\"term\": 0}],\"total\": 3}]}")
 				end
 			end
 

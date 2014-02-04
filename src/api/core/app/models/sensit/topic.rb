@@ -9,6 +9,8 @@ module Sensit
 	
 	validates :name, presence: true, uniqueness: true
 
+	has_many :fields, dependent: :destroy, :class_name => "Sensit::Topic::Field"	
+
 	# delegate :name, :to => :node, :prefix => true
 
 	def feeds(params = {})

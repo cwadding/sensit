@@ -6,7 +6,8 @@ FactoryGirl.define do
     sequence :name do |n|
       "Facet#{n}"
     end
-    query ({ :terms => { :field => "value1"}})
+    kind "terms"
+    query ({ :field => "value1"})
     report
   end
 

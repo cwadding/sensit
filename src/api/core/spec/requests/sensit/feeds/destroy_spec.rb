@@ -18,7 +18,7 @@ describe "DELETE sensit/feeds#destroy" do
 		context "with delete access to the users data" do
 
 			before(:each) do
-				@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "delete_any_data")
+				@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "manage_any_data")
 			end
 			context "when the feed exists" do
 				before(:each) do
@@ -81,7 +81,7 @@ describe "DELETE sensit/feeds#destroy" do
 		end
 		context "with delete access to only the applications data" do
 			before(:each) do
-				@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "delete_application_data")
+				@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "manage_application_data")
 				@application = FactoryGirl.create(:application)
 				@topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @application)
 			end

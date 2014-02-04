@@ -17,7 +17,7 @@ describe "DELETE sensit/percolators#destroy" do
 	context "oauth authentication" do
 		context "with delete access to the users percolator data" do
 			before(:each) do
-				@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "delete_any_percolations")
+				@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "manage_any_percolations")
 			end
 			context "when the percolator exists" do
 				before(:each) do
@@ -87,7 +87,7 @@ describe "DELETE sensit/percolators#destroy" do
 
 		context "with delete access to only the applications data" do
 			before(:each) do
-				@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "delete_application_percolations")
+				@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "manage_application_percolations")
 				@application = FactoryGirl.create(:application)
 				@topic = FactoryGirl.create(:topic, user: @user, application: @application)
 				@percolator = ::Sensit::Topic::Percolator.create({ topic: @topic, :name => "5",  query: { query: { query_string: { query: 'foo' } } } })

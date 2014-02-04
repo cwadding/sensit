@@ -11,6 +11,7 @@ module Sensit
     attr_reader :feeds
     attr_accessor :index
     attr_accessor :type
+    attr_accessor :fields
 
     def initialize(attributes = {})
       @feeds = []
@@ -59,8 +60,12 @@ private
       spreadsheets.each do |spreadsheet|
         header = spreadsheet.shift
         
+        # filter out any rows that are not in the fields
+        temp_fields = self.fields.clone
+        temp_fields.delete_if {|x| !header.include?(x.key)}
+
         spreadsheet.each do |row|
-          values = header.inject({}) {|h,field| h.merge!(field => row[header.index(field)])}
+          values = temp_fields.inject({}) {|h,field| h.merge!(field.key => field.convert(row[header.index(field.key)]))}
           at = row[header.index("at")]
           tz = row[header.index("tz")]
           feed_arr << Topic::Feed.new({index: self.index, type: self.type, at: at, tz: tz, values: values})

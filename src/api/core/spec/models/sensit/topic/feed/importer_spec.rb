@@ -37,6 +37,8 @@ module Sensit
 		describe "#load_feeds" do
 			it "creates an CSV instance" do
 				importer = Topic::Feed::Importer.new
+				topic = FactoryGirl.create(:topic_with_feeds_and_fields, field_keys: ["key1", "key2", "key3"], user: @user, application: nil)
+				importer.fields = topic.fields
 				file = fixture_file_upload("/files/feeds.csv", 'text/csv')
 				feeds = importer.send(:load_feeds,file)
 				feeds.should be_an_instance_of(Array)

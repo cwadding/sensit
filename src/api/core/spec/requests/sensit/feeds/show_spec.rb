@@ -21,7 +21,7 @@ describe "GET sensit/feeds#show" do
 			end
 			context "when the feed exists" do
 				before(:each) do
-					@topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @access_grant.application)
+					@topic = FactoryGirl.create(:topic_with_feeds_and_fields, user: @user, application: @access_grant.application)
 				end
 				it "is successful" do
 					response = process_oauth_request(@access_grant,@topic)
@@ -30,11 +30,16 @@ describe "GET sensit/feeds#show" do
 
 				it "returns the expected json" do
 					response = process_oauth_request(@access_grant,@topic)
+
+					field_arr = @topic.fields.inject([]) do |arr, field|
+						arr << "{\"key\": \"#{field.key}\",\"name\": \"#{field.name}\"}"
+					end
+
 					feed = @topic.feeds.first
 					data_arr = feed.values.inject([]) do |arr, (key, value)|
 						arr << "{\"#{key}\": #{value}}"
 					end
-					response.body.should be_json_eql("{\"at\": \"#{feed.at.utc.strftime("%Y-%m-%dT%H:%M:%S.%3NZ")}\",\"data\": #{data_arr.join(',')},\"tz\":\"UTC\"}")
+					response.body.should be_json_eql("{\"at\": \"#{feed.at.utc.strftime("%Y-%m-%dT%H:%M:%S.%3NZ")}\",\"data\": #{data_arr.join(',')},\"fields\": [#{field_arr.join(',')}],\"tz\":\"UTC\"}")
 				end
 
 				it "returns the expected xml" do

@@ -25,7 +25,7 @@ describe "POST sensit/percolators#create"  do
 		context "oauth authentication" do
 			context "with write access to the users data" do
 				before(:each) do
-					@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "write_any_percolations")
+					@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "manage_any_percolations")
 					@topic = FactoryGirl.create(:topic, user: @user, application: @access_grant.application)
 				end
 				context "creating percolations on the current application and user" do
@@ -70,7 +70,7 @@ describe "POST sensit/percolators#create"  do
 
 			context "with write access to only the applications data" do
 				before(:each) do
-					@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "write_application_percolations")
+					@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "manage_application_percolations")
 					@application = FactoryGirl.create(:application)
 					@topic = FactoryGirl.create(:topic, user: @user, application: @application)
 					@params.merge!({:application_id =>  @application.to_param})

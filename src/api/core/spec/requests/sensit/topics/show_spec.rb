@@ -38,7 +38,11 @@ describe "GET sensit/topics#show" do
 						end
 						feeds_arr << "{\"at\":\"#{feed.at.utc.strftime("%Y-%m-%dT%H:%M:%S.%3NZ")}\", \"data\":{#{data_arr.join(',')}}, \"tz\": \"UTC\"}"
 					end
-					response.body.should be_json_eql("{\"id\":1,\"description\": null,\"feeds\": [#{feeds_arr.join(',')}],\"name\": \"#{@topic.name}\"}")
+					fields_arr = []
+					@topic.fields.each do |field|
+						fields_arr << "{\"key\": \"#{field.key}\",\"name\": \"#{field.name}\"}"
+					end
+					response.body.should be_json_eql("{\"id\":1,\"description\": null,\"feeds\": [#{feeds_arr.join(',')}],\"fields\": [#{fields_arr.join(',')}],\"name\": \"#{@topic.name}\"}")
 				end
 
 				it "returns the expected xml" do

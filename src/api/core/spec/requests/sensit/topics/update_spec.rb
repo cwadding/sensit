@@ -25,8 +25,8 @@ describe "PUT sensit/topics#update" do
       context "oauth authentication" do
          context "with write access to the users data" do
             before(:each) do
-               @access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "write_any_data")
-               @topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @access_grant.application)
+               @access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "manage_any_data")
+               @topic = FactoryGirl.create(:topic_with_feeds_and_fields, :user => @user, application: @access_grant.application)
             end
 
 
@@ -46,7 +46,12 @@ describe "PUT sensit/topics#update" do
                   end
                   feeds_arr << "{\"at\":\"#{feed.at.utc.strftime("%Y-%m-%dT%H:%M:%S.%3NZ")}\", \"data\":{#{data_arr.join(',')}}, \"tz\": \"UTC\"}"
                end
-               response.body.should be_json_eql("{\"id\":1,\"description\": \"#{@params[:topic][:description]}\",\"feeds\": [#{feeds_arr.join(',')}],\"name\": \"#{@params[:topic][:name]}\"}")
+
+               fields_arr = []
+               @topic.fields.each do |field|
+                  fields_arr << "{\"key\": \"#{field.key}\",\"name\": \"#{field.name}\"}"
+               end               
+               response.body.should be_json_eql("{\"id\":1,\"description\": \"#{@params[:topic][:description]}\",\"feeds\": [#{feeds_arr.join(',')}],\"fields\": [#{fields_arr.join(',')}],\"name\": \"#{@params[:topic][:name]}\"}")
             end
 
             it "returns the expected xml" do
@@ -59,6 +64,34 @@ describe "PUT sensit/topics#update" do
       			updated_topic = Sensit::Topic.find(@topic.id)
       			updated_topic.name.should == "New topic name"
       			updated_topic.description.should == "new description"
+            end
+
+            context "with fields" do
+               before(:each) do
+                  fields_arr = []
+                  @topic.fields.each do |field|
+                     fields_arr << {key: field.key, name: "New#{field.name}"}
+                  end
+                  @params[:topic].merge!({:fields => fields_arr})
+               end
+               it "returns the expected json" do
+                  response = process_oauth_request(@access_grant,@topic, @params)
+                  feeds_arr = []
+
+                  @topic.feeds.each do |feed|
+                     data_arr = []
+                     feed.values.each do |key, value|
+                        data_arr << "\"#{key}\": #{value}"
+                     end
+                     feeds_arr << "{\"at\":\"#{feed.at.utc.strftime("%Y-%m-%dT%H:%M:%S.%3NZ")}\", \"data\":{#{data_arr.join(',')}}, \"tz\": \"UTC\"}"
+                  end
+                  fields_arr = []
+                  @topic.fields.each do |field|
+                     fields_arr << "{\"key\": \"#{field.key}\",\"name\": \"New#{field.name}\"}"
+                  end
+                  response.body.should be_json_eql("{\"id\":1,\"description\": \"#{@params[:topic][:description]}\",\"feeds\": [#{feeds_arr.join(',')}],\"fields\": [#{fields_arr.join(',')}],\"name\": \"#{@params[:topic][:name]}\"}")
+
+               end       
             end
 
             context "with ttl" do
@@ -77,8 +110,12 @@ describe "PUT sensit/topics#update" do
                      end
                      feeds_arr << "{\"at\":\"#{feed.at.utc.strftime("%Y-%m-%dT%H:%M:%S.%3NZ")}\", \"data\":{#{data_arr.join(',')}}, \"tz\": \"UTC\"}"
                   end
-                  response.body.should be_json_eql("{\"id\":1,\"description\": \"#{@params[:topic][:description]}\",\"feeds\": [#{feeds_arr.join(',')}],\"name\": \"#{@params[:topic][:name]}\"}")
 
+                  fields_arr = []
+                  @topic.fields.each do |field|
+                     fields_arr << "{\"key\": \"#{field.key}\",\"name\": \"#{field.name}\"}"
+                  end                  
+                  response.body.should be_json_eql("{\"id\":1,\"description\": \"#{@params[:topic][:description]}\",\"feeds\": [#{feeds_arr.join(',')}],\"fields\": [#{fields_arr.join(',')}],\"name\": \"#{@params[:topic][:name]}\"}")
                end
 
                it "returns the expected xml" do
@@ -120,7 +157,11 @@ describe "PUT sensit/topics#update" do
                      feeds_arr << "{\"at\":\"#{feed.at.utc.strftime("%Y-%m-%dT%H:%M:%S.%3NZ")}\", \"data\":{#{data_arr.join(',')}}, \"tz\": \"UTC\"}"
                   end
 
-                  response.body.should be_json_eql("{\"id\":1,\"description\": \"#{@params[:topic][:description]}\",\"feeds\": [#{feeds_arr.join(',')}],\"name\": \"#{@params[:topic][:name]}\"}")
+                  fields_arr = []
+                  @topic.fields.each do |field|
+                     fields_arr << "{\"key\": \"#{field.key}\",\"name\": \"#{field.name}\"}"
+                  end
+                  response.body.should be_json_eql("{\"id\":1,\"description\": \"#{@params[:topic][:description]}\",\"feeds\": [#{feeds_arr.join(',')}],\"fields\": [#{fields_arr.join(',')}],\"name\": \"#{@params[:topic][:name]}\"}")
                   # @application.topics.first.name == "New topic name"
                   # @application.topics.first.description == "new description"
                end
@@ -141,7 +182,7 @@ describe "PUT sensit/topics#update" do
          end
          context "with write access to only the applications data" do
             before(:each) do
-               @access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "write_application_data")
+               @access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "manage_application_data")
                @application = FactoryGirl.create(:application)
                @topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @application)
             end

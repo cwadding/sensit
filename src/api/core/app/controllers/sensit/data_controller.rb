@@ -37,7 +37,7 @@ module Sensit
       end
       # Only allow a trusted parameter "white list" through.
       def data_param
-        params.permit!
+        params.permit(fields)
       end
   end
 end

@@ -3,8 +3,7 @@ require_dependency "sensit/api_controller"
 module Sensit
   class ReportsController < ApiController
     doorkeeper_for :index, :show, :scopes => [:read_any_reports, :read_application_reports]
-    doorkeeper_for :create, :update, :scopes => [:write_any_reports, :write_application_reports]
-    doorkeeper_for :destroy,  :scopes => [:delete_any_reports, :delete_application_reports]
+    doorkeeper_for :create, :update, :destroy, :scopes => [:manage_any_reports, :manage_application_reports]
 
     respond_to :json, :xml
     # GET /reports
@@ -32,10 +31,10 @@ module Sensit
 
     # POST /reports
     def create
-      if attempting_to_access_topic_from_another_application_without_privilage("write_any_reports")
+      if attempting_to_access_topic_from_another_application_without_privilage("manage_any_reports")
         head :unauthorized
       else
-        topic = scoped_owner("write_any_reports").topics.find(params[:topic_id])
+        topic = scoped_owner("manage_any_reports").topics.find(params[:topic_id])
         @report = topic.reports.build(report_params)
         facets_params.each do |facet_params|
           @report.facets.build(facet_params)
@@ -50,10 +49,10 @@ module Sensit
 
     # PATCH/PUT /reports/1
     def update
-      if attempting_to_access_topic_from_another_application_without_privilage("write_any_reports")
+      if attempting_to_access_topic_from_another_application_without_privilage("manage_any_reports")
         raise ::ActiveRecord::RecordNotFound
       else
-        @report = scoped_owner("write_any_reports").topics.find(params[:topic_id]).reports.find(params[:id])
+        @report = scoped_owner("manage_any_reports").topics.find(params[:topic_id]).reports.find(params[:id])
 
         (params[:report][:facets] || []).each do |facet_params|
           facet = @report.facets.where( name: facet_params[:name]).first || nil
@@ -70,10 +69,10 @@ module Sensit
 
     # DELETE /reports/1
     def destroy
-      if attempting_to_access_topic_from_another_application_without_privilage("delete_any_reports")
+      if attempting_to_access_topic_from_another_application_without_privilage("manage_any_reports")
         raise ::ActiveRecord::RecordNotFound
       else
-        @report = scoped_owner("delete_any_reports").topics.find(params[:topic_id]).reports.find(params[:id])
+        @report = scoped_owner("manage_any_reports").topics.find(params[:topic_id]).reports.find(params[:id])
         @report.destroy
         head :status => :no_content
       end
@@ -92,7 +91,15 @@ module Sensit
       # Only allow a trusted parameter "white list" through.
       def facets_params
         # fields = Topic::Field.joins(:topic).where(:sensit_topics => {:slug => params[:topic_id]}).map(&:key)
-        params.require(:report).require(:facets)#.permit!#(:name, :query, :facets)
+        params.require(:report).require(:facets).map do |facet|
+          type = facet.delete(:type)
+          facet[:kind] = type
+          facet.tap do |whitelisted|
+            whitelisted[:name] = facet[:name] if facet.has_key?(:name)
+            whitelisted[:kind] = facet[:kind]
+            whitelisted[:query] = facet[:query] if facet.has_key?(:query)
+          end
+        end
         # (:name, 
         #   :query => {:match_all => {}},
         #   :facets => {

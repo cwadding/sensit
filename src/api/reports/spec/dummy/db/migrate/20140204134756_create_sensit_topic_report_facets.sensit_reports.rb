@@ -1,3 +1,4 @@
+# This migration comes from sensit_reports (originally 20140103161721)
 class CreateSensitTopicReportFacets < ActiveRecord::Migration
   def change
     create_table :sensit_topic_report_facets do |t|

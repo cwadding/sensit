@@ -16,11 +16,11 @@ describe "DELETE sensit/topics#destroy" do
 	context "oauth authentication" do
 		context "with delete access to the users data" do
 			before(:each) do
-				@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "delete_any_data")
+				@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "manage_any_data")
 			end
 			context "when the topic exists" do
 				before(:each) do
-					@topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @access_grant.application)
+					@topic = FactoryGirl.create(:topic_with_feeds_and_fields, user: @user, application: @access_grant.application)
 				end
 				it "is successful" do
 					response = process_oauth_request(@access_grant,@topic)
@@ -32,6 +32,14 @@ describe "DELETE sensit/topics#destroy" do
 		            response = process_oauth_request(@access_grant,@topic)
 		          }.to change(Sensit::Topic, :count).by(-1)
 		        end
+
+				it "deletes its fields" do
+					number_of_fields = @topic.fields.count
+					number_of_fields.should > 0
+					expect {
+						response = process_oauth_request(@access_grant,@topic)
+					}.to change(Sensit::Topic::Field, :count).by(-1*number_of_fields)
+				end
 
 		        it "deletes its feeds" do
 					if ENV['ELASTICSEARCH_URL']
@@ -83,7 +91,7 @@ describe "DELETE sensit/topics#destroy" do
 		end
 		context "with delete access to only application data" do	
 			before(:each) do
-				@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "delete_application_data")
+				@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "manage_application_data")
 				@application = FactoryGirl.create(:application)
 				@topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @application)				
 			end

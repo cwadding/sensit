@@ -89,7 +89,7 @@ module Sensit
 		self.type = record.id
 	end
 
-  	# delegate :fields, :to => :topic, :prefix => false
+  	delegate :fields, :to => :topic, :prefix => false
 	delegate :name, :to => :topic, :prefix => true
 	delegate :node_name, :to => :topic, :prefix => false
 	delegate :ttl, :to => :topic, :prefix => false

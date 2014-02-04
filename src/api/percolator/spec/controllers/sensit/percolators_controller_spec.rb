@@ -22,7 +22,7 @@ module Sensit
     describe PercolatorsController do
 
       before(:each) do
-        @access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "read_any_percolations write_any_percolations delete_any_percolations")
+        @access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "read_any_percolations manage_any_percolations")
         controller.stub(:doorkeeper_token).and_return(@access_grant)
         @topic = FactoryGirl.create(:topic, name:"topic_type", application: @access_grant.application, user:@user)
       end
