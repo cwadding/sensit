@@ -13,10 +13,6 @@ describe "POST sensit/reports#create"  do
 		post url(topic, format), valid_request(params), valid_session(:user_id => topic.user.to_param)
 	end	
 
-	before(:each) do
-		@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "manage_any_reports")
-	end
-
 	context "with valid attributes" do
 
 		context "with facets" do 
@@ -76,10 +72,9 @@ describe "POST sensit/reports#create"  do
 				end
 				context "with write access to only the applications data" do
 					before(:each) do
-						@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "manage_application_percolations")
+						@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "manage_application_reports")
 						@application = FactoryGirl.create(:application)
 						@topic = FactoryGirl.create(:topic, user: @user, application: @application)
-						@params.merge!({:application_id =>  @application.to_param})
 					end
 					it "cannot update data to another application" do
 						expect{

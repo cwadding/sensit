@@ -14,7 +14,7 @@ describe "POST sensit/topics#create" do
       before(:each) do
          FactoryGirl.create(:topic, :name => "Existing Topic", application: @access_grant.application)
       end
-      before(:all) do
+      before(:each) do
          @params = {
             :topic => {
                :name => "Existing Topic"
@@ -36,7 +36,7 @@ describe "POST sensit/topics#create" do
       before(:each) do
          FactoryGirl.create(:topic, :name => "Existing Topic", application: @access_grant.application)
       end
-      before(:all) do
+      before(:each) do
          @params = {
             :topic => {
                :name => "Existing Topic"

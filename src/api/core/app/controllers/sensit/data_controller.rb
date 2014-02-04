@@ -8,6 +8,7 @@ module Sensit
 
     # GET topics/1/feeds/1/data/:key
     def show
+      # :fields => [:key]
       feed = Topic::Feed.find({index: elastic_index_name, type: elastic_type_name, id:  params[:feed_id].to_s})
       render text: feed.values[params[:id]]
     end

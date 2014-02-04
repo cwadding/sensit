@@ -59,8 +59,12 @@ module Sensit
     # DELETE 1/topics/1
     def destroy
       @topic = scoped_owner("manage_any_data").topics.find(params[:id])
-      @topic.destroy
-      head :status => :no_content
+      if @topic
+        @topic.destroy
+        head :status => :no_content
+      else
+        head :status => :not_found
+      end
     end
 
     private

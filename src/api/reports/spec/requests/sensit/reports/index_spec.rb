@@ -90,7 +90,7 @@ describe "GET sensit/reports#index" do
 					response = process_oauth_request(@access_grant, @topic)
 					response.body.should be_json_eql("{\"reports\": []}")
 				end
-			end			
+			end		
 		end
 		context "with read access to only the applications data" do
 			before(:each) do

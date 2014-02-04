@@ -48,7 +48,6 @@ module Sensit
     describe "GET index" do
       it "assigns all subscriptions as @subscriptions" do
         subscription = FactoryGirl.create(:subscription, :topic => @topic)
-        # debugger
         get :index, valid_request({:topic_id => @topic.to_param}), valid_session(user_id: @user.to_param)
         assigns(:subscriptions).to_a.should eq([subscription])
       end

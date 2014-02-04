@@ -22,30 +22,42 @@ module Sensit
 
     # POST /topics/1/fields
     def create
-      topic = scoped_owner("manage_any_data").topics.find(params[:topic_id])
-      @field = topic.fields.build(field_params)
-      if @field.save
-        respond_with(@field,:status => :created, :template => "sensit/fields/show")
+      if (attempting_to_access_topic_from_another_application_without_privilage("manage_any_data"))
+        head :unauthorized
       else
-        render(:json => "{\"errors\":#{@field.errors.to_json}}", :status => :unprocessable_entity)
+        topic = scoped_owner("manage_any_data").topics.find(params[:topic_id])
+        @field = topic.fields.build(field_params)
+        if @field.save
+          respond_with(@field,:status => :created, :template => "sensit/fields/show")
+        else
+          render(:json => "{\"errors\":#{@field.errors.to_json}}", :status => :unprocessable_entity)
+        end
       end
     end
 
     # PATCH/PUT /topics/1/fields/1
     def update
-      @field = set_field_in_scope("manage_any_data")
-      if @field.update(field_params)
-        respond_with(@field,:status => :ok, :template => "sensit/fields/show")
+      if (attempting_to_access_topic_from_another_application_without_privilage("manage_any_data"))
+        raise ActiveRecord::RecordNotFound
       else
-        render(:json => "{\"errors\":#{@field.errors.to_json}}", :status => :unprocessable_entity)
+        @field = set_field_in_scope("manage_any_data")
+        if @field.update(field_params)
+          respond_with(@field,:status => :ok, :template => "sensit/fields/show")
+        else
+          render(:json => "{\"errors\":#{@field.errors.to_json}}", :status => :unprocessable_entity)
+        end
       end
     end
 
     # DELETE topics/1/fields/1
     def destroy
-      @field = set_field_in_scope("manage_any_data")
-      @field.destroy
-      head :status => :no_content
+      if attempting_to_access_topic_from_another_application_without_privilage("manage_any_data")
+        raise ActiveRecord::RecordNotFound
+      else
+        @field = set_field_in_scope("manage_any_data")
+        @field.destroy
+        head :status => :no_content
+      end
     end
 
     private
