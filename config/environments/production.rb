@@ -79,4 +79,5 @@ Sensit::Application.configure do
   config.log_formatter = ::Logger::Formatter.new
 
   ENV['ELASTICSEARCH_URL'] = ENV['SEARCHBOX_URL']
+  ENV['MQTT_URL'] = ENV['CLOUDMQTT_URL']
 end
