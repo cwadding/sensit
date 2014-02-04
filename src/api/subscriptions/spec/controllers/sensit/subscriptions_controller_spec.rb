@@ -34,7 +34,7 @@ module Sensit
     # ::Sensit::Topic::Feed. As you add validations to ::Sensit::Topic::Feed, be sure to
     # update the return value of this method accordingly.
     def valid_attributes
-      { :name => "MyString", :host => "127.0.0.1"}
+      { :name => "MyString", :host => "127.0.0.1", :protocol => "mqtt"}
     end
 
     # This should return the minimal set of values that should be in the session

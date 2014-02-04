@@ -19,7 +19,6 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "sensit_core", Sensit::VERSION
-  spec.add_dependency "sensit_schema", Sensit::VERSION
   spec.add_dependency "sensit_percolator", Sensit::VERSION
   spec.add_dependency "sensit_reports", Sensit::VERSION
   spec.add_dependency "sensit_subscriptions", Sensit::VERSION

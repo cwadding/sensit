@@ -18,7 +18,7 @@ describe "POST sensit/subscriptions#create"  do
 			@params = {
 				:subscription => {
 					:name => "MyString",
-					:host => "127.0.0.1"
+					:uri => "mqtt://user:pass@broker.cloudmqtt.com:1883"
 				}
 			}
 		end

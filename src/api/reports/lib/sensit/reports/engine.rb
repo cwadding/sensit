@@ -1,4 +1,4 @@
-require 'sensit_schema'
+require 'sensit_core'
 module Sensit
 	module Reports
 		class Engine < ::Rails::Engine

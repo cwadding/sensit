@@ -6,7 +6,8 @@ FactoryGirl.define do
     sequence :name do |n|
       "Subscription#{n}"
     end
-    host "127.0.0.1"
+	protocol "mqtt"
+	host "broker.cloudmqtt.com"
     topic
   end
   

@@ -72,7 +72,11 @@ module Sensit
 
       # Only allow a trusted parameter "white list" through.
       def subscription_params
-        params.require(:subscription).permit(:name, :host, :auth_token, :protocol)
+        if params[:subscription] && params[:subscription].has_key?(:uri)
+          params.require(:subscription).permit(:name, :uri)
+        else
+          params.require(:subscription).permit(:name, :host, :protocol, :username, :password, :port)
+        end
       end
   end
 end

@@ -42,12 +42,9 @@ end
 gem 'sensit_core', :path => "src/api/core"
 gem 'sensit_percolator', :path => "src/api/percolator"
 gem 'sensit_reports', :path => "src/api/reports"
-gem 'sensit_schema', :path => "src/api/schema"
 gem 'sensit_subscriptions', :path => "src/api/subscriptions"
 
 gem "foreman"
 gem "puma"
 
 gem 'newrelic_rpm'
-
-gem 'mqtt'

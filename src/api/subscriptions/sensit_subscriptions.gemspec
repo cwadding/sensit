@@ -14,12 +14,12 @@ Gem::Specification.new do |s|
   s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.rdoc"]
 
 
-  s.add_dependency 'sensit_core', Sensit::VERSION
-  s.add_dependency 'sidekiq', '2.17.0'  
+  s.add_dependency 'sensit_core', Sensit::VERSION 
   # s.add_dependency 'em-websocket'# , '0.0.3'
   s.add_dependency 'socketio-client'# , '0.0.3'
   s.add_dependency 'faye', '1.0.0'
   s.add_dependency 'eventmachine'
+  s.add_dependency 'mqtt'
 
   s.add_development_dependency "sqlite3"
   s.add_development_dependency 'rspec-rails'
