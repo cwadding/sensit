@@ -39,7 +39,7 @@ describe "POST sensit/subscriptions#create"  do
 
 					it "returns the expected json" do
 						response = process_oauth_request(@access_grant,@topic, @params)
-						response.body.should be_json_eql("{\"name\": \"#{@params[:subscription][:name]}\",\"host\": \"#{@params[:subscription][:host]}\"}")
+						response.body.should be_json_eql("{\"name\": \"#{@params[:subscription][:name]}\",\"host\": \"broker.cloudmqtt.com\",\"protocol\": \"mqtt\", \"username\": \"user\",\"password\": \"pass\",\"port\":1883 }")
 					end
 				end
 
@@ -52,7 +52,7 @@ describe "POST sensit/subscriptions#create"  do
 					it "returns the expected json", current:true do
 						response = process_oauth_request(@access_grant,@topic, @params)
 						response.status.should == 201
-						response.body.should be_json_eql("{\"name\": \"#{@params[:subscription][:name]}\",\"host\": \"#{@params[:subscription][:host]}\"}")
+						response.body.should be_json_eql("{\"name\": \"#{@params[:subscription][:name]}\",\"host\": \"broker.cloudmqtt.com\",\"protocol\": \"mqtt\", \"username\": \"user\",\"password\": \"pass\",\"port\":1883 }")
 					end
 				end
 

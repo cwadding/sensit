@@ -30,7 +30,7 @@ describe "GET sensit/subscriptions#index" do
 
 				it "returns the expected json" do
 					response = process_oauth_request(@access_grant,@topic)
-					response.body.should be_json_eql("{\"subscriptions\": [{\"name\": \"#{@subscription.name}\",\"host\": \"#{@subscription.host}\"}]}")
+					response.body.should be_json_eql("{\"subscriptions\": [{\"name\": \"#{@subscription.name}\",\"host\": \"#{@subscription.host}\",\"protocol\": \"#{@subscription.protocol}\"}]}")
 				end
 			end
 			context "with no subscriptions" do
@@ -52,7 +52,7 @@ describe "GET sensit/subscriptions#index" do
 				it "returns the expected json" do
 					response = process_oauth_request(@access_grant,@topic)
 					response.status.should == 200
-					response.body.should be_json_eql("{\"subscriptions\": [{\"name\": \"#{@subscription.name}\",\"host\": \"#{@subscription.host}\"}]}")
+					response.body.should be_json_eql("{\"subscriptions\": [{\"name\": \"#{@subscription.name}\",\"host\": \"#{@subscription.host}\",\"protocol\": \"#{@subscription.protocol}\"}]}")
 				end
 			end
 

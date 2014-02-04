@@ -33,7 +33,7 @@ module Sensit
         topic = scoped_owner("manage_any_subscriptions").topics.find(params[:topic_id])
         @subscription = topic.subscriptions.build(subscription_params)
         if @subscription.save
-          SubscriptionsWorker.perform_async({action: :create, subscription_id: @subscription.to_param})
+          # SubscriptionsWorker.perform_async({action: :create, subscription_id: @subscription.to_param})
           respond_with(@subscription,:status => :created, :template => "sensit/subscriptions/show")
         else
           render(:json => "{\"errors\":#{@subscription.errors.to_json}}", :status => :unprocessable_entity)

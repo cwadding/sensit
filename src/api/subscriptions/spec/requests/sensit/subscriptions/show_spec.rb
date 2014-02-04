@@ -32,7 +32,7 @@ describe "GET sensit/subscriptions#show" do
 
 				it "returns the expected json" do
 					response = process_oauth_request(@access_grant,@subscription)
-					response.body.should be_json_eql("{\"name\": \"#{@subscription.name}\",\"host\": \"#{@subscription.host}\"}")
+					response.body.should be_json_eql("{\"name\": \"#{@subscription.name}\",\"host\": \"#{@subscription.host}\",\"protocol\": \"#{@subscription.protocol}\"}")
 				end
 
 			end
@@ -63,7 +63,7 @@ describe "GET sensit/subscriptions#show" do
 				it "returns the expected json" do
 					response = process_oauth_request(@access_grant,@subscription)
 					response.status.should == 200
-					response.body.should be_json_eql("{\"name\": \"#{@subscription.name}\",\"host\": \"#{@subscription.host}\"}")
+					response.body.should be_json_eql("{\"name\": \"#{@subscription.name}\",\"host\": \"#{@subscription.host}\",\"protocol\": \"#{@subscription.protocol}\"}")
 				end
 			end
 

@@ -2,11 +2,11 @@
 require 'faye'
 require 'eventmachine'
 # require 'json'
-require 'sidekiq'
+# require 'sidekiq'
 
 module Sensit
 	class SubscriptionsWorker
-		include ::Sidekiq::Worker
+		# include ::Sidekiq::Worker
 		def perform(params)
 			
 			subscription = ::Sensit::Topic::Subscription.where(:id => params[:subscription_id]).first
