@@ -26,7 +26,7 @@ describe "PUT sensit/feeds#update" do
 			end
 			@params = {
 				:feed => {
-				   :values => values
+				   :data => values
 				}
 			}
 		end
@@ -45,7 +45,7 @@ describe "PUT sensit/feeds#update" do
 
 				it "returns the expected json" do
 					response = process_oauth_request(@access_grant,@topic, @params)
-					data_arr = @params[:feed][:values].inject([]) do |arr, (key, value)|
+					data_arr = @params[:feed][:data].inject([]) do |arr, (key, value)|
 						arr << "\"#{key}\": \"#{value}\""
 					end
 

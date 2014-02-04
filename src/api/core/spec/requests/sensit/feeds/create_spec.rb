@@ -59,17 +59,17 @@ describe "POST sensit/feeds#create"  do
                      :feeds => [{
                         :at => '2013-12-12T21:00:15.000Z',
                         :tz => "Eastern Time (US & Canada)",
-                        :values => value_set1
+                        :data => value_set1
                      },
                      {
                         :at => '2013-12-13T21:00:15.000Z',
                         :tz => "Eastern Time (US & Canada)",
-                        :values => value_set2
+                        :data => value_set2
                      },
                      {
                         :at => '2013-12-14T21:00:15.000Z',
                         :tz => "Eastern Time (US & Canada)",
-                        :values => value_set3
+                        :data => value_set3
                      }
                   ]
                   }
@@ -85,7 +85,7 @@ describe "POST sensit/feeds#create"  do
                   field_arr = @topic.fields.inject([]) do |arr, field|
                      arr << "{\"key\": \"#{field.key}\",\"name\": \"#{field.name}\"}"
                   end
-                  response.body.should be_json_eql("{\"fields\":[#{field_arr.join(',')}],\"feeds\":[{\"at\": \"2013-12-12T21:00:15.000Z\",\"data\": #{@params[:feeds][0][:values].to_json}, \"tz\": \"Eastern Time (US & Canada)\"}, {\"at\": \"2013-12-13T21:00:15.000Z\",\"data\": #{@params[:feeds][1][:values].to_json}, \"tz\": \"Eastern Time (US & Canada)\"}, {\"at\": \"2013-12-14T21:00:15.000Z\",\"data\": #{@params[:feeds][2][:values].to_json}, \"tz\": \"Eastern Time (US & Canada)\"}]}")
+                  response.body.should be_json_eql("{\"fields\":[#{field_arr.join(',')}],\"feeds\":[{\"at\": \"2013-12-12T21:00:15.000Z\",\"data\": #{@params[:feeds][0][:data].to_json}, \"tz\": \"Eastern Time (US & Canada)\"}, {\"at\": \"2013-12-13T21:00:15.000Z\",\"data\": #{@params[:feeds][1][:data].to_json}, \"tz\": \"Eastern Time (US & Canada)\"}, {\"at\": \"2013-12-14T21:00:15.000Z\",\"data\": #{@params[:feeds][2][:data].to_json}, \"tz\": \"Eastern Time (US & Canada)\"}]}")
                end
 
                it "returns the expected xml" do
@@ -132,7 +132,7 @@ describe "POST sensit/feeds#create"  do
                   @params = {
                      :feed => {
                         :at => Time.new(2013,11,14,3,56,6, "-00:00").utc.to_f,#Time.new(2013,11,14,3,56,6, "-00:00").utc.to_f,
-                        :values => values
+                        :data => values
                      }
                   }
                end
@@ -147,7 +147,7 @@ describe "POST sensit/feeds#create"  do
                   field_arr = @topic.fields.inject([]) do |arr, field|
                      arr << "{\"key\": \"#{field.key}\",\"name\": \"#{field.name}\"}"
                   end
-                  response.body.should be_json_eql("{\"at\": \"2013-11-14T03:56:06.000Z\",\"data\": #{@params[:feed][:values].to_json},\"fields\": [#{field_arr.join(",")}], \"tz\": \"UTC\"}")                  
+                  response.body.should be_json_eql("{\"at\": \"2013-11-14T03:56:06.000Z\",\"data\": #{@params[:feed][:data].to_json},\"fields\": [#{field_arr.join(",")}], \"tz\": \"UTC\"}")                  
                end
 
                context "on first commit of fields" do
@@ -177,7 +177,7 @@ describe "POST sensit/feeds#create"  do
                      field_arr = @topic.fields.inject([]) do |arr, field|
                         arr << "{\"key\": \"#{field.key}\",\"name\": \"#{field.name}\"}"
                      end
-                     response.body.should be_json_eql("{\"at\": \"2013-11-14T03:56:06.000Z\",\"data\": #{@params[:feed][:values].to_json},\"fields\": [#{field_arr.join(",")}], \"tz\": \"Eastern Time (US & Canada)\"}")                     
+                     response.body.should be_json_eql("{\"at\": \"2013-11-14T03:56:06.000Z\",\"data\": #{@params[:feed][:data].to_json},\"fields\": [#{field_arr.join(",")}], \"tz\": \"Eastern Time (US & Canada)\"}")                     
                   end
                end
 
@@ -253,7 +253,7 @@ describe "POST sensit/feeds#create"  do
             @params = {
                :feed => {
                   :at => Time.new(2013,11,14,3,56,6, "-00:00").utc.to_f,#Time.new(2013,11,14,3,56,6, "-00:00").utc.to_f,
-                  :values => values
+                  :data => values
                }
             }
 

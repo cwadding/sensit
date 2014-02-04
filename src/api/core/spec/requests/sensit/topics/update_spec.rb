@@ -41,7 +41,7 @@ describe "PUT sensit/topics#update" do
 
                @topic.feeds.each do |feed|
                   data_arr = []
-                  feed.values.each do |key, value|
+                  feed.data.each do |key, value|
                      data_arr << "\"#{key}\": #{value}"
                   end
                   feeds_arr << "{\"at\":\"#{feed.at.utc.strftime("%Y-%m-%dT%H:%M:%S.%3NZ")}\", \"data\":{#{data_arr.join(',')}}, \"tz\": \"UTC\"}"
@@ -80,7 +80,7 @@ describe "PUT sensit/topics#update" do
 
                   @topic.feeds.each do |feed|
                      data_arr = []
-                     feed.values.each do |key, value|
+                     feed.data.each do |key, value|
                         data_arr << "\"#{key}\": #{value}"
                      end
                      feeds_arr << "{\"at\":\"#{feed.at.utc.strftime("%Y-%m-%dT%H:%M:%S.%3NZ")}\", \"data\":{#{data_arr.join(',')}}, \"tz\": \"UTC\"}"
@@ -105,7 +105,7 @@ describe "PUT sensit/topics#update" do
 
                   @topic.feeds.each do |feed|
                      data_arr = []
-                     feed.values.each do |key, value|
+                     feed.data.each do |key, value|
                         data_arr << "\"#{key}\": #{value}"
                      end
                      feeds_arr << "{\"at\":\"#{feed.at.utc.strftime("%Y-%m-%dT%H:%M:%S.%3NZ")}\", \"data\":{#{data_arr.join(',')}}, \"tz\": \"UTC\"}"
@@ -151,7 +151,7 @@ describe "PUT sensit/topics#update" do
 
                   @topic.feeds.each do |feed|
                      data_arr = []
-                     feed.values.each do |key, value|
+                     feed.data.each do |key, value|
                         data_arr << "\"#{key}\": #{value}"
                      end
                      feeds_arr << "{\"at\":\"#{feed.at.utc.strftime("%Y-%m-%dT%H:%M:%S.%3NZ")}\", \"data\":{#{data_arr.join(',')}}, \"tz\": \"UTC\"}"

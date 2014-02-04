@@ -19,7 +19,7 @@ module Sensit
 		# 	  client = Faye::Client.new(subscription.host)
 		# 	# puts "/#{subscription.name}"
 		# 	  client.subscribe("/#{subscription.name}") do |feed_params|
-		# 	    # {:feed => {:at => Time.now.to_f, :values => {} }}
+		# 	    # {:feed => {:at => Time.now.to_f, :data => {} }}
 		# 	    feed = Topic::Feed.create(feed_params["feed"].merge!({index: subscription.user.name, type: topic_id, :topic_id => topic_id})) 
 		# 	    # puts feed.inspect
 		# 	    # puts feed_params.inspect

@@ -36,7 +36,7 @@ module Sensit
       # ::Sensit::Topic::Feed. As you add validations to ::Sensit::Topic::Feed, be sure to
       # update the return value of this method accordingly.
       def valid_attributes
-        { at: Time.now, tz: "Eastern Time (US & Canada)", values: {"assf" => "dsdsag"}}
+        { at: Time.now, tz: "Eastern Time (US & Canada)", data: {"assf" => "dsdsag"}}
       end
 
       # This should return the minimal set of values that should be in the session
@@ -63,7 +63,7 @@ module Sensit
               client = ::Elasticsearch::Client.new
             end
             expect {
-              post :create, valid_request(topic_id: @topic.to_param, :feed => { :at => Time.now, :values => {"assf" => "fssa"} }), valid_session(user_id: @user.to_param)
+              post :create, valid_request(topic_id: @topic.to_param, :feed => { :at => Time.now, :data => {"assf" => "fssa"} }), valid_session(user_id: @user.to_param)
               client.indices.refresh(:index => ELASTIC_INDEX_NAME)
             }.to change{::Sensit::Topic::Feed.count({index: ELASTIC_INDEX_NAME, type: @topic.to_param})}.by(1)
           end
@@ -74,13 +74,13 @@ module Sensit
             end
 
             it "assigns a newly created feed as @feed" do
-              post :create, valid_request(:topic_id => @topic.to_param, :feed => { :at => Time.now, :values => {"assf" => "fssa"} }), valid_session(user_id: @user.to_param)
+              post :create, valid_request(:topic_id => @topic.to_param, :feed => { :at => Time.now, :data => {"assf" => "fssa"} }), valid_session(user_id: @user.to_param)
               assigns(:feed).should be_a(::Sensit::Topic::Feed)
               # assigns(:feed).should_not be_a_new_record
             end
 
             it "renders to the created feed" do
-              post :create, valid_request(:topic_id => @topic.to_param, :feed => { :at => Time.now, :values => {"assf" => "fssa"} }), valid_session(user_id: @user.to_param)
+              post :create, valid_request(:topic_id => @topic.to_param, :feed => { :at => Time.now, :data => {"assf" => "fssa"} }), valid_session(user_id: @user.to_param)
               response.should render_template("sensit/feeds/show")
             end
           end
@@ -92,13 +92,13 @@ module Sensit
           end
           it "assigns a newly created but unsaved feed as @feed" do
             # Trigger the behavior that occurs when invalid params are submitted
-            post :create, valid_request(:topic_id => @topic.to_param, :feed => { :at => Time.now, :values => {"assf" => "fssa"} }), valid_session(user_id: @user.to_param)
+            post :create, valid_request(:topic_id => @topic.to_param, :feed => { :at => Time.now, :data => {"assf" => "fssa"} }), valid_session(user_id: @user.to_param)
             assigns(:feed).should be_a_new(::Sensit::Topic::Feed)
           end
 
           it "re-renders the 'new' template" do
             # Trigger the behavior that occurs when invalid params are submitted
-            post :create, valid_request(:topic_id => @topic.to_param, :feed => { :at => Time.now, :values => {"assf" => "fssa"} }), valid_session(user_id: @user.to_param)
+            post :create, valid_request(:topic_id => @topic.to_param, :feed => { :at => Time.now, :data => {"assf" => "fssa"} }), valid_session(user_id: @user.to_param)
             response.status.should == 422
           end
         end
@@ -115,16 +115,16 @@ module Sensit
             # receives the :update_attributes message with whatever params are
             # submitted in the request.
             ::Sensit::Topic::Feed.any_instance.should_receive(:update_attributes).with({"assf" => "fssa"})
-            put :update, valid_request(:id => @feed.id, :topic_id => @topic.to_param, :feed => { :at => Time.now, :values => {"assf" => "fssa"} }), valid_session(user_id: @user.to_param)
+            put :update, valid_request(:id => @feed.id, :topic_id => @topic.to_param, :feed => { :at => Time.now, :data => {"assf" => "fssa"} }), valid_session(user_id: @user.to_param)
           end
 
           it "assigns the requested feed as @feed" do
-            put :update, valid_request(:id => @feed.id, :topic_id => @topic.to_param, :feed => { :at => Time.now, :values => {"assf" => "fssa"} }), valid_session(user_id: @user.to_param)
+            put :update, valid_request(:id => @feed.id, :topic_id => @topic.to_param, :feed => { :at => Time.now, :data => {"assf" => "fssa"} }), valid_session(user_id: @user.to_param)
             assigns(:feed).id.should == @feed.id
           end
 
           it "renders the feed" do
-            put :update, valid_request(:id => @feed.id, :topic_id => @topic.to_param, :feed => { :at => Time.now, :values => {"assf" => "fssa"} }), valid_session(user_id: @user.to_param)
+            put :update, valid_request(:id => @feed.id, :topic_id => @topic.to_param, :feed => { :at => Time.now, :data => {"assf" => "fssa"} }), valid_session(user_id: @user.to_param)
             response.should render_template("sensit/feeds/show")
           end
         end
@@ -136,12 +136,12 @@ module Sensit
             ::Sensit::Topic::Feed.any_instance.stub(:save).and_return(false)
           end
           it "assigns the feed as @feed" do
-            put :update, valid_request(:id => @feed.id, :topic_id => @topic.to_param, :feed => { :at => Time.now, :values => {"assf" => "fssa"} } ), valid_session(user_id: @user.to_param)
+            put :update, valid_request(:id => @feed.id, :topic_id => @topic.to_param, :feed => { :at => Time.now, :data => {"assf" => "fssa"} } ), valid_session(user_id: @user.to_param)
             assigns(:feed).id.should == @feed.id
           end
 
           it "re-renders the 'edit' template" do
-            put :update, valid_request(:id => @feed.id, :topic_id => @topic.to_param, :feed => { :at => Time.now, :values => {"assf" => "fssa"} } ), valid_session(user_id: @user.to_param)
+            put :update, valid_request(:id => @feed.id, :topic_id => @topic.to_param, :feed => { :at => Time.now, :data => {"assf" => "fssa"} } ), valid_session(user_id: @user.to_param)
             response.status.should == 422
           end
         end

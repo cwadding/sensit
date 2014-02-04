@@ -1,6 +1,7 @@
 *.log
 *.gem
 *.rbc
+*.orig
 .DS_Store
 .env
 .bundle

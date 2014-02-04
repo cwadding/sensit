@@ -6,9 +6,7 @@ module Sensit
 		describe "#create" do
 			before(:each) do
 				@indices_client = Elasticsearch::API::Indices::IndicesClient.new(@client)
-				@feed = Topic::Feed.new({index: 'myindex', type: 'mytype', at: Time.now, values: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}})
-				# @params = {index: 'myindex', type: 'mytype', at: Time.now, values: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}}
-				# {index: 'myindex',type: 'mytype', body: {title: 'Test 1',tags: ['y', 'z'], published: true, published_at: Time.now.utc.iso8601, counter: 1}}
+				@feed = Topic::Feed.new({index: 'myindex', type: 'mytype', at: Time.now, data: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}})
 			end
 			# context "when the index doesn't exist (called for first time)" do
 			# 	before(:each) do

@@ -10,7 +10,7 @@ module Sensit
     describe "#feeds" do
         before(:each) do
             @topic = FactoryGirl.create(:topic, user: @user, application: nil)
-            @feed = Sensit::Topic::Feed.create({index: ELASTIC_INDEX_NAME, type: @topic.to_param, at: Time.now, :tz => "UTC", values: {value1: 2}})
+            @feed = Sensit::Topic::Feed.create({index: ELASTIC_INDEX_NAME, type: @topic.to_param, at: Time.now, :tz => "UTC", data: {value1: 2}})
         end
     	it "returns the associated feeds" do
             if ENV['ELASTICSEARCH_URL']
@@ -30,7 +30,7 @@ module Sensit
         
         before(:each) do
             @topic = FactoryGirl.create(:topic, user: @user, application: nil)
-            feed = Sensit::Topic::Feed.create({index: ELASTIC_INDEX_NAME, type: @topic.to_param, at: Time.now, :tz => "UTC", values: {value1: 3}})
+            feed = Sensit::Topic::Feed.create({index: ELASTIC_INDEX_NAME, type: @topic.to_param, at: Time.now, :tz => "UTC", data: {value1: 3}})
         end
         it "returns the associated feeds" do
             if ENV['ELASTICSEARCH_URL']

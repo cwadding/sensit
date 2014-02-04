@@ -250,7 +250,7 @@ File.open('seed_errors.txt', 'w') do |f|
 				end
 			end
 
-			feed = Sensit::Topic::Feed.new({index: @user.name, type: @topic.to_param, at: at, values: values})
+			feed = Sensit::Topic::Feed.new({index: @user.name, type: @topic.to_param, at: at, data: values})
 			check_if_created(feed, f)
 		end
 	end

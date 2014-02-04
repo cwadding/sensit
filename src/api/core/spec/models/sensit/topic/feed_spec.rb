@@ -5,7 +5,7 @@ module Sensit
 	it { should validate_presence_of(:at) }
 	# it { should validate_uniqueness_of(:at).scoped_to(:topic_id) }
 
-	it { should validate_presence_of(:values) }
+	it { should validate_presence_of(:data) }
 	it { should validate_presence_of(:type) }
 	it { should validate_presence_of(:index) }
 	
@@ -88,7 +88,7 @@ module Sensit
 
 	describe ".create" do
 		before(:each) do
-			@params = {index: ELASTIC_INDEX_NAME, type: 'mytype', at: Time.now, values: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}}
+			@params = {index: ELASTIC_INDEX_NAME, type: 'mytype', at: Time.now, data: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}}
 			@feed = Topic::Feed.new(@params)
 		end
 		it "executes the create instance" do
@@ -224,20 +224,8 @@ module Sensit
 
 		before(:each) do
 			@indices_client = Elasticsearch::API::Indices::IndicesClient.new(@client)
-			@feed = Topic::Feed.new({index: ELASTIC_INDEX_NAME, type: 'mytype', at: Time.now, values: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}})
-			# @params = {index: ELASTIC_INDEX_NAME, type: 'mytype', at: Time.now, values: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}}
-			# {index: ELASTIC_INDEX_NAME,type: 'mytype', body: {title: 'Test 1',tags: ['y', 'z'], published: true, published_at: Time.now.utc.iso8601, counter: 1}}
+			@feed = Topic::Feed.new({index: ELASTIC_INDEX_NAME, type: 'mytype', at: Time.now, data: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}})
 		end
-		# context "when the index doesn't exist (called for first time)" do
-		# 	before(:each) do
-		# 		@indices_client.stub(:exists).and_return(false)
-		# 	end
-		# 	it "creates the index" do
-		# 		@indices_client.should_receive(:create)
-		# 		@client.stub(:indices).and_return(@indices_client)
-		# 		Topic::Feed.stub(:elastic_client).and_return(@client)
-		# 		feed = Topic::Feed.create(@params)
-		# 	end
 
 		# end
 		context "when the index does exist" do
@@ -277,7 +265,7 @@ module Sensit
 
 	describe "#update" do
 		before(:each) do
-			@feed = Topic::Feed.new({index: ELASTIC_INDEX_NAME, type: 'mytype', at: Time.now, values: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}})
+			@feed = Topic::Feed.new({index: ELASTIC_INDEX_NAME, type: 'mytype', at: Time.now, data: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}})
 			@feed.stub(:id).and_return(3)
 			@feed.stub(:new_record?).and_return(false)
 		end
@@ -299,7 +287,7 @@ module Sensit
 
 	describe "#destroy" do
 		before(:each) do
-			@feed = Topic::Feed.new({index: ELASTIC_INDEX_NAME, type: 'mytype', at: Time.now, values: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}})
+			@feed = Topic::Feed.new({index: ELASTIC_INDEX_NAME, type: 'mytype', at: Time.now, data: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}})
 		end
 		context "when the record is not a new record" do
 			before(:each) do
@@ -322,7 +310,7 @@ module Sensit
 
 	describe "#save" do
 		before(:each) do
-			@feed = Topic::Feed.new({index: ELASTIC_INDEX_NAME, type: 'mytype', at: Time.now, values: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}})
+			@feed = Topic::Feed.new({index: ELASTIC_INDEX_NAME, type: 'mytype', at: Time.now, data: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}})
 		end
 		context "when the record is not a new record" do
 			before(:each) do

@@ -72,19 +72,18 @@ module Sensit
       # Only allow a trusted parameter "white list" through.
       def feed_update_params(fields)
         values = fields.map(&:key)
-        params.require(:feed).require(:values).permit(values)
+        params.require(:feed).require(:data).permit(values)
       end
 
       def feed_params(fields)
-        params.require(:feed).permit(:at, :tz, :values => fields.map(&:key))
+        params.require(:feed).permit(:at, :tz, :data => fields.map(&:key))
       end
 
       def feeds_params(fields)
         values = fields.map(&:key)
         if params[:feeds] && params[:feeds].is_a?(Hash)
-          all_keys = params.require(:feeds)[0][:values].keys
           params.require(:feeds).map do |p|
-            ActionController::Parameters.new(p.to_hash).permit(:at, :tz, :values => values)
+            ActionController::Parameters.new(p.to_hash).permit(:at, :tz, :data => values)
           end
         else
           params.require(:feeds)

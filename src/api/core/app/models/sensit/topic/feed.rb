@@ -10,7 +10,7 @@ module Sensit
 	# include ElasticUniquenessValidator
   	define_model_callbacks :create, :update, :save
 
-  	attr_accessor :at, :values, :type, :index
+  	attr_accessor :at, :data, :type, :index
 	attr_reader :errors, :id
 
 	def initialize(params={})
@@ -29,7 +29,7 @@ module Sensit
 	validates :type, presence: true
 	# validates :topic_id, presence: true
 	validates :at, presence: true, elastic_uniqueness: {scope: [:topic_id]}
-	validates :values, presence: true
+	validates :data, presence: true
 
   	def self.find(arguments = {})
 		result = elastic_client.get arguments
@@ -105,12 +105,12 @@ module Sensit
 	# end
 
 	def update_attributes(params)
-		values.merge!(params)
+		self.data.merge!(params)
 		save
 	end
 
 	def to_hash
-		body = self.values.clone
+		body = self.data.clone
 		body.merge!({at:self.at.to_f, tz: (self.at.time_zone.name || "UTC")})
 	end
 
@@ -121,7 +121,7 @@ private
 		tz = result["_source"].delete("tz")
 		at = Time.at(t) unless t.nil?
 		body = result["_source"]
-		obj = self.new({index: result["_index"], type: result["_type"], at: at, tz: tz, values: body})
+		obj = self.new({index: result["_index"], type: result["_type"], at: at, tz: tz, data: body})
 		obj.instance_variable_set(:@id, result["_id"])
 		obj.instance_variable_set(:@new_record, false)
 		obj

@@ -12,7 +12,7 @@ child @topic.feeds(params) => :feeds do
 		u.at.time_zone.name
 	end
 	node :data do |u|
-		u.values
+		u.data
 	end
 end unless @topic.blank?
 

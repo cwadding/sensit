@@ -55,18 +55,18 @@ module Sensit
     #       # receives the :update_attributes message with whatever params are
     #       # submitted in the request.
     #       ::Sensit::Topic::Feed.any_instance.should_receive(:update).with({ "value" => "456" })
-    #       put :update, valid_request({:id => datum.to_param, :values => { "value" => "456" }}), valid_session
+    #       put :update, valid_request({:id => datum.to_param, :data => { "value" => "456" }}), valid_session
     #     end
 
     #     it "assigns the requested data as @data" do
     #       datum = ::Sensit::Topic::Feed.create valid_attributes
-    #       put :update, valid_request({:id => datum.to_param, :values => valid_attributes}), valid_session
+    #       put :update, valid_request({:id => datum.to_param, :data => valid_attributes}), valid_session
     #       assigns(:data).should eq(datum)
     #     end
 
     #     it "redirects to the data" do
     #       datum = ::Sensit::Topic::Feed.create valid_attributes
-    #       put :update, valid_request({:id => datum.to_param, :values => valid_attributes}), valid_session
+    #       put :update, valid_request({:id => datum.to_param, :data => valid_attributes}), valid_session
     #       response.should render_template("sensit/data/show")
     #     end
     #   end

@@ -180,8 +180,6 @@ module Sensit
         before(:each) do
             @indices_client = Elasticsearch::API::Indices::IndicesClient.new(@client)
             @percolator = Topic::Percolator.new({topic_id: 'mytype', user_id: @user.name, name: 'myrule', query: { query: { query_string: { query: 'foo' } } } })
-            # @params = {index: 'myindex', topic_id: 'mytype', user_id: @user.name, topic_name: 3, at: Time.now, values: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}}
-            # {index: 'myindex',topic_id: 'mytype', user_id: @user.name, body: {title: 'Test 1',tags: ['y', 'z'], published: true, published_at: Time.now.utc.iso8601, counter: 1}}
         end
         # context "when the index doesn't exist (called for first time)" do
         #   before(:each) do

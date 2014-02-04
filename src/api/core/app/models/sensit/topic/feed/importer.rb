@@ -68,7 +68,7 @@ private
           values = temp_fields.inject({}) {|h,field| h.merge!(field.key => field.convert(row[header.index(field.key)]))}
           at = row[header.index("at")]
           tz = row[header.index("tz")]
-          feed_arr << Topic::Feed.new({index: self.index, type: self.type, at: at, tz: tz, values: values})
+          feed_arr << Topic::Feed.new({index: self.index, type: self.type, at: at, tz: tz, data: values})
         end
       end
       feed_arr.uniq {|feed| feed.at}

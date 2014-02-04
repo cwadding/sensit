@@ -62,7 +62,7 @@ FactoryGirl.define do
           else
             client = ::Elasticsearch::Client.new
           end
-          Sensit::Topic::Feed.create({index: topic.user.name, type: topic.to_param, at: Time.now, :tz => "UTC", values: values})
+          Sensit::Topic::Feed.create({index: topic.user.name, type: topic.to_param, at: Time.now, :tz => "UTC", data: values})
           client.indices.refresh(:index => topic.user.name)
         end
       end
@@ -83,7 +83,7 @@ FactoryGirl.define do
           else
             client = ::Elasticsearch::Client.new
           end          
-          Sensit::Topic::Feed.create({index: topic.user.name, type: topic.to_param, at: Time.now, :tz => "UTC", values: {value1: i}})
+          Sensit::Topic::Feed.create({index: topic.user.name, type: topic.to_param, at: Time.now, :tz => "UTC", data: {value1: i}})
           client.indices.refresh(:index => topic.user.name)
         end
       end

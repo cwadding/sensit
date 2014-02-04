@@ -7,7 +7,7 @@ module Sensit
 			context "with an array of feed attributes" do
 				it "instantiates the feeds" do
 					importer = Topic::Feed::Importer.new(index: ELASTIC_INDEX_NAME, type: "topic_id")
-					feed_data = [{at: Time.now, tz: "Eastern Time (US & Canada)", values: {"assf" => "fgd"}},{at: Time.now, tz: "Eastern Time (US & Canada)", values: {"assf" => "dsdsag"}}]
+					feed_data = [{at: Time.now, tz: "Eastern Time (US & Canada)", data: {"assf" => "fgd"}},{at: Time.now, tz: "Eastern Time (US & Canada)", data: {"assf" => "dsdsag"}}]
 					importer.feeds = feed_data
 					importer.feeds.should be_an_instance_of(Array)
 					importer.feeds.count.should == 2
