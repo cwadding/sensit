@@ -332,5 +332,23 @@ module Sensit
 		end		
 	end
 
+
+	describe "#percolate" do
+		it "calls the elasticsearch pecolate command with valid attributes" do
+			feed = Sensit::Topic::Feed.new({index: ELASTIC_INDEX_NAME, type: 'mytype', at: Time.now, data: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}})
+			@client.should_receive(:percolate).with({:valid => "params"})
+			feed.stub(:elastic_client).and_return(@client)
+			feed.stub(:attributes_for_percolate).and_return({:valid => "params"})
+			feed.percolate
+		end
+	end
+
+	describe "#attributes_for_percolate", current: true do
+		it "returns valid parameters for elasticsearch percolation" do
+			feed = Sensit::Topic::Feed.new({index: ELASTIC_INDEX_NAME, type: 'mytype', at: Time.now, data: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}})
+			feed.attributes_for_percolate.should == {}
+		end
+	end
+
   end
 end
