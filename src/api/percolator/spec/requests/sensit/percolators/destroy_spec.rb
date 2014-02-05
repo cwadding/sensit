@@ -31,11 +31,7 @@ describe "DELETE sensit/percolators#destroy" do
 				end
 
 				it "deletes the Percolator" do
-					if ENV['ELASTICSEARCH_URL']
-						client = ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL'])
-					else
-						client = ::Elasticsearch::Client.new
-					end
+					client = ENV['ELASTICSEARCH_URL'] ? ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL']) : ::Elasticsearch::Client.new
 					@percolator = ::Sensit::Topic::Percolator.create({ topic: @topic, name: "3", query: { query_string: { query: 'foo' } } })
 					client.indices.refresh(index: ELASTIC_INDEX_NAME)
 					expect {

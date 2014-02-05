@@ -22,7 +22,10 @@ module Sensit
         Topic::Feed.search({index: elastic_index_name, type: elastic_type_name, body: body, size: per, from: from})
 	end
 
+
 	def create_index
+		self.is_initialized = true
+		self.save
 	# client.indices.create index: 'test',
  #                      body: {
  #                        settings: {

@@ -37,7 +37,7 @@ describe "GET sensit/feeds#show" do
 
 					feed = @topic.feeds.first
 					data_arr = feed.data.inject([]) do |arr, (key, value)|
-						arr << "{\"#{key}\": #{value}}"
+						arr << "{\"#{key}\": \"#{value}}\""
 					end
 					response.body.should be_json_eql("{\"at\": \"#{feed.at.utc.strftime("%Y-%m-%dT%H:%M:%S.%3NZ")}\",\"data\": #{data_arr.join(',')},\"fields\": [#{field_arr.join(',')}],\"tz\":\"UTC\"}")
 				end

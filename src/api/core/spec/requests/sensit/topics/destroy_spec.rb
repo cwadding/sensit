@@ -42,11 +42,7 @@ describe "DELETE sensit/topics#destroy" do
 				end
 
 		        it "deletes its feeds" do
-					if ENV['ELASTICSEARCH_URL']
-						client = ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL'])
-					else
-						client = ::Elasticsearch::Client.new
-					end
+					client = ENV['ELASTICSEARCH_URL'] ? ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL']) : ::Elasticsearch::Client.new
 					number_of_feeds = @topic.feeds.count
 					number_of_feeds.should > 0
 					expect {

@@ -37,34 +37,26 @@ module Sensit
 
     # PATCH/PUT 1/topics/1
     def update
-      if (attempting_to_write_to_another_application_without_privilage)
-        head :unauthorized
+      @topic = scoped_owner("manage_any_data").topics.find(params[:id])
+
+      fields_params.each do |field_set|
+        field = @topic.fields.where(:key => field_set[:key]).first
+        field.name = field_set[:name]
+        field.save
+      end unless fields_params.blank?
+
+      if @topic.update(topic_params)
+        respond_with(@topic, :status => 200, :template => "sensit/topics/show")
       else
-        @topic = scoped_owner("manage_any_data").topics.find(params[:id])
-
-        fields_params.each do |field_set|
-          field = @topic.fields.where(:key => field_set[:key]).first
-          field.name = field_set[:name]
-          field.save
-        end unless fields_params.blank?
-
-        if @topic.update(topic_params)
-          respond_with(@topic, :status => 200, :template => "sensit/topics/show")
-        else
-          render(:json => "{\"errors\":#{@topic.errors.to_json}}", :status => :unprocessable_entity)
-        end
+        render(:json => "{\"errors\":#{@topic.errors.to_json}}", :status => :unprocessable_entity)
       end
     end
 
     # DELETE 1/topics/1
     def destroy
       @topic = scoped_owner("manage_any_data").topics.find(params[:id])
-      if @topic
-        @topic.destroy
-        head :status => :no_content
-      else
-        head :status => :not_found
-      end
+      @topic.destroy
+      head :status => :no_content
     end
 
     private

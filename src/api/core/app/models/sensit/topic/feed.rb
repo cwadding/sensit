@@ -18,10 +18,11 @@ module Sensit
     	@type = params.delete(:type)
     	@index = params.delete(:index)
     	t = params.delete(:at)
-    	self.at = self.class.convert_to_time(t) unless t.blank?
+    	self.at = self.class.convert_to_time(t || Time.now)
     	tz = params.delete(:tz)
     	self.at = self.at.in_time_zone(tz) if self.at.present? && tz.present? && ::ActiveSupport::TimeZone.zones_map.keys.include?(tz)
     	super(params)
+		convert_rawdata_to_datatype unless self.data.blank?
     	@errors = ActiveModel::Errors.new(self)
   	end
 
@@ -80,6 +81,10 @@ module Sensit
 		self.class.destroy({index: index, type: type, id: id})
 	end
 
+	def percolate
+		elastic_client.percolate attributes_for_percolate
+	end
+
 	def topic
 		@topic ||= Topic.find(self.type)
 	end
@@ -128,11 +133,7 @@ private
 	end
 
 	def self.elastic_client
-		if ENV['ELASTICSEARCH_URL']
-			@@client ||= ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL'])
-		else
-			@@client ||= ::Elasticsearch::Client.new
-		end
+		@@client ||= ENV['ELASTICSEARCH_URL'] ? ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL']) : ::Elasticsearch::Client.new
 	end
 
 	def elastic_client
@@ -158,12 +159,19 @@ private
 		end
 	end
 
-	def percolate
-		elastic_client.percolate attributes_for_percolate
-	end
-
 	def create
 		run_callbacks :create do
+			if topic && !topic.is_initialized
+				if fields && fields.empty?
+					data.each_pair do |key, value|
+						field = topic.fields.build(key: key.to_s.parameterize, name:key.to_s)
+						field.datatype = field.guess_datatype(value)
+						field.save
+					end
+				end
+				topic.create_index
+				convert_rawdata_to_datatype
+			end
 			response = elastic_client.create attributes_to_create
 			if (response["ok"])
 				@new_record = false
@@ -180,6 +188,12 @@ private
 			Time.zone.at(value.to_f)
 		else
 			Time.zone.parse(value)
+		end
+	end
+
+	def convert_rawdata_to_datatype
+		fields.each do |field|
+			self.data[field.key] = Topic::Field.convert(self.data[field.key], field.datatype)
 		end
 	end
 

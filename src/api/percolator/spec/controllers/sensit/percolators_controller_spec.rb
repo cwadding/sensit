@@ -56,11 +56,7 @@ module Sensit
       describe "POST create" do
         describe "with valid params" do
           it "creates a new ::Sensit::Topic::Percolator" do
-            if ENV['ELASTICSEARCH_URL']
-              client = ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL'])
-            else
-              client = ::Elasticsearch::Client.new
-            end
+            client = ENV['ELASTICSEARCH_URL'] ? ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL']) : ::Elasticsearch::Client.new
             expect {
               post :create, valid_request(:percolator => { topic_id: "topic_type", user_id: @user.name, :name => "mytest1", :query => { query_string: { query: 'foo' } }}), valid_session(user_id: @user.name)
               client.indices.refresh(index: ELASTIC_INDEX_NAME)
@@ -144,11 +140,7 @@ module Sensit
           @percolator = ::Sensit::Topic::Percolator.create valid_attributes(user_id: @user.name, name:9, topic_id: @topic.to_param)
         end
         it "destroys the requested percolator" do
-          if ENV['ELASTICSEARCH_URL']
-            client = ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL'])
-          else
-            client = ::Elasticsearch::Client.new
-          end
+          client = ENV['ELASTICSEARCH_URL'] ? ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL']) : ::Elasticsearch::Client.new
           client.indices.refresh(index: ELASTIC_INDEX_NAME)
           expect {
             delete :destroy, valid_request(:id => @percolator.name), valid_session(user_id: @user.name)

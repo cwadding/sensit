@@ -66,9 +66,8 @@ describe "PUT sensit/fields#update" do
 						another_user = Sensit::User.create(:name => ELASTIC_INDEX_NAME, :email => "anouther_user@example.com", :password => "password", :password_confirmation => "password")
 						@topic = FactoryGirl.create(:topic_with_feeds_and_fields, user: another_user, application: @access_grant.application)
 					end
-					it "cannot read data from another user", current:true do
+					it "cannot read data from another user" do
 						expect{
-							# debugger
 							response = process_oauth_request(@access_grant, @topic, @params)
 							response.status.should == 404
 						}.to raise_error(ActiveRecord::RecordNotFound)
@@ -81,7 +80,7 @@ describe "PUT sensit/fields#update" do
 					@application = FactoryGirl.create(:application)
 					@topic = FactoryGirl.create(:topic_with_feeds_and_fields, user: @user, application: @application)
 				end
-				it "cannot update data to another application", current:true do
+				it "cannot update data to another application" do
 					expect{
 						# debugger
 						response = process_oauth_request(@access_grant, @topic, @params)

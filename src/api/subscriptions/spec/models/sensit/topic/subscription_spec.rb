@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 module Sensit
-  describe Topic::Subscription, current: true do
+  describe Topic::Subscription do
 
 	it {should belong_to :topic}
 

@@ -31,11 +31,7 @@ describe "DELETE sensit/feeds#destroy" do
 				end
 
 				it "deletes the Feed" do
-					if ENV['ELASTICSEARCH_URL']
-						client = ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL'])
-					else
-						client = ::Elasticsearch::Client.new
-					end
+					client = ENV['ELASTICSEARCH_URL'] ? ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL']) : ::Elasticsearch::Client.new
 					expect {
 						response = process_oauth_request(@access_grant,@topic)
 						client.indices.refresh(index: ELASTIC_INDEX_NAME)

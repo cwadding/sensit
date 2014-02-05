@@ -41,11 +41,7 @@ module Sensit
     private
 
       def elastic_client
-        if ENV['ELASTICSEARCH_URL']
-          @client ||= ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL'])
-        else
-          @client ||= ::Elasticsearch::Client.new
-        end
+        @client ||= ENV['ELASTICSEARCH_URL'] ? ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL']) : ::Elasticsearch::Client.new
       end
       # Only allow a trusted parameter "white list" through.
       def data_param

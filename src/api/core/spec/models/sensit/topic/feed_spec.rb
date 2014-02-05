@@ -343,10 +343,10 @@ module Sensit
 		end
 	end
 
-	describe "#attributes_for_percolate", current: true do
+	describe "#attributes_for_percolate" do
 		it "returns valid parameters for elasticsearch percolation" do
-			feed = Sensit::Topic::Feed.new({index: ELASTIC_INDEX_NAME, type: 'mytype', at: Time.now, data: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}})
-			feed.attributes_for_percolate.should == {}
+			feed = Sensit::Topic::Feed.new({index: ELASTIC_INDEX_NAME, type: 'mytype', at: Time.new(2013,11,14,3,56,6, "-00:00"), data: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}})
+			feed.send(:attributes_for_percolate).should == {:index=>"my_index", :type=>"mytype", :body=>{:doc=>{:title=>"Test 1", :tags=>["y", "z"], :published=>true, :counter=>1, :at=>1384401366.0, :tz=>"UTC"}}}
 		end
 	end
 

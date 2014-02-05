@@ -155,11 +155,7 @@ describe "POST sensit/feeds#create"  do
                end
 
                it "creates a new Feed" do
-                   if ENV['ELASTICSEARCH_URL']
-                     client = ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL'])
-                   else
-                     client = ::Elasticsearch::Client.new
-                   end
+                   client = ENV['ELASTICSEARCH_URL'] ? ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL']) : ::Elasticsearch::Client.new
                   client.indices.refresh(:index => ELASTIC_INDEX_NAME)
                   before_count = @topic.feeds.count
                   process_oauth_request(@access_grant,@topic, @params)
@@ -213,11 +209,7 @@ describe "POST sensit/feeds#create"  do
                   end
 
                   it "creates the feed on the topic of the application" do
-                     if ENV['ELASTICSEARCH_URL']
-                        client = ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL'])
-                     else
-                        client = ::Elasticsearch::Client.new
-                     end
+                     client = ENV['ELASTICSEARCH_URL'] ? ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL']) : ::Elasticsearch::Client.new
                      client.indices.refresh(:index => ELASTIC_INDEX_NAME)
                      before_count = @topic.feeds.count
                      process_oauth_request(@access_grant,@topic, @params)

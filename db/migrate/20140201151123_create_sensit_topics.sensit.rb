@@ -8,6 +8,7 @@ class CreateSensitTopics < ActiveRecord::Migration
       t.integer :user_id
       t.integer :application_id
       t.integer :ttl
+      t.boolean :is_initialized
       t.timestamps
     end
   end

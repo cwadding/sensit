@@ -11,11 +11,7 @@ module Sensit
 		end
 
 		def validate_each(record, attribute, value)
-			if ENV['ELASTICSEARCH_URL']
-				client = ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL'])
-			else
-				client = ::Elasticsearch::Client.new
-			end			
+			client = ENV['ELASTICSEARCH_URL'] ? ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL']) : ::Elasticsearch::Client.new			
 			# TODO need to refine query to include scope
 			response = client.count(index: record.index, type: record.type, body: { match: { term: { attribute => value } } })
 			if response["count"].to_i > 0
