@@ -20,83 +20,59 @@ require 'spec_helper'
 
 module Sensit
   describe DataController do
-
       before(:each) do
         @access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "read_any_data manage_any_data")
         controller.stub(:doorkeeper_token).and_return(@access_grant)
-        @topic = Topic.create(:name => "MyTopic", :user => @user)
-        field = @topic.fields.build( :key => "assf", :name => "Assf" )
-        field.save
+        @topic = FactoryGirl.create(:topic_with_feeds_and_fields, user: @user, application: @access_grant.application)
+        @feed = @topic.feeds.first
+        @data_key = @feed.data.keys.first
       end
 
       def valid_request(h = {})
         {:use_route => :sensit_api, :format => "json", :api_version => 1}.merge!(h)
       end
-      # This should return the minimal set of attributes required to create a valid
-      # ::Sensit::Topic::Feed. As you add validations to ::Sensit::Topic::Feed, be sure to
-      # update the return value of this method accordingly.
-      def valid_attributes
-        { key: "my_key", value: "123"}
-      end
 
-      # This should return the minimal set of values that should be in the session
-      # in order to pass any filters (e.g. authentication) defined in
-      # ::Sensit::Topic::FeedsController. Be sure to keep this updated too.
       def valid_session
         {}
       end
 
-    # describe "GET show" do
-    #   it "assigns the requested data as @data" do
-    #     datum = ::Sensit::Topic::Feed.create valid_attributes
-    #     get :show, valid_request({:id => datum.to_param}), valid_session
-    #     assigns(:data).should eq(datum)
-    #   end
-    # end
+    describe "GET show" do
+      it "renders the requested data" do
+        get :show, valid_request({:id => @data_key, :feed_id => @feed.id, :topic_id => @topic.to_param}), valid_session
+        response.body.should == @feed.data[@data_key].to_s
+      end
+    end
 
-    # describe "PUT update" do
-    #   describe "with valid params" do
-    #     it "updates the requested data" do
-    #       datum = ::Sensit::Topic::Feed.create valid_attributes
-    #       # Assuming there are no other data in the database, this
-    #       # specifies that the Topic::Feed::DataRow created on the previous line
-    #       # receives the :update_attributes message with whatever params are
-    #       # submitted in the request.
-    #       ::Sensit::Topic::Feed.any_instance.should_receive(:update).with({ "value" => "456" })
-    #       put :update, valid_request({:id => datum.to_param, :data => { "value" => "456" }}), valid_session
-    #     end
+    describe "PUT update" do
+      describe "with valid params" do
+        it "updates the requested data" do
+          client  = ::Elasticsearch::Client.new
+          client.should_receive(:update).and_return({"ok" => true })
+          controller.stub(:elastic_client).and_return(client)
+          # ::Sensit::Topic::Feed.any_instance.should_receive(:update).with({ "value" => "456" })
+          put :update, valid_request({:id => @data_key, :feed_id => @feed.id, :topic_id => @topic.to_param, :value => "456" }), valid_session
+        end
 
-    #     it "assigns the requested data as @data" do
-    #       datum = ::Sensit::Topic::Feed.create valid_attributes
-    #       put :update, valid_request({:id => datum.to_param, :data => valid_attributes}), valid_session
-    #       assigns(:data).should eq(datum)
-    #     end
+        it "returns an ok status" do
+          client  = ::Elasticsearch::Client.new
+          client.should_receive(:update).and_return({"ok" => true })
+          controller.stub(:elastic_client).and_return(client)
+          put :update, valid_request({:id => @data_key, :feed_id => @feed.id, :topic_id => @topic.to_param, :value => "456" }), valid_session
+          response.status.should == 200
+        end
+      end
 
-    #     it "redirects to the data" do
-    #       datum = ::Sensit::Topic::Feed.create valid_attributes
-    #       put :update, valid_request({:id => datum.to_param, :data => valid_attributes}), valid_session
-    #       response.should render_template("sensit/data/show")
-    #     end
-    #   end
+      describe "with invalid params" do
 
-    #   describe "with invalid params" do
-    #     it "assigns the data as @data" do
-    #       datum = ::Sensit::Topic::Feed.create valid_attributes
-    #       # Trigger the behavior that occurs when invalid params are submitted
-    #       ::Sensit::Topic::Feed::DataRow.any_instance.stub(:save).and_return(false)
-    #       put :update, valid_request({:id => datum.to_param, :values => { "value" => "456" }}), valid_session
-    #       assigns(:data).should eq(datum)
-    #     end
-
-    #     it "re-renders the 'edit' template" do
-    #       datum = ::Sensit::Topic::Feed::DataRow.create! valid_attributes
-    #       # Trigger the behavior that occurs when invalid params are submitted
-    #       ::Sensit::Topic::Feed.any_instance.stub(:save).and_return(false)
-    #       put :update, valid_request({:id => datum.to_param, :values => { "value" => "456"  }}), valid_session
-    #       response.should render_template("sensit/data/show")
-    #     end
-    #   end
-    # end
+        it "re-renders the 'edit' template" do
+          client  = ::Elasticsearch::Client.new
+          client.should_receive(:update).and_return({"ok" => false })
+          controller.stub(:elastic_client).and_return(client)
+          put :update, valid_request({:id => @data_key, :feed_id => @feed.id, :topic_id => @topic.to_param, :value => "456" }), valid_session
+          response.status.should == 422
+        end
+      end
+    end
 
   end
 end
