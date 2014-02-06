@@ -10,8 +10,8 @@ module Sensit
 	# include ElasticUniquenessValidator
   	define_model_callbacks :create, :update, :save
 
-  	attr_accessor :at, :data, :type, :index
-	attr_reader :errors, :id
+  	attr_accessor :at, :type, :index
+	attr_reader :errors, :id, :data
 
 	def initialize(params={})
     	@new_record = true
@@ -31,6 +31,10 @@ module Sensit
 	# validates :topic_id, presence: true
 	validates :at, presence: true, elastic_uniqueness: {scope: [:topic_id]}
 	validates :data, presence: true
+
+	def data=(value)
+ 		@data = ActiveSupport::HashWithIndifferentAccess.new(value)
+	end
 
   	def self.find(arguments = {})
 		result = elastic_client.get arguments
@@ -86,7 +90,7 @@ module Sensit
 	end
 
 	def topic
-		@topic ||= Topic.find(self.type)
+		@topic ||= Topic.find_by(slug: self.type)
 	end
 
 	def topic=(record)
@@ -162,12 +166,11 @@ private
 	def create
 		run_callbacks :create do
 			if topic && !topic.is_initialized
-				if fields && fields.empty?
-					data.each_pair do |key, value|
-						field = topic.fields.build(key: key.to_s.parameterize, name:key.to_s)
-						field.datatype = field.guess_datatype(value)
-						field.save
-					end
+				data.each_pair do |key, value|
+					field = topic.fields.find_or_initialize_by(key: key.to_s.parameterize)
+					field.name = key.to_s if field.name.blank?
+					field.datatype = field.guess_datatype(value) if field.datatype.nil?
+					field.save
 				end
 				topic.create_index
 				convert_rawdata_to_datatype
@@ -194,7 +197,7 @@ private
 	def convert_rawdata_to_datatype
 		fields.each do |field|
 			self.data[field.key] = Topic::Field.convert(self.data[field.key], field.datatype)
-		end
+		end unless topic.nil? || fields.empty?
 	end
 
   end

@@ -147,7 +147,7 @@ module Sensit
 
 	describe "#topic" do
 		it "returns its parent topic" do
-			Topic.stub(:find).with("atm").and_return(Topic.new)
+			Topic.stub(:find_by).with({slug: "atm"}).and_return(Topic.new)
 			feed = Topic::Feed.new(index: "transactions", type: "atm")
 			feed.topic.should be_an_instance_of Topic
 		end
@@ -234,7 +234,7 @@ module Sensit
 			end
 			context "with valid response" do
 				it "executes the elastic create action" do
-					@client.should_receive(:create).with({index: ELASTIC_INDEX_NAME, :type=>"mytype", :body=>{:title=>"Test 1", :tags=>["y", "z"], :published=>true, :counter=>1, :at=>@feed.at.utc.to_f, :tz=>"UTC"}}).and_return({"ok"=>true, "_index"=> @user.to_param, "_type"=>'mytype', "_id"=>"8eI2kKfwSymCrhqkjnGYiA", "_version"=>1})
+					@client.should_receive(:create).with({index: ELASTIC_INDEX_NAME, :type=>"mytype", :body=>{"title"=>"Test 1", "tags"=>["y", "z"], "published"=>true, "counter"=>1, "at"=>@feed.at.utc.to_f, "tz"=>"UTC"}}).and_return({"ok"=>true, "_index"=> @user.to_param, "_type"=>'mytype', "_id"=>"8eI2kKfwSymCrhqkjnGYiA", "_version"=>1})
 					Topic::Feed.stub(:elastic_client).and_return(@client)
 					@feed.send(:create)
 				end
@@ -270,7 +270,7 @@ module Sensit
 			@feed.stub(:new_record?).and_return(false)
 		end
 		it "executes the update class action" do
-			@client.should_receive(:update).with({index: ELASTIC_INDEX_NAME, type: 'mytype', id: 3, body:{ doc:{ at: @feed.at.utc.to_f, :tz=>"UTC", title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}}}).and_return({"ok"=>true, "_index"=>"#{@user.to_param}", "_type"=>'mytype', "_id"=>"8eI2kKfwSymCrhqkjnGYiA", "_version"=>2})
+			@client.should_receive(:update).with({index: ELASTIC_INDEX_NAME, type: 'mytype', id: 3, body:{ doc:{ "at" => @feed.at.utc.to_f, "tz"=>"UTC", "title" => 'Test 1',"tags" => ['y', 'z'], "published" => true, "counter" => 1}}}).and_return({"ok"=>true, "_index"=>"#{@user.to_param}", "_type"=>'mytype', "_id"=>"8eI2kKfwSymCrhqkjnGYiA", "_version"=>2})
 			@feed.stub(:elastic_client).and_return(@client)
 			success = @feed.send(:update)
 		end
@@ -346,7 +346,7 @@ module Sensit
 	describe "#attributes_for_percolate" do
 		it "returns valid parameters for elasticsearch percolation" do
 			feed = Sensit::Topic::Feed.new({index: ELASTIC_INDEX_NAME, type: 'mytype', at: Time.new(2013,11,14,3,56,6, "-00:00"), data: {title: 'Test 1',tags: ['y', 'z'], published: true, counter: 1}})
-			feed.send(:attributes_for_percolate).should == {:index=>"my_index", :type=>"mytype", :body=>{:doc=>{:title=>"Test 1", :tags=>["y", "z"], :published=>true, :counter=>1, :at=>1384401366.0, :tz=>"UTC"}}}
+			feed.send(:attributes_for_percolate).should == {:index=>"my_index", :type=>"mytype", :body=>{:doc=>{"title"=>"Test 1", "tags"=>["y", "z"], "published"=>true, "counter"=>1, "at"=>1384401366.0, "tz"=>"UTC"}}}
 		end
 	end
 

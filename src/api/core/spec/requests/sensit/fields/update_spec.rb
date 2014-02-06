@@ -82,7 +82,6 @@ describe "PUT sensit/fields#update" do
 				end
 				it "cannot update data to another application" do
 					expect{
-						# debugger
 						response = process_oauth_request(@access_grant, @topic, @params)
 						response.status.should == 404
 					}.to raise_error(ActiveRecord::RecordNotFound)

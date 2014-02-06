@@ -2,8 +2,6 @@ module Sensit
   class Topic::Field < ActiveRecord::Base
     extend ::FriendlyId
     friendly_id :key, use: [:slugged, :finders]
-
-    before_save :default_datatype
   	belongs_to :topic
 
 
@@ -26,7 +24,7 @@ module Sensit
   	validates_associated :topic
   	validates :name, presence: true, uniqueness: {scope: :topic_id}
   	validates :key, presence: true, uniqueness: {scope: :topic_id}
-    validates :datatype, inclusion: { in: DATATYPES, message: "%{value} is not a valid datatype" }
+    validates :datatype, inclusion: { in: DATATYPES, message: "%{value} is not a valid datatype" } , :allow_nil => true
 
 
     # also use the key as part of the decision when deciding the time
@@ -105,7 +103,7 @@ module Sensit
       end
     end
 
-    def self.convert(value)
+    def convert(value)
       self.class.convert(value, self.datatype)
     end    
 
@@ -144,10 +142,6 @@ module Sensit
       else
         nil
       end
-    end
-
-    def default_datatype
-      self.datatype ||= "string"
     end
     
   end

@@ -59,7 +59,7 @@ describe "POST sensit/topics#create" do
                      response.body.should be_json_eql("{\"description\": \"A description of my topic\",\"feeds\": [],\"fields\": [{\"name\":\"NewField1\",\"key\":\"new_field_1\"}, {\"name\":\"NewField2\",\"key\":\"new_field_2\"}],\"name\": \"Test topic\"}")
                   end
 
-                  it "creates two new fields on the topic" do
+                  it "creates two new fields on the topic", current: true do
                       expect {
                         response = process_oauth_request(@access_grant,@params)
                       }.to change(Sensit::Topic::Field, :count).by(2)

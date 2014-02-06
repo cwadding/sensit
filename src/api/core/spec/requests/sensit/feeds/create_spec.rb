@@ -182,18 +182,9 @@ describe "POST sensit/feeds#create"  do
                      @params[:feed].delete(:at)
                   end
 
-                  it "is an unprocessable entity" do
-                     expect{
-                        response = process_oauth_request(@access_grant,@topic, @params)
-                        response.status.should == 422
-                     }.to raise_error(OAuth2::Error)
-                  end
-
-                  it "returns the expected json" do
-                     expect{
-                        response = process_oauth_request(@access_grant,@topic, @params)
-                        response.body.should be_json_eql("{\"errors\":{\"at\":[\"can't be blank\"]}}")
-                     }.to raise_error(OAuth2::Error)
+                  it "is a success because it sets :at to the current time" do
+                     response = process_oauth_request(@access_grant,@topic, @params)
+                     response.status.should == 201
                   end
                end
                context "a feed from another application" do
