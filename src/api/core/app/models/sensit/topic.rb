@@ -23,9 +23,21 @@ module Sensit
 	end
 
 
-	def create_index
+	def create_mapping
 		self.is_initialized = true
 		self.save
+		field_properties = fields.inject({}) do |h, field|
+			h.merge!({field.key => field.properties})
+			h
+		end
+
+		# if there are many fields then add the store function to specific fields that are accessed frequently
+
+		if client.indices.exists(index: elastic_index_name)
+			client.indices.put_mapping({index: elastic_index_name, type: elastic_type_name, body:{mapping:{ elastic_type_name => {properties: field_properties}}}})
+		else
+			client.indices.create({index: elastic_index_name, body:{ mapping:{ elastic_type_name => {properties: field_properties}}}})
+		end
 	# client.indices.create index: 'test',
  #                      body: {
  #                        settings: {

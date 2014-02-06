@@ -26,13 +26,13 @@ module Sensit
 					@field.guess_datatype("-123").should == "integer"
 				end		
 			end
-			context "and the string is a decimal" do
+			context "and the string is a float" do
 				before(:each) do
 					Topic::Field.stub(:to_boolean).with("123.123").and_return(nil)
 					Topic::Field.stub(:to_number).with("123.123").and_return(123.123)
 				end
 				it "guesses the datatype for the parsed number" do
-					@field.guess_datatype("123.123").should  == "decimal"
+					@field.guess_datatype("123.123").should  == "float"
 				end
 			end
 			context "and the string is a boolean" do
@@ -145,13 +145,13 @@ module Sensit
 						@field.stub(:could_be_a_time?).and_return(false)
 					end
 					it "returns that it is a integer" do
-						@field.guess_datatype(9.months.ago.to_f).should == "decimal"
+						@field.guess_datatype(9.months.ago.to_f).should == "float"
 					end
 				end				
 			end
 			context "the value is not close to a the curruent unix timestamp" do
 				it "returns that it is an integer" do
-					@field.guess_datatype(10.32).should == "decimal"
+					@field.guess_datatype(10.32).should == "float"
 				end
 			end
 		end
@@ -173,57 +173,6 @@ module Sensit
 			it "returns that it is a datetime" do
 				@field.guess_datatype(Time.now).should == "datetime"
 				@field.guess_datatype(DateTime.new(2001,2,3)).should == "datetime"
-			end
-		end		
-		context "when input value is a uri" do
-			context "with no extension" do
-				context "but it could be an image uri" do
-					it "returns a image type" do
-						@field.stub(:could_be_an_image?).and_return(true)
-						uri = URI("http://localhost:8080/image")
-						@field.guess_datatype(uri).should == "image_uri"
-					end
-				end
-				context "but it could be an video uri" do
-					it "returns a video type" do
-						@field.stub(:could_be_an_image?).and_return(false)
-						@field.stub(:could_be_a_video?).and_return(true)
-						uri = URI("http://localhost:8080/video")
-						@field.guess_datatype(uri).should == "video_uri"
-					end
-				end		
-				context "and it can't be an image or video uri" do
-					it "returns a uri type" do
-						@field.stub(:could_be_an_image?).and_return(false)
-						@field.stub(:could_be_a_video?).and_return(false)
-						uri = URI("http://localhost:8080/somefile")
-						@field.guess_datatype(uri).should == "uri"
-					end
-				end
-			end
-			context "with some unknown extension" do
-				it "returns a uri type" do
-					uri = URI("http://localhost:8080/somefile.unknown")
-					@field.guess_datatype(uri).should == "uri"
-				end
-			end			
-			context "and has an image extension" do
-				it "returns a uri type" do
-					uri = URI("http://localhost:8080/image.jpg")
-					@field.guess_datatype(uri).should == "image_uri"
-				end
-			end
-			context "and has a document extension" do
-				it "returns a uri type" do
-					uri = URI("http://localhost:8080/document.pdf")
-					@field.guess_datatype(uri).should == "document_uri"
-				end
-			end
-			context "and has a video extension" do
-				it "returns a video type" do
-					uri = URI("http://localhost:8080/video.avi")
-					@field.guess_datatype(uri).should == "video_uri"
-				end
 			end
 		end
     end
@@ -253,32 +202,13 @@ module Sensit
 	end
 
 
-	describe "#could_be_an_image?" do
-
-		it "checks against a list of suffixes" do
-			field = Topic::Field.new(:name => "my Field Name")
-			field.should_receive(:could_be_one_of).with(["image"])
-			field.could_be_an_image?
-		end
-	end
-
-	describe "#could_be_a_video?" do
-
-		it "checks against a list of suffixes" do
-			field = Topic::Field.new(:name => "my Field Name")
-			field.should_receive(:could_be_one_of).with(["video"])
-			field.could_be_a_video?
-		end
-	end	
-
-
     describe ".convert" do
 		it "converts an integer string to an integer" do
 			Topic::Field.convert("123", "integer").should === 123
 		end
 
-		it "converts a decimal string to a decimal" do
-			Topic::Field.convert("123.123", "decimal").should === 123.123
+		it "converts a float string to a float" do
+			Topic::Field.convert("123.123", "float").should === 123.123
 		end
 
 		it "converts an value to a string" do
@@ -329,6 +259,72 @@ module Sensit
 		end
 		it "returns nil if it is not a number" do
 			Topic::Field.to_number("asdf").should be_nil
+		end
+    end
+
+	# [string integer boolean float datetime timezone uri]
+    describe "#properties" do
+		context "with a string type" do
+			before(:each) do
+				@field = Topic::Field.new(key: "key", name: "name" , datatype: "string")
+			end
+			it "returns the hash configuration" do
+				@field.properties.should == {type: "string"}
+			end
+		end
+
+		context "with a timezone type" do
+			before(:each) do
+				@field = Topic::Field.new(key: "key", name: "name" , datatype: "tmezone")
+			end			
+			it "returns the hash configuration" do
+				@field.properties.should == {type: "string", index: "not_analyzed"}
+			end
+		end
+
+		context "with a uri type" do
+			before(:each) do
+				@field = Topic::Field.new(key: "key", name: "name" , datatype: "uri")
+			end
+			it "returns the hash configuration" do
+				@field.properties.should == {type: "string", index: "not_analyzed"}
+			end
+		end		
+
+		context "with a integer type" do
+			before(:each) do
+				@field = Topic::Field.new(key: "key", name: "name" , datatype: "integer")
+			end
+			it "returns the hash configuration" do
+				@field.properties.should == {type: "integer"}
+			end
+		end
+
+		context "with a float type" do
+			before(:each) do
+				@field = Topic::Field.new(key: "key", name: "name" , datatype: "float")
+			end
+			it "returns the hash configuration" do
+				@field.properties.should == {type: "float"}
+			end
+		end
+
+		context "with a boolean type" do
+			before(:each) do
+				@field = Topic::Field.new(key: "key", name: "name" , datatype: "boolean")
+			end
+			it "returns the hash configuration" do
+				@field.properties.should == {type: "boolean"}
+			end
+		end
+
+		context "with a datetime type" do
+			before(:each) do
+				@field = Topic::Field.new(key: "key", name: "name" , datatype: "datetime")
+			end
+			it "returns the hash configuration" do
+				@field.properties.should == {type: "date"}
+			end
 		end
     end
 

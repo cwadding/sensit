@@ -23,6 +23,7 @@ module Sensit
       else
         topic = scoped_owner("manage_any_data").topics.find(params[:topic_id])
         if params.has_key?(:feeds)
+          # have an async option to avoid timeouts and just return immediately with the confirmation that it was received
           importer = Topic::Feed::Importer.new({index: elastic_index_name, type: elastic_type_name, :fields => topic.fields, :feeds => feeds_params(topic.fields)})
           if importer.save
             @fields = topic.fields

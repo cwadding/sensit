@@ -5,8 +5,6 @@ module Sensit
   	belongs_to :topic
 
 
-
-
     ## dynamic validations
     # has_many :data_options
     # data_restrictions
@@ -18,8 +16,11 @@ module Sensit
     # max_length
     # uniqueness
 
+# float, double, byte, short, integer, and long are supported by elasticsearch
+# also suports just date
+    DATATYPES = %w[string integer boolean float datetime timezone uri]
 
-    DATATYPES = %w[string integer boolean decimal datetime timezone image_uri video_uri uri document_uri]
+    # other datatypes (latitiude, longitude), identifier, credit_card, bank_account, address, city, country, state, province, postal_code, name, enum
 
   	validates_associated :topic
   	validates :name, presence: true, uniqueness: {scope: :topic_id}
@@ -39,15 +40,15 @@ module Sensit
         return "datetime"        
       when "Fixnum", "Float"
         if value > 1328000000
-          # Could be a decimal, integer or a datetime
+          # Could be a float, integer or a datetime
           time_difference = (value - Time.now.to_f).abs
           if (time_difference < 8.days.to_f || (time_difference < 2.years.to_f && could_be_a_time?)) # is it close to a unix timestamp
             return "datetime"
           else
-            return value.class == Fixnum ? "integer" : "decimal"
+            return value.class == Fixnum ? "integer" : "float"
           end
         else
-          return value.class == Fixnum ? "integer" : "decimal"
+          return value.class == Fixnum ? "integer" : "float"
         end
       when "String"
         # does it have a currency symbol
@@ -67,21 +68,13 @@ module Sensit
               # image_file video_file file
               uri_val = ::URI.parse(value)
               raise URI::InvalidURIError if uri_val.nil? || uri_val.host.nil?
-              return guess_datatype(uri_val)
+              return "uri"
             rescue URI::InvalidURIError
               
             end
             return "string"
       else
-        if (value.is_a?(URI))
-          ext = File.extname(value.path).downcase
-          return "image_uri" if [".jpg", ".gif", ".png", ".webp"].include?(ext) || (ext.blank? && could_be_an_image?)
-          return "video_uri" if [".avi", ".mp4", ".mov", ".mpg", ".ogv", ".webm"].include?(ext) || (ext.blank? && could_be_a_video?)
-          return "document_uri" if [".pdf", ".doc", ".docx"].include?(ext)
-          return "uri"
-        else
-          nil
-        end
+        nil
       end
     end
 
@@ -92,7 +85,7 @@ module Sensit
         Sensit::Topic::Feed.convert_to_time(value)
       when "integer"
         value.to_i
-      when "decimal"
+      when "float"
         value.to_f
       when "string"
         value.to_s
@@ -105,14 +98,6 @@ module Sensit
 
     def convert(value)
       self.class.convert(value, self.datatype)
-    end    
-
-    def could_be_a_video?
-      could_be_one_of(["video"])
-    end
-
-    def could_be_an_image?
-      could_be_one_of(["image"])
     end
 
     def could_be_a_time?
@@ -124,7 +109,17 @@ module Sensit
       temp_key ? list.include?(temp_key) : true
     end
 
+    ##
+    # This method returns the elasticsearch properties based on the datatype for indexing
+    def properties
+
+    end
+
     private
+
+    def is_elasticsearch_string_type?
+      []
+    end
 
     def self.to_boolean(value)
       # should I use a regex instead?

@@ -44,6 +44,16 @@ module Sensit
             topic.should_receive(:destroy_feeds)
             topic.destroy
 		end
-	end    
+	end
+
+    describe "#create_index" do
+        before(:each) do
+            @client = ENV['ELASTICSEARCH_URL'] ? ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL']) : ::Elasticsearch::Client.new
+        end
+        it "sets the state to initialized after creating the index" do
+            
+        end
+    end
+
   end
 end
