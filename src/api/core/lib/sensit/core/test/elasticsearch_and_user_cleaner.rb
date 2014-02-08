@@ -1,10 +1,6 @@
 RSpec::Runner.configure do |config|
   config.before(:all) do
-    if ENV['ELASTICSEARCH_URL']
-      @client = ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL'])
-    else
-      @client = ::Elasticsearch::Client.new
-    end
+    @client = ENV['ELASTICSEARCH_URL'] ? ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL']) : ::Elasticsearch::Client.new
     @client.indices.delete({index: ELASTIC_INDEX_NAME}) if @client.indices.exists({ index: ELASTIC_INDEX_NAME})
     @client.indices.create({index: ELASTIC_INDEX_NAME, :body => {:settings => {:index => {:store => {:type => :memory}}}}})
   end

@@ -55,9 +55,9 @@ FactoryGirl.define do
           field = topic.fields.where(key: key).first
           field = FactoryGirl.create(:field, topic: topic, key: key) if field.blank?
         end
+        client = ENV['ELASTICSEARCH_URL'] ? ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL']) : ::Elasticsearch::Client.new        
         evaluator.feeds_count.times do |i|
           values = evaluator.field_keys.inject({}) {|h, key| h.merge!(key => i)}
-          client = ENV['ELASTICSEARCH_URL'] ? ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL']) : ::Elasticsearch::Client.new
           Sensit::Topic::Feed.create({index: topic.user.name, type: topic.to_param, at: Time.now, :tz => "UTC", data: values})
           client.indices.refresh(:index => topic.user.name)
         end
@@ -72,8 +72,8 @@ FactoryGirl.define do
       
       after(:create) do |topic, evaluator|
         key_arr = []
+        client = ENV['ELASTICSEARCH_URL'] ? ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL']) : ::Elasticsearch::Client.new
         evaluator.feeds_count.times do |i|
-          client = ENV['ELASTICSEARCH_URL'] ? ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL']) : ::Elasticsearch::Client.new          
           Sensit::Topic::Feed.create({index: topic.user.name, type: topic.to_param, at: Time.now, :tz => "UTC", data: {value1: i}})
           client.indices.refresh(:index => topic.user.name)
         end

@@ -140,7 +140,8 @@ describe "PUT sensit/topics#update" do
             context "writing to another application" do
                before(:each) do
                   @application = FactoryGirl.create(:application)
-                  @topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @application)
+                  @topic.application = @application;
+                  @topic.save
                end
 
                it "updates the topic in the application" do
@@ -152,7 +153,7 @@ describe "PUT sensit/topics#update" do
                   @topic.feeds.each do |feed|
                      data_arr = []
                      feed.data.each do |key, value|
-                        data_arr << "\"#{key}\": #{value}"
+                        data_arr << "\"#{key}\": \"#{value}\""
                      end
                      feeds_arr << "{\"at\":\"#{feed.at.utc.strftime("%Y-%m-%dT%H:%M:%S.%3NZ")}\", \"data\":{#{data_arr.join(',')}}, \"tz\": \"UTC\"}"
                   end
@@ -167,10 +168,14 @@ describe "PUT sensit/topics#update" do
                end
             end
 
-            context "writing a topic owned by another user" do
+            context "writing a topic owned by another user", current: true do
                before(:each) do
-                  @another_user = Sensit::User.create(:name => ELASTIC_INDEX_NAME, :email => "anouther_user@example.com", :password => "password", :password_confirmation => "password")
+                  @client.indices.create({index: "another_user", :body => {:settings => {:index => {:store => {:type => :memory}}}}}) unless @client.indices.exists({ index: "another_user"})
+                  @another_user = Sensit::User.create(:name => "another_user", :email => "anouther_user@example.com", :password => "password", :password_confirmation => "password")
                   @topic = FactoryGirl.create(:topic_with_feeds, user: @another_user, application: @access_grant.application)
+               end
+               after(:each) do
+                  @client.indices.flush(index: "another_user", refresh: true)
                end
                it "cannot read data from another user" do
                   expect{

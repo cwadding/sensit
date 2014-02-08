@@ -2,15 +2,15 @@ require 'spec_helper'
 describe "PUT sensit/subscriptions#update" do
 
 	def url(subscription, format = "json")
-		"/api/topics/#{subscription.topic.to_param}/subscriptions/#{subscription.to_param}"
+		"/api/subscriptions/#{subscription.to_param}"
 	end
 
 	def process_oauth_request(access_grant,subscription, params = {}, format = "json")
-		oauth_put access_grant, url(subscription, format), valid_request(params), valid_session(user_id: subscription.topic.user.to_param)
+		oauth_put access_grant, url(subscription, format), valid_request(params), valid_session(user_id: subscription.user.to_param)
 	end
 
 	def process_request(subscription, params, format = "json")
-		put url(subscription, format), valid_request(params), valid_session(user_id: subscription.topic.user.to_param)
+		put url(subscription, format), valid_request(params), valid_session(user_id: subscription.user.to_param)
 	end	
 
 	context "with valid attributes" do
@@ -30,8 +30,7 @@ describe "PUT sensit/subscriptions#update" do
 				end
 				context "writing to own application" do
 					before(:each) do
-						topic = FactoryGirl.create(:topic, :user => @user, application: @access_grant.application)
-						@subscription = FactoryGirl.create(:subscription, :topic => topic)
+						@subscription = FactoryGirl.create(:subscription, user: @user, application: @access_grant.application)
 					end
 					it "returns a 200 status code" do
 						response = process_oauth_request(@access_grant,@subscription, @params)
@@ -46,8 +45,7 @@ describe "PUT sensit/subscriptions#update" do
 				context "updating subscription from another application" do
 					before(:each) do
 						@application = FactoryGirl.create(:application)
-						topic = FactoryGirl.create(:topic, user: @user, application: @application)
-						@subscription = FactoryGirl.create(:subscription, :topic => topic)
+						@subscription = FactoryGirl.create(:subscription, user: @user, application: @application)
 					end
 
 					it "returns the expected json" do
@@ -59,10 +57,14 @@ describe "PUT sensit/subscriptions#update" do
 
 				context "updating a subscription owned by another user" do
 					before(:each) do
-						another_user = Sensit::User.create(:name => ELASTIC_INDEX_NAME, :email => "anouther_user@example.com", :password => "password", :password_confirmation => "password")
-						topic = FactoryGirl.create(:topic, user: another_user, application: @access_grant.application)
-						@subscription = FactoryGirl.create(:subscription, :topic => topic)
+						@client = ENV['ELASTICSEARCH_URL'] ? ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL']) : ::Elasticsearch::Client.new
+						@client.indices.create({index: "another_user", :body => {:settings => {:index => {:store => {:type => :memory}}}}}) unless @client.indices.exists({ index: "another_user"})
+						another_user = Sensit::User.create(:name => "another_user", :email => "anouther_user@example.com", :password => "password", :password_confirmation => "password")
+						@subscription = FactoryGirl.create(:subscription, :user => another_user, application: @access_grant.application)
 					end
+					after(:each) do
+						@client.indices.flush(index: "another_user", refresh: true)
+					end					
 					it "cannot read data from another user" do
 						expect{
 							response = process_oauth_request(@access_grant, @subscription, @params)
@@ -75,8 +77,7 @@ describe "PUT sensit/subscriptions#update" do
 				before(:each) do
 					@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "manage_application_subscriptions")
 					@application = FactoryGirl.create(:application)
-					topic = FactoryGirl.create(:topic, user: @user, application: @application)
-					@subscription = FactoryGirl.create(:subscription, :topic => topic)
+					@subscription = FactoryGirl.create(:subscription, user: @user, application: @application)
 				end
 				it "cannot update data to another application" do
 					expect{
@@ -88,8 +89,7 @@ describe "PUT sensit/subscriptions#update" do
 		end
 		context "no authentication" do
 			before(:each) do
-				@topic = FactoryGirl.create(:topic, user: @user, application: nil)
-				@subscription = FactoryGirl.create(:subscription, :topic => @topic)
+				@subscription = FactoryGirl.create(:subscription, user: @user, application: nil)
 			end
 			it "is unauthorized" do
 				status = process_request(@subscription, @params)

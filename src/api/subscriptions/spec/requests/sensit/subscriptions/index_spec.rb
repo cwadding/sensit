@@ -1,16 +1,16 @@
 require 'spec_helper'
 describe "GET sensit/subscriptions#index" do
 
-	def url(topic, format = "json")
-		"/api/topics/#{topic.to_param}/subscriptions.#{format}"
+	def url(format = "json")
+		"/api/subscriptions.#{format}"
 	end
 
-	def process_oauth_request(access_grant,topic,format = "json")
-		oauth_get access_grant, url(topic, format), valid_request, valid_session(user_id: topic.user.to_param)
+	def process_oauth_request(access_grant,format = "json")
+		oauth_get access_grant, url(format), valid_request, valid_session
 	end
 
-	def process_request(topic,format = "json")
-		get url(topic, format), valid_request, valid_session(user_id: topic.user.to_param)
+	def process_request(format = "json")
+		get url(format), valid_request, valid_session
 	end	
 
 	context "oauth authentication" do
@@ -20,37 +20,32 @@ describe "GET sensit/subscriptions#index" do
 			end			
 			context "with a subscription" do
 				before(:each) do
-					@topic = FactoryGirl.create(:topic, :user => @user, application: @access_grant.application)
-					@subscription = FactoryGirl.create(:subscription, :topic => @topic)
+					@subscription = FactoryGirl.create(:subscription, :user => @user, application: @access_grant.application)
 				end
 				it "is successful" do
-					response = process_oauth_request(@access_grant,@topic)
+					response = process_oauth_request(@access_grant)
 					response.status.should == 200
 				end
 
 				it "returns the expected json" do
-					response = process_oauth_request(@access_grant,@topic)
+					response = process_oauth_request(@access_grant)
 					response.body.should be_json_eql("{\"subscriptions\": [{\"name\": \"#{@subscription.name}\",\"host\": \"#{@subscription.host}\",\"protocol\": \"#{@subscription.protocol}\"}]}")
 				end
 			end
 			context "with no subscriptions" do
-				before(:each) do
-					@topic = FactoryGirl.create(:topic, user: @user, application: @access_grant.application)
-				end
 				it "returns the expected json" do
-					response = process_oauth_request(@access_grant,@topic)
+					response = process_oauth_request(@access_grant)
 					response.body.should be_json_eql("{\"subscriptions\": []}")
 				end
 			end			
 			context "reading subscriptions from another application" do
 				before(:each) do
 					@application = FactoryGirl.create(:application)
-					@topic = FactoryGirl.create(:topic, user: @user, application: @application)
-					@subscription = FactoryGirl.create(:subscription, :topic => @topic)
+					@subscription = FactoryGirl.create(:subscription, user: @user, application: @application)
 				end
 
 				it "returns the expected json" do
-					response = process_oauth_request(@access_grant,@topic)
+					response = process_oauth_request(@access_grant)
 					response.status.should == 200
 					response.body.should be_json_eql("{\"subscriptions\": [{\"name\": \"#{@subscription.name}\",\"host\": \"#{@subscription.host}\",\"protocol\": \"#{@subscription.protocol}\"}]}")
 				end
@@ -58,12 +53,16 @@ describe "GET sensit/subscriptions#index" do
 
 			context "with a subscription owned by another user" do
 				before(:each) do
-					another_user = Sensit::User.create(:name => ELASTIC_INDEX_NAME, :email => "anouther_user@example.com", :password => "password", :password_confirmation => "password")
-					@topic = FactoryGirl.create(:topic, user: another_user, application: @access_grant.application)
-					@subscription = FactoryGirl.create(:subscription, :topic => @topic)
+					@client = ENV['ELASTICSEARCH_URL'] ? ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL']) : ::Elasticsearch::Client.new
+					@client.indices.create({index: "another_user", :body => {:settings => {:index => {:store => {:type => :memory}}}}}) unless @client.indices.exists({ index: "another_user"})
+					another_user = Sensit::User.create(:name => "another_user", :email => "anouther_user@example.com", :password => "password", :password_confirmation => "password")
+					@subscription = FactoryGirl.create(:subscription, user: another_user, application: @access_grant.application)
 				end
+				after(:each) do
+					@client.indices.flush(index: "another_user", refresh: true)
+				end	
 				it "cannot read data from another user" do
-					response = process_oauth_request(@access_grant, @topic)
+					response = process_oauth_request(@access_grant)
 					response.body.should be_json_eql("{\"subscriptions\": []}")
 				end
 			end				
@@ -72,21 +71,17 @@ describe "GET sensit/subscriptions#index" do
 			before(:each) do
 				@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "read_application_subscriptions")
 				@application = FactoryGirl.create(:application)
-				@topic = FactoryGirl.create(:topic, user: @user, application: @application)
-				@subscription = FactoryGirl.create(:subscription, :topic => @topic)
+				@subscription = FactoryGirl.create(:subscription, user: @user, application: @application)
 			end
 			it "cannot read data of other application" do
-				response = process_oauth_request(@access_grant, @topic)
+				response = process_oauth_request(@access_grant)
 				response.body.should be_json_eql("{\"subscriptions\":[]}")
 			end
 		end		
 	end
 	context "no authentication" do
-		before(:each) do
-			@topic = FactoryGirl.create(:topic, user: @user, application: nil)
-		end
 		it "is unauthorized" do
-			status = process_request(@topic)
+			status = process_request
 			status.should == 401
 		end
 	end		

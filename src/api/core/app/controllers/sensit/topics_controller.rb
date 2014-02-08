@@ -18,7 +18,7 @@ module Sensit
 
     # POST 1/topics
     def create
-      if (attempting_to_write_to_another_application_without_privilage)
+      if (attempting_to_write_to_another_application_without_privilage(:topic))
         head :unauthorized
       else
         @topic = current_user.topics.build(topic_params)
@@ -60,13 +60,6 @@ module Sensit
     end
 
     private
-      def attempting_to_write_to_another_application_without_privilage
-        !has_scope?("manage_any_data") && application_id_from_params.has_key?(:application_id) && application_id_from_params[:application_id].to_s != doorkeeper_token.application_id.to_s
-      end
-
-      def application_id_from_params
-        @application_id_from_params ||= params.require(:topic).permit(:application_id)
-      end
       # Only allow a trusted parameter "white list" through.
       def topic_params
         @topic_params ||= strong_topic_params

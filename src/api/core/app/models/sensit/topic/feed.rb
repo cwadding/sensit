@@ -172,7 +172,7 @@ private
 					field.datatype = field.guess_datatype(value) if field.datatype.nil?
 					field.save
 				end
-				topic.create_index
+				topic.create_mapping
 				convert_rawdata_to_datatype
 			end
 			response = elastic_client.create attributes_to_create

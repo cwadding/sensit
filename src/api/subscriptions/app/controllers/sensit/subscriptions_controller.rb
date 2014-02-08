@@ -9,31 +9,23 @@ module Sensit
 
     # GET /subscriptions
     def index
-      joins = {:user_id => doorkeeper_token.resource_owner_id, :slug => params[:topic_id]}
-      joins.merge!(:application_id => doorkeeper_token.application_id) unless has_scope?("read_any_subscriptions")
-      @subscriptions = Topic::Subscription.joins(:topic).where(:sensit_topics => joins).page(params[:page] || 1).per(params[:per] || 10)
+      @subscriptions = scoped_owner("read_any_subscriptions").subscriptions.page(params[:page] || 1).per(params[:per] || 10)
       respond_with(@subscriptions)
     end
 
     # GET /subscriptions/1
     def show
-      if attempting_to_access_topic_from_another_application_without_privilage("read_any_subscriptions")
-        raise ::ActiveRecord::RecordNotFound
-      else
-        @subscription = scoped_owner("read_any_subscriptions").topics.find(params[:topic_id]).subscriptions.find(params[:id])
-        respond_with(@subscription)
-      end
+      @subscription = scoped_owner("read_any_subscriptions").subscriptions.find(params[:id])
+      respond_with(@subscription)
     end
 
     # POST /subscriptions
     def create
-      if attempting_to_access_topic_from_another_application_without_privilage("manage_any_subscriptions")
+      if attempting_to_write_to_another_application_without_privilage(:subscription)
         head :unauthorized
       else
-        topic = scoped_owner("manage_any_subscriptions").topics.find(params[:topic_id])
-        @subscription = topic.subscriptions.build(subscription_params)
+        @subscription = current_user.subscriptions.build(subscription_params)
         if @subscription.save
-          # SubscriptionsWorker.perform_async({action: :create, subscription_id: @subscription.to_param})
           respond_with(@subscription,:status => :created, :template => "sensit/subscriptions/show")
         else
           render(:json => "{\"errors\":#{@subscription.errors.to_json}}", :status => :unprocessable_entity)
@@ -43,40 +35,37 @@ module Sensit
 
     # PATCH/PUT /subscriptions/1
     def update
-      if attempting_to_access_topic_from_another_application_without_privilage("manage_any_subscriptions")
-        raise ::ActiveRecord::RecordNotFound
+      @subscription = scoped_owner("manage_any_subscriptions").subscriptions.find(params[:id])
+      if @subscription.update(subscription_params)
+        # SubscriptionsWorker.perform_async(@subscription.id)
+        respond_with(@subscription,:status => :ok, :template => "sensit/subscriptions/show")
       else
-        @subscription = scoped_owner("manage_any_subscriptions").topics.find(params[:topic_id]).subscriptions.find(params[:id])
-        if @subscription.update(subscription_params)
-          # SubscriptionsWorker.perform_async(@subscription.id)
-          respond_with(@subscription,:status => :ok, :template => "sensit/subscriptions/show")
-        else
-          render(:json => "{\"errors\":#{@subscription.errors.to_json}}", :status => :unprocessable_entity)
-        end
+        render(:json => "{\"errors\":#{@subscription.errors.to_json}}", :status => :unprocessable_entity)
       end
     end
 
     # DELETE /subscriptions/1
-    def destroy
-      if attempting_to_access_topic_from_another_application_without_privilage("manage_any_subscriptions")
-        raise ::ActiveRecord::RecordNotFound
-      else      
-        @subscription = scoped_owner("manage_any_subscriptions").topics.find(params[:topic_id]).subscriptions.find(params[:id])
-        # SubscriptionsWorker kill a job
-        @subscription.destroy
-        head :status => :no_content
-      end
+    def destroy     
+      @subscription = scoped_owner("manage_any_subscriptions").subscriptions.find(params[:id])
+      # SubscriptionsWorker kill a job
+      @subscription.destroy
+      head :status => :no_content
     end
 
     private
 
       # Only allow a trusted parameter "white list" through.
       def subscription_params
+        permitted_attributes = [:name]
         if params[:subscription] && params[:subscription].has_key?(:uri)
-          params.require(:subscription).permit(:name, :uri)
+          permitted_attributes << :uri if has_scope?("manage_any_subscriptions")
         else
-          params.require(:subscription).permit(:name, :host, :protocol, :username, :password, :port)
+          permitted_attributes.concat([:host, :protocol, :username, :password, :port])
         end
+        permitted_attributes << :application_id if has_scope?("manage_any_subscriptions")
+        temp_params = params.require(:subscription).permit(permitted_attributes)
+        temp_params.merge!(application_id: doorkeeper_token.application_id) unless temp_params.has_key?(:application_id)
+        temp_params
       end
   end
 end

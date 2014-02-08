@@ -1,18 +1,16 @@
 require 'spec_helper'
 
 module Sensit
-  describe Topic::Subscription do
-
-	it {should belong_to :topic}
+  describe Subscription do
 
 	it { should validate_presence_of(:name) }
-    it { should validate_uniqueness_of(:name).scoped_to(:topic_id) }
+    it { should validate_uniqueness_of(:name).scoped_to(:user_id) }
 
     it { should validate_presence_of(:host) }
 
 	describe "#uri=" do
 		it "parses the uri and assigns the attributes" do
-			subscription = Topic::Subscription.new
+			subscription = Subscription.new
 			subscription.uri = "mqtt://user:pass@broker.cloudmqtt.com:1883"
 			subscription.protocol.should == "mqtt"
 			subscription.username.should == "user"
@@ -23,7 +21,7 @@ module Sensit
 	end
     describe "#uri" do
     	it "returns the uri as a string" do
-			subscription = Topic::Subscription.new
+			subscription = Subscription.new
 			subscription.protocol = "mqtt"
 			subscription.username = "user"
 			subscription.password = "pass"

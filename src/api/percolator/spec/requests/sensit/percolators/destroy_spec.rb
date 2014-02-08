@@ -68,9 +68,13 @@ describe "DELETE sensit/percolators#destroy" do
 
 			context "deleting a percolation owned by another user" do
 				before(:each) do
-					another_user = Sensit::User.create(:name => ELASTIC_INDEX_NAME, :email => "anouther_user@example.com", :password => "password", :password_confirmation => "password")
+					@client.indices.create({index: "another_user", :body => {:settings => {:index => {:store => {:type => :memory}}}}}) unless @client.indices.exists({ index: "another_user"})
+					another_user = Sensit::User.create(:name => "another_user", :email => "anouther_user@example.com", :password => "password", :password_confirmation => "password")
 					topic = FactoryGirl.create(:topic, user: another_user, application: @access_grant.application)
 					@percolator = ::Sensit::Topic::Percolator.create({ topic: topic, :name => "5",  query: { query_string: { query: 'foo' } } })
+				end
+				after(:each) do
+					@client.indices.flush(index: "another_user", refresh: true)
 				end
 				it "cannot read data from another user" do
 					expect{

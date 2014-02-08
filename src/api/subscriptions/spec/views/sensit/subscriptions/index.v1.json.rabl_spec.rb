@@ -3,10 +3,9 @@ require 'spec_helper'
 describe "sensit/subscriptions/index" do
   context "when subscription is incomplete" do
     before(:each) do
-      @topic = FactoryGirl.create(:topic, :user => @user)
       @subscriptions = [
-        FactoryGirl.create(:subscription, topic: @topic),
-        FactoryGirl.create(:subscription, topic: @topic)
+        FactoryGirl.create(:subscription, :user => @user),
+        FactoryGirl.create(:subscription, :user => @user)
       ]
       assign(:subscriptions, @subscriptions)
     end

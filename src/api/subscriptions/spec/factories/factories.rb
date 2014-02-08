@@ -2,13 +2,14 @@
 
 FactoryGirl.define do
 
-  factory :subscription, :class => Sensit::Topic::Subscription do
+  factory :subscription, :class => Sensit::Subscription do
     sequence :name do |n|
       "Subscription#{n}"
     end
 	protocol "mqtt"
 	host "broker.cloudmqtt.com"
-    topic
+    user
+    application
   end
   
 end

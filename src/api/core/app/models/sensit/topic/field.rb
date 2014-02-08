@@ -18,7 +18,7 @@ module Sensit
 
 # float, double, byte, short, integer, and long are supported by elasticsearch
 # also suports just date
-    DATATYPES = %w[string integer boolean float datetime timezone uri]
+    DATATYPES = %w[string integer boolean float datetime timezone uri ip_address, lat_long]
 
     # other datatypes (latitiude, longitude), identifier, credit_card, bank_account, address, city, country, state, province, postal_code, name, enum
 
@@ -57,6 +57,13 @@ module Sensit
         return guess_datatype(bool_val) unless bool_val.nil?
         num_val = self.class.to_number(value)
         return guess_datatype(num_val) unless num_val.nil?
+            lat_long_val = value.split(',')
+            if (lat_long_val.count == 2)
+              lat_val = self.class.to_number(value[0])
+              long_val = self.class.to_number(value[0])
+              return "lat_long" if lat_val.present? && long_val.present? && lat_val >= -90 && lat_val <= 90 && long_val >= -180 && long_val <= 180
+            end
+
             begin
               time_val = Time.parse(value)
               return "datetime"
@@ -64,6 +71,12 @@ module Sensit
 
             end
             return "timezone" if ActiveSupport::TimeZone.zones_map.keys.include?(value)
+            begin
+              ip_val = IPAddr.new(value)
+              return "ip_address"
+            rescue ::IPAddr::InvalidAddressError
+
+            end
             begin
               # image_file video_file file
               uri_val = ::URI.parse(value)
@@ -112,14 +125,22 @@ module Sensit
     ##
     # This method returns the elasticsearch properties based on the datatype for indexing
     def properties
-
+      case self.datatype
+      when "timezone" then {type: "string", index: "not_analyzed"}
+      when "string" then {type: "string"}
+      when "uri" then {type: "string", index: "not_analyzed"}
+      when "ip_address" then {type: "ip"}
+      when "integer" then {type: "integer"}
+      when "boolean" then {type: "boolean"}
+      when "float" then {type: "float"}
+      when "datetime" then {type: "date", format: "basic_date_time"}
+      when "lat_long" then {type: "geo_point", "fielddata" => {format: "compressed",precision: "1cm"}}
+      else 
+        {}
+      end
     end
 
     private
-
-    def is_elasticsearch_string_type?
-      []
-    end
 
     def self.to_boolean(value)
       # should I use a regex instead?

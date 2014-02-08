@@ -21,8 +21,7 @@ module Sensit
 			end
 
 			config.to_prepare do
-				::Sensit::Topic.send :include, ::Sensit::Subscribable
-				::Sensit::Topic::Feed.send :include, ::Sensit::Publishable
+				::Doorkeeper::Application.send :include, ::SubscribableApplication
 			end
 
 			config.view_versions = [1]

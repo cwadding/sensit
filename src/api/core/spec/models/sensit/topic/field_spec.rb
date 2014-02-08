@@ -46,10 +46,24 @@ module Sensit
 
 			context "and the string is a uri" do
 				it "guesses the datatype for the parsed uri" do
+					@field.key = "address"
+					@field.guess_datatype("192.168.215.66").should  == "ip_address"
+				end
+			end
+
+			context "and the string is a lat_long" do
+				it "guesses the datatype for the parsed uri" do
+					@field.key = "location"
+					@field.guess_datatype("41.12,-71.34").should  == "lat_long"
+				end
+			end			
+
+			context "and the string is a uri" do
+				it "guesses the datatype for the parsed uri" do
 					@field.key = "host"
 					@field.guess_datatype("http://localhost:8080").should  == "uri"
 				end
-			end	
+			end
 
 			context "and the string is a timezone" do
 				it "guesses the datatype for the parsed timezone" do
@@ -275,7 +289,7 @@ module Sensit
 
 		context "with a timezone type" do
 			before(:each) do
-				@field = Topic::Field.new(key: "key", name: "name" , datatype: "tmezone")
+				@field = Topic::Field.new(key: "key", name: "name" , datatype: "timezone")
 			end			
 			it "returns the hash configuration" do
 				@field.properties.should == {type: "string", index: "not_analyzed"}
@@ -288,6 +302,24 @@ module Sensit
 			end
 			it "returns the hash configuration" do
 				@field.properties.should == {type: "string", index: "not_analyzed"}
+			end
+		end
+
+		context "with a lat_long type" do
+			before(:each) do
+				@field = Topic::Field.new(key: "key", name: "name" , datatype: "lat_long")
+			end
+			it "returns the hash configuration" do
+				@field.properties.should == {type: "geo_point", "fielddata" => {format: "compressed",precision: "1cm"}}
+			end
+		end
+
+		context "with a ip address type" do
+			before(:each) do
+				@field = Topic::Field.new(key: "key", name: "name" , datatype: "ip_address")
+			end
+			it "returns the hash configuration" do
+				@field.properties.should == {type: "ip"}
 			end
 		end		
 
@@ -323,7 +355,7 @@ module Sensit
 				@field = Topic::Field.new(key: "key", name: "name" , datatype: "datetime")
 			end
 			it "returns the hash configuration" do
-				@field.properties.should == {type: "date"}
+				@field.properties.should == {type: "date", format: "basic_date_time"}
 			end
 		end
     end

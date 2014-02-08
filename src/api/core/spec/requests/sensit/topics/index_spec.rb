@@ -90,8 +90,12 @@ describe "GET sensit/topics#index" do
 			end
 			context "a topic belonging to another user" do
 				before(:each) do
-                  @another_user = Sensit::User.create(:name => ELASTIC_INDEX_NAME, :email => "anouther_user@example.com", :password => "password", :password_confirmation => "password")
-                  @topic = FactoryGirl.create(:topic_with_feeds, user: @another_user, application: @access_grant.application)
+					@client.indices.create({index: "another_user", :body => {:settings => {:index => {:store => {:type => :memory}}}}}) unless @client.indices.exists({ index: "another_user"})
+					@another_user = Sensit::User.create(:name => "another_user", :email => "anouther_user@example.com", :password => "password", :password_confirmation => "password")
+					@topic = FactoryGirl.create(:topic_with_feeds, user: @another_user, application: @access_grant.application)
+				end
+				after(:each) do
+					@client.indices.flush(index: "another_user", refresh: true)
 				end
 				it "cannot read the data from the other user in the same application" do
 					response = process_oauth_request(@access_grant)

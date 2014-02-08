@@ -9,7 +9,7 @@ module Sensit
 		# include ::Sidekiq::Worker
 		def perform(params)
 			
-			subscription = ::Sensit::Topic::Subscription.where(:id => params[:subscription_id]).first
+			subscription = ::Sensit::Subscription.where(:id => params[:subscription_id]).first
 			
 			# client = ::SocketIO.connect(subscription.host) do
 			#   before_start do

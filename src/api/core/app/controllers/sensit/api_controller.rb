@@ -19,6 +19,14 @@ module Sensit
 		# 	doorkeeper_token ? doorkeeper_token.resource_owner_id : session[:user_id]
 		# end
 
+		def attempting_to_write_to_another_application_without_privilage(root_key)
+			!has_scope?("manage_any_data") && application_id_from_params(root_key).has_key?(:application_id) && application_id_from_params[:application_id].to_s != doorkeeper_token.application_id.to_s
+		end
+
+		def application_id_from_params(root_key)
+			@application_id_from_params ||= params.require(root_key).permit(:application_id)
+		end
+
 		def attempting_to_access_topic_from_another_application_without_privilage(scope)
 			(!has_scope?(scope) && (!current_application.topics.map(&:slug).include?(params[:topic_id].to_s)) || !current_user.topics.map(&:slug).include?(params[:topic_id].to_s))
 		end

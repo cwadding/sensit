@@ -2,15 +2,15 @@ require 'spec_helper'
 describe "DELETE sensit/subscriptions#destroy" do
 
 	def url(subscription, format = "json")
-		"/api/topics/#{subscription.topic.to_param}/subscriptions/#{subscription.to_param}.#{format}"
+		"/api/subscriptions/#{subscription.to_param}.#{format}"
 	end
 
 	def process_oauth_request(access_grant,subscription, format = "json")
-		oauth_delete access_grant, url(subscription, format), valid_request, valid_session(user_id: subscription.topic.user.to_param)
+		oauth_delete access_grant, url(subscription, format), valid_request, valid_session(user_id: subscription.user.to_param)
 	end
 
 	def process_request(subscription, format = "json")
-		delete url(subscription, format), valid_request, valid_session(user_id: subscription.topic.user.to_param)
+		delete url(subscription, format), valid_request, valid_session(user_id: subscription.user.to_param)
 	end	
 
 	context "oauth authentication" do
@@ -21,8 +21,7 @@ describe "DELETE sensit/subscriptions#destroy" do
 
 			context "when the subscription exists" do
 				before(:each) do
-					topic = FactoryGirl.create(:topic, :user => @user, application: @access_grant.application)
-					@subscription = FactoryGirl.create(:subscription, :topic => topic)
+					@subscription = FactoryGirl.create(:subscription, :user => @user, application: @access_grant.application)
 				end
 				it "is successful" do
 					response = process_oauth_request(@access_grant,@subscription)
@@ -32,13 +31,13 @@ describe "DELETE sensit/subscriptions#destroy" do
 				it "deletes the Subscription" do
 					expect {
 						response = process_oauth_request(@access_grant,@subscription)
-					}.to change(Sensit::Topic::Subscription, :count).by(-1)
+					}.to change(Sensit::Subscription, :count).by(-1)
 		        end
 			end
 			context "when the subscription does not exist" do
 				it "is unsuccessful" do
 					expect{
-						response = oauth_delete @access_grant, "/api/topics/1/subscriptions/1", valid_request, valid_session(user_id: @user.to_param)
+						response = oauth_delete @access_grant, "/api/subscriptions/1", valid_request, valid_session(user_id: @user.to_param)
 						response.status.should == 404
 					}.to raise_error(ActiveRecord::RecordNotFound)
 				end
@@ -46,8 +45,7 @@ describe "DELETE sensit/subscriptions#destroy" do
 			context "deleting subscription from another application" do
 				before(:each) do
 					@application = FactoryGirl.create(:application)
-					topic = FactoryGirl.create(:topic, user: @user, application: @application)
-					@subscription = FactoryGirl.create(:subscription, :topic => topic)
+					@subscription = FactoryGirl.create(:subscription, user: @user, application: @application)
 				end
 
 				it "returns the expected json" do
@@ -58,10 +56,14 @@ describe "DELETE sensit/subscriptions#destroy" do
 
 			context "deleting a subscription owned by another user" do
 				before(:each) do
-					another_user = Sensit::User.create(:name => ELASTIC_INDEX_NAME, :email => "anouther_user@example.com", :password => "password", :password_confirmation => "password")
-					topic = FactoryGirl.create(:topic, user: another_user, application: @access_grant.application)
-					@subscription = FactoryGirl.create(:subscription, :topic => topic)
+					@client = ENV['ELASTICSEARCH_URL'] ? ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL']) : ::Elasticsearch::Client.new
+					@client.indices.create({index: "another_user", :body => {:settings => {:index => {:store => {:type => :memory}}}}}) unless @client.indices.exists({ index: "another_user"})
+					another_user = Sensit::User.create(:name => "another_user", :email => "anouther_user@example.com", :password => "password", :password_confirmation => "password")
+					@subscription = FactoryGirl.create(:subscription, user: another_user, application: @access_grant.application)
 				end
+				after(:each) do
+					@client.indices.flush(index: "another_user", refresh: true)
+				end	
 				it "cannot read data from another user" do
 					expect{
 						response = process_oauth_request(@access_grant, @subscription)
@@ -76,8 +78,7 @@ describe "DELETE sensit/subscriptions#destroy" do
 			before(:each) do
 				@access_grant = FactoryGirl.create(:access_grant, resource_owner_id: @user.id, scopes: "manage_application_subscriptions")
 				@application = FactoryGirl.create(:application)
-				topic = FactoryGirl.create(:topic, user: @user, application: @application)
-				@subscription = FactoryGirl.create(:subscription, :topic => topic)
+				@subscription = FactoryGirl.create(:subscription, user: @user, application: @application)
 			end
 			it "cannot read data to another application" do
 				expect{
@@ -89,8 +90,7 @@ describe "DELETE sensit/subscriptions#destroy" do
 	end
 	context "no authentication" do
 		before(:each) do
-			topic = FactoryGirl.create(:topic, user: @user, application: nil)
-			@subscription = FactoryGirl.create(:subscription, :topic => topic)
+			@subscription = FactoryGirl.create(:subscription, user: @user, application: nil)
 		end
 		it "is unauthorized" do
 			status = process_request(@subscription)
