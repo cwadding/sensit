@@ -1,10 +1,11 @@
 Sensit::Application.routes.draw do
+  
   mount Sensit::Core::Engine => "/"
+  use_doorkeeper
+  devise_for :users, :class_name => "Sensit::User"
   mount Sensit::Reports::Engine => "/"
   mount Sensit::Percolator::Engine => "/"
   mount Sensit::Subscriptions::Engine => "/"
-  use_doorkeeper
-  devise_for :users, :class_name => "Sensit::User"
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

@@ -1,4 +1,4 @@
-# This migration comes from sensit_schema (originally 20131110183150)
+# This migration comes from sensit (originally 20131110183150)
 class CreateSensitTopicFields < ActiveRecord::Migration
   def change
     create_table :sensit_topic_fields do |t|

@@ -3,7 +3,7 @@ class CreateSensitTopicReportFacets < ActiveRecord::Migration
   def change
     create_table :sensit_topic_report_facets do |t|
       t.string :name
-      t.string :type
+      t.string :kind
       t.string :slug      
       t.text :query
       t.integer :report_id
