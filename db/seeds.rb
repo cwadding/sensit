@@ -31,7 +31,6 @@ def check_if_created(object, f)
 end
 
 if ENV['ELASTICSEARCH_URL']
-	puts ENV['ELASTICSEARCH_URL']
 	@client = ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL'])
 else
 	@client = ::Elasticsearch::Client.new
@@ -245,11 +244,10 @@ File.open('seed_errors.txt', 'w') do |f|
 			values = {}
 			field_map.each_pair do |idx, field|
 				val = row[idx]
-				unless val.nil? || val == "NULL"
+				if !val.nil? && val != "NULL"
 					values.merge!(field.key => val)
 				end
 			end
-
 			feed = Sensit::Topic::Feed.new({index: @user.name, type: @topic.to_param, at: at, data: values})
 			check_if_created(feed, f)
 		end

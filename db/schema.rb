@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140201151128) do
+ActiveRecord::Schema.define(version: 20140209191134) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -55,6 +55,20 @@ ActiveRecord::Schema.define(version: 20140201151128) do
 
   add_index "oauth_applications", ["uid"], name: "index_oauth_applications_on_uid", unique: true, using: :btree
 
+  create_table "sensit_subscriptions", force: true do |t|
+    t.string   "name"
+    t.string   "protocol"
+    t.string   "host"
+    t.integer  "port"
+    t.string   "username"
+    t.string   "password_digest"
+    t.integer  "user_id"
+    t.integer  "application_id"
+    t.string   "slug"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "sensit_topic_fields", force: true do |t|
     t.string   "name"
     t.string   "key"
@@ -68,6 +82,7 @@ ActiveRecord::Schema.define(version: 20140201151128) do
 
   create_table "sensit_topic_report_facets", force: true do |t|
     t.string   "name"
+    t.string   "kind"
     t.string   "slug"
     t.text     "query"
     t.integer  "report_id"
@@ -84,17 +99,6 @@ ActiveRecord::Schema.define(version: 20140201151128) do
     t.datetime "updated_at"
   end
 
-  create_table "sensit_topic_subscriptions", force: true do |t|
-    t.string   "name"
-    t.string   "host"
-    t.string   "auth_token"
-    t.string   "protocol"
-    t.integer  "topic_id"
-    t.string   "slug"
-    t.datetime "created_at"
-    t.datetime "updated_at"
-  end
-
   create_table "sensit_topics", force: true do |t|
     t.string   "name"
     t.string   "description"
@@ -102,6 +106,7 @@ ActiveRecord::Schema.define(version: 20140201151128) do
     t.integer  "user_id"
     t.integer  "application_id"
     t.integer  "ttl"
+    t.boolean  "is_initialized"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

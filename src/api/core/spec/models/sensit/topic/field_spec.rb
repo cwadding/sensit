@@ -77,7 +77,7 @@ module Sensit
 				end
 			end		
 
-			context "and the string is a formatted date or time" do
+			context "and the string is a formatted date or time", current: true do
 				it "guesses the datatype for the parsed number" do
 					@field.guess_datatype("Wed, 02 Oct 2002 08:00:00 EST").should  == "datetime"
 					@field.guess_datatype("2011-10-05T22:26:12-04:00").should  == "datetime"
@@ -89,6 +89,7 @@ module Sensit
 					@field.guess_datatype("12:00").should  == "datetime"
 					@field.guess_datatype("2010-10-31").should  == "datetime"
 					@field.guess_datatype('H13.02.03T04:05:06+07:00').should  == "datetime"
+					@field.guess_datatype("2013-10-08 15:18:27.000").should  == "datetime"
 				end
 			end
     	end

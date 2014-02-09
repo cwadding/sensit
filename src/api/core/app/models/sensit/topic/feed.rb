@@ -196,7 +196,7 @@ private
 
 	def convert_rawdata_to_datatype
 		fields.each do |field|
-			self.data[field.key] = Topic::Field.convert(self.data[field.key], field.datatype)
+			self.data[field.key] = Topic::Field.convert(self.data[field.key], field.datatype) if self.data.has_key?(field.key)
 		end unless topic.nil? || fields.empty?
 	end
 
