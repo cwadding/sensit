@@ -56,7 +56,8 @@ describe "POST sensit/percolators#create"  do
 
 				context "creating a percolation owned by another user" do
 					before(:each) do
-						@client.indices.create({index: "another_user", :body => {:settings => {:index => {:store => {:type => :memory}}}}}) unless @client.indices.exists({ index: "another_user"})
+						@client.indices.delete({index: "another_user"}) if @client.indices.exists({ index: "another_user"})
+						@client.indices.create({index: "another_user", :body => {:settings => {:index => {:store => {:type => :memory}}}}})
 						another_user = Sensit::User.create(:name => "another_user", :email => "anouther_user@example.com", :password => "password", :password_confirmation => "password")
 						@topic = FactoryGirl.create(:topic, user: another_user, application: @access_grant.application)
 					end

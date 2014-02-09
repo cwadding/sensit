@@ -1,16 +1,16 @@
 module Sensit
-
 	class MQTT
-		
 		attr_accessor :host, :port, :username, :password
 
-		def initialize()
-			
+		def initialize(params = {})
+			params.each do |attr, value|
+				self.public_send("#{attr}=", value)
+			end if params
+			super()
 		end
 
 		def uri=(value)
 			url = ::URI.parse value
-			# raise MQTT::InvalidProtocol  if url.scheme != "mqtt"
 			self.host = url.host
 			self.port = url.port
 			self.username = url.user
@@ -18,30 +18,43 @@ module Sensit
 		end
 
 		def uri
-			"mqtt://#{self.username}:#{self.password}@#{self.host}:#{self.port}"
+			if (self.username)
+				"mqtt://#{self.username}:#{self.password}@#{self.host}:#{self.port}"
+			else
+				"mqtt://#{self.host}:#{self.port}"
+			end
 		end
 
 		def connection_options
-			conn_opts = {
+			{
 				remote_host: self.host,
 				remote_port: self.port,
-				username: self.user,
+				username: self.username,
 				password: self.password,
 			}
 		end
 
 		def subscribe(name, &block)
+			channel = name
+			connect_opts = connection_options
+			code_block = block
 			::Thread.new do
-				::MQTT::Client.connect(connection_options) do |c|
-					# The block will be called when you messages arrive to the topic
-					c.get(subscription.name) do |topic, message|
-						block.call topic, message
+				::MQTT::Client.connect(connect_opts) do |c|
+					c.get(channel) do |topic, message|
+						puts "channel: #{topic} data: #{message.inspect}"
+						code_block.call topic, message
 					end
 				end
 			end
 		end
 
-	end
+		def publish(channel = nil, data)
+			::MQTT::Client.connect(connection_options) do |c|
+				c.publish(channel, data)
+			end
+		end		
+
+	end	
 
 	class Subscription < ActiveRecord::Base
 		extend ::FriendlyId
@@ -68,19 +81,25 @@ module Sensit
 		end
 
 		def uri
-			"#{self.protocol}://#{self.username}:#{self.password}@#{self.host}:#{self.port}"
+			if (self.username)
+				"mqtt://#{self.username}:#{self.password}@#{self.host}:#{self.port}"
+			else
+				"mqtt://#{self.host}:#{self.port}"
+			end
 		end
 
 		def subscribe
 			client.subscribe(self.name) do |topic, message|
-				create_feed(feed_params["feed"].merge!({index: self.user.name, type: topic_id, :topic_id => topic_id})) if topic == self.name
+				topic = topic || self.name
+				# validate message format
+				create_feed(message.merge!({index: self.user.name, type: topic}))
 			end
 		end
 
 		def client
 			@client ||= case self.protocol
 			when "mqtt"
-				MQTT.new(url: url)
+				MQTT.new(url: uri)
 			else
 				nil
 			end
@@ -89,14 +108,14 @@ module Sensit
 
 		private
 
-		def faye_subscribe(subscription)
-			# topic_id = subscription.topic_id
-			client = Faye::Client.new(subscription.host)
+		# def faye_subscribe(subscription)
+		# 	# topic_id = subscription.topic_id
+		# 	client = Faye::Client.new(subscription.host)
 
-			client.subscribe("/#{subscription.name}") do |feed_params|
+		# 	client.subscribe("/#{subscription.name}") do |feed_params|
 				
-			end
-		end
+		# 	end
+		# end
 
 		def create_feed(feed_params)
 			feed = Topic::Feed.create(feed_params) 

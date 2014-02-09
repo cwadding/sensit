@@ -179,7 +179,7 @@ module Sensit
 
         before(:each) do
             @indices_client = Elasticsearch::API::Indices::IndicesClient.new(@client)
-            @percolator = Topic::Percolator.new({topic_id: 'mytype', user_id: @user.name, name: 'myrule', query: { query: { query_string: { query: 'foo' } } } })
+            @percolator = Topic::Percolator.new({topic_id: 'mytype', user_id: @user.name, name: 'myrule', query: { query_string: { query: 'foo' } } })
         end
         # context "when the index doesn't exist (called for first time)" do
         #   before(:each) do
@@ -225,7 +225,7 @@ module Sensit
 
     describe "#update" do
         before(:each) do
-            @percolator = Topic::Percolator.new({topic_id: 'mytype', user_id: @user.name, name: 3, query: {query: { query_string: { query: 'foo' } } }})
+            @percolator = Topic::Percolator.new({topic_id: 'mytype', user_id: @user.name, name: 3, query: { query_string: { query: 'foo' } }})
             @percolator.stub(:id).and_return(3)
             @percolator.stub(:new_record?).and_return(false)
         end
@@ -247,7 +247,7 @@ module Sensit
 
     describe "#destroy" do
         before(:each) do
-            @percolator = Topic::Percolator.new({topic_id: 'mytype', user_id: @user.name,  name: 3, query: {query: { query_string: { query: 'foo' } } }})
+            @percolator = Topic::Percolator.new({topic_id: 'mytype', user_id: @user.name,  name: 3, query: { query_string: { query: 'foo' }  }})
         end
         context "when the record is not a new record" do
             before(:each) do
@@ -269,7 +269,7 @@ module Sensit
 
     describe "#save" do
         before(:each) do
-            @percolator = Topic::Percolator.new({topic_id: 'mytype', user_id: @user.name,  name: 3, query: {query: { query_string: { query: 'foo' } } } })
+            @percolator = Topic::Percolator.new({topic_id: 'mytype', user_id: @user.name,  name: 3, query: { query_string: { query: 'foo' } } })
         end
         context "when the record is not a new record" do
             before(:each) do

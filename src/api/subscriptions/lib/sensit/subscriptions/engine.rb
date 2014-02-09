@@ -2,6 +2,7 @@ require 'sensit/core'
 require "net/http"
 require 'faye'
 require 'eventmachine'
+require 'mqtt'
 
 module Sensit
 	module Subscriptions

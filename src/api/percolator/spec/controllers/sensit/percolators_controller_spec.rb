@@ -98,18 +98,18 @@ module Sensit
         end
         describe "with valid params" do
           it "updates the requested percolator" do
-            ::Sensit::Topic::Percolator.should_receive(:update).with({"name" => @percolator.name, "topic_id" => @percolator.topic_id, "user_id" => @user.name, "query" => {"query" => { "query_string" => { "query" => 'foo' } } }  }).and_return(@percolator)
+            ::Sensit::Topic::Percolator.should_receive(:update).with({"name" => @percolator.name, "topic_id" => @percolator.topic_id, "user_id" => @user.name, "query" => { "query_string" => { "query" => 'foo' } }  }).and_return(@percolator)
             put :update, valid_request(:id => @percolator.name, :percolator => { :query => { query_string: { query: 'foo' } }  }), valid_session(user_id: @user.name)
           end
 
           it "assigns the requested percolator as @percolator" do
-            ::Sensit::Topic::Percolator.stub(:update).with({"name" => @percolator.name, "topic_id" => @percolator.topic_id, "user_id" => @user.name, "query" => {"query" => { "query_string" => { "query" => 'foo' } } }  }).and_return(@percolator)
+            ::Sensit::Topic::Percolator.stub(:update).with({"name" => @percolator.name, "topic_id" => @percolator.topic_id, "user_id" => @user.name, "query" => { "query_string" => { "query" => 'foo' } }  }).and_return(@percolator)
             put :update, valid_request(:id => @percolator.name, :percolator => { :query => { query_string: { query: 'foo' } } }), valid_session(user_id: @user.name)
             assigns(:percolator).name.should == @percolator.name
           end
 
           it "renders the percolator" do
-            ::Sensit::Topic::Percolator.stub(:update).with({"name" => @percolator.name, "topic_id" => @percolator.topic_id, "user_id" => @user.name, "query" => {"query" => { "query_string" => { "query" => 'foo' } } }  }).and_return(@percolator)
+            ::Sensit::Topic::Percolator.stub(:update).with({"name" => @percolator.name, "topic_id" => @percolator.topic_id, "user_id" => @user.name, "query" => { "query_string" => { "query" => 'foo' } }  }).and_return(@percolator)
             put :update, valid_request(:id => @percolator.name, :percolator => { :query => { query_string: { query: 'foo' } }  }), valid_session(user_id: @user.name)
             response.should render_template("sensit/percolators/show")
           end
@@ -119,7 +119,7 @@ module Sensit
           it "assigns the percolator as @percolator" do
             # Trigger the behavior that occurs when invalid params are submitted
             @percolator.stub(:valid?).and_return(false)
-            ::Sensit::Topic::Percolator.should_receive(:update).with({"name" => @percolator.name, "topic_id" => @percolator.topic_id, "user_id" => @user.name, "query" => {"query" => { "query_string" => { "query" => 'foo' } } }  }).and_return(@percolator)
+            ::Sensit::Topic::Percolator.should_receive(:update).with({"name" => @percolator.name, "topic_id" => @percolator.topic_id, "user_id" => @user.name, "query" => { "query_string" => { "query" => 'foo' } }  }).and_return(@percolator)
             put :update, valid_request(:id => @percolator.name, :percolator => { :query => { query_string: { query: 'foo' } }  } ), valid_session(user_id: @user.name)
             assigns(:percolator).name.should == @percolator.name
           end
@@ -127,7 +127,7 @@ module Sensit
           it "re-renders the 'edit' template" do
             # Trigger the behavior that occurs when invalid params are submitted
             @percolator.stub(:valid?).and_return(false)
-            ::Sensit::Topic::Percolator.should_receive(:update).with({"name" => @percolator.name, "topic_id" => @percolator.topic_id, "user_id" => @user.name, "query" => {"query" => { "query_string" => { "query" => 'foo' } } }  }).and_return(@percolator)
+            ::Sensit::Topic::Percolator.should_receive(:update).with({"name" => @percolator.name, "topic_id" => @percolator.topic_id, "user_id" => @user.name, "query" => { "query_string" => { "query" => 'foo' } }  }).and_return(@percolator)
 
             put :update, valid_request(:id => @percolator.name, :percolator => { :query => { query_string: { query: 'foo' } } } ), valid_session(user_id: @user.name)
             response.status.should == 422

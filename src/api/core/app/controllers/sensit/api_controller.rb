@@ -20,7 +20,7 @@ module Sensit
 		# end
 
 		def attempting_to_write_to_another_application_without_privilage(root_key)
-			!has_scope?("manage_any_data") && application_id_from_params(root_key).has_key?(:application_id) && application_id_from_params[:application_id].to_s != doorkeeper_token.application_id.to_s
+			!has_scope?("manage_any_data") && application_id_from_params(root_key).has_key?(:application_id) && application_id_from_params(root_key)[:application_id].to_s != doorkeeper_token.application_id.to_s
 		end
 
 		def application_id_from_params(root_key)

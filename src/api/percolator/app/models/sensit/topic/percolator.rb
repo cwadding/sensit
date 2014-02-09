@@ -115,7 +115,7 @@ private
 
 	def self.map_results(result)
 		user_id, topic_id = result["_type"].split(":")
-		obj = self.new({user_id: user_id, topic_id: topic_id, name: result["_id"], query: result["_source"]})
+		obj = self.new({user_id: user_id, topic_id: topic_id, name: result["_id"], query: result["_source"]["query"]})
 		obj.instance_variable_set(:@new_record, false)
 		obj
 	end
