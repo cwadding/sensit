@@ -77,7 +77,7 @@ File.open('seed_errors.txt', 'w') do |f|
 
 	fields = []
 
-	# DATATYPES = %w[string integer boolean decimal datetime timezone image_file video_file file]
+	# DATATYPES = %w[string integer boolean float datetime timezone image_file video_file file]
 	product_field = Sensit::Topic::Field.new(name: "Product", key: "Product", datatype: "string", topic: @topic)
 	check_if_created(product_field, f)
 	fields << product_field
@@ -134,15 +134,15 @@ File.open('seed_errors.txt', 'w') do |f|
 	check_if_created(loan_date_field, f)
 	fields << loan_date_field
 
-	loan_amount_field = Sensit::Topic::Field.new(name: "Loan Amount", key: "Loan_Amt", datatype: "decimal", topic: @topic)
+	loan_amount_field = Sensit::Topic::Field.new(name: "Loan Amount", key: "Loan_Amt", datatype: "float", topic: @topic)
 	check_if_created(loan_amount_field, f)
 	fields << loan_amount_field
 
-	total_paid_field = Sensit::Topic::Field.new(name: "Total Paid", key: "Total_Paid", datatype: "decimal", topic: @topic)
+	total_paid_field = Sensit::Topic::Field.new(name: "Total Paid", key: "Total_Paid", datatype: "float", topic: @topic)
 	check_if_created(total_paid_field, f)
 	fields << total_paid_field
 
-	total_due_field = Sensit::Topic::Field.new(name: "Total Due", key: "Total_Due", datatype: "decimal", topic: @topic)
+	total_due_field = Sensit::Topic::Field.new(name: "Total Due", key: "Total_Due", datatype: "float", topic: @topic)
 	check_if_created(total_due_field, f)
 	fields << total_due_field
 
@@ -217,7 +217,7 @@ File.open('seed_errors.txt', 'w') do |f|
 	check_if_created(netspend_date_field, f)
 	fields << netspend_date_field
 
-	netspend_amount_field = Sensit::Topic::Field.new(name: "NetSpend Amount", key: "NetSpend_Amount", datatype: "decimal", topic: @topic)
+	netspend_amount_field = Sensit::Topic::Field.new(name: "NetSpend Amount", key: "NetSpend_Amount", datatype: "float", topic: @topic)
 	check_if_created(netspend_amount_field, f)
 	fields << netspend_amount_field
 
