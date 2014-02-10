@@ -33,7 +33,7 @@ module Sensit
 			config.view_version_extraction_strategy = :http_header
 			config.default_version = 1
 			config.to_prepare do
-				::Doorkeeper::Application.send :include, ::SensibleApplication
+				# ::Doorkeeper::Application.send :include, ::SensibleApplication
 			end
 
 			::Kaminari.configure do |kaminari|

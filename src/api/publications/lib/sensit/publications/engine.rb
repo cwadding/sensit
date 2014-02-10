@@ -1,4 +1,5 @@
 require 'sensit/core'
+
 module Sensit
 	module Publications
 		class Engine < ::Rails::Engine
@@ -14,6 +15,11 @@ module Sensit
 			Rabl.configure do |config|
 				config.include_json_root = false
 				config.include_child_root = false
+			end
+
+			config.to_prepare do
+				::Sensit::Topic::Feed.send :include, ::Publishable
+				::Sensit::Topic::Percolator.send :include, ::Percolatable
 			end
 
 			config.view_versions = [1]

@@ -13,9 +13,6 @@
 
 ActiveRecord::Schema.define(version: 20140209191134) do
 
-  # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
-
   create_table "oauth_access_grants", force: true do |t|
     t.integer  "resource_owner_id", null: false
     t.integer  "application_id",    null: false
@@ -27,6 +24,8 @@ ActiveRecord::Schema.define(version: 20140209191134) do
     t.string   "scopes"
   end
 
+  add_index "oauth_access_grants", ["application_id"], name: "oauth_access_grants_application_id_fk", using: :btree
+  add_index "oauth_access_grants", ["resource_owner_id"], name: "oauth_access_grants_resource_owner_id_fk", using: :btree
   add_index "oauth_access_grants", ["token"], name: "index_oauth_access_grants_on_token", unique: true, using: :btree
 
   create_table "oauth_access_tokens", force: true do |t|
@@ -40,6 +39,7 @@ ActiveRecord::Schema.define(version: 20140209191134) do
     t.string   "scopes"
   end
 
+  add_index "oauth_access_tokens", ["application_id"], name: "oauth_access_tokens_application_id_fk", using: :btree
   add_index "oauth_access_tokens", ["refresh_token"], name: "index_oauth_access_tokens_on_refresh_token", unique: true, using: :btree
   add_index "oauth_access_tokens", ["resource_owner_id"], name: "index_oauth_access_tokens_on_resource_owner_id", using: :btree
   add_index "oauth_access_tokens", ["token"], name: "index_oauth_access_tokens_on_token", unique: true, using: :btree
@@ -69,6 +69,10 @@ ActiveRecord::Schema.define(version: 20140209191134) do
     t.datetime "updated_at"
   end
 
+  add_index "sensit_subscriptions", ["application_id"], name: "sensit_subscriptions_application_id_fk", using: :btree
+  add_index "sensit_subscriptions", ["slug"], name: "index_sensit_subscriptions_on_slug", unique: true, using: :btree
+  add_index "sensit_subscriptions", ["user_id"], name: "sensit_subscriptions_user_id_fk", using: :btree
+
   create_table "sensit_topic_fields", force: true do |t|
     t.string   "name"
     t.string   "key"
@@ -80,6 +84,10 @@ ActiveRecord::Schema.define(version: 20140209191134) do
     t.datetime "updated_at"
   end
 
+  add_index "sensit_topic_fields", ["key"], name: "index_sensit_topic_fields_on_key", unique: true, using: :btree
+  add_index "sensit_topic_fields", ["slug"], name: "index_sensit_topic_fields_on_slug", unique: true, using: :btree
+  add_index "sensit_topic_fields", ["topic_id"], name: "sensit_topic_fields_topic_id_fk", using: :btree
+
   create_table "sensit_topic_report_facets", force: true do |t|
     t.string   "name"
     t.string   "kind"
@@ -90,6 +98,9 @@ ActiveRecord::Schema.define(version: 20140209191134) do
     t.datetime "updated_at"
   end
 
+  add_index "sensit_topic_report_facets", ["report_id"], name: "sensit_report_facets_report_id_fk", using: :btree
+  add_index "sensit_topic_report_facets", ["slug"], name: "index_sensit_topic_report_facets_on_slug", unique: true, using: :btree
+
   create_table "sensit_topic_reports", force: true do |t|
     t.string   "name"
     t.text     "query"
@@ -98,6 +109,9 @@ ActiveRecord::Schema.define(version: 20140209191134) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "sensit_topic_reports", ["slug"], name: "index_sensit_topic_reports_on_slug", unique: true, using: :btree
+  add_index "sensit_topic_reports", ["topic_id"], name: "sensit_topic_reports_topic_id_fk", using: :btree
 
   create_table "sensit_topics", force: true do |t|
     t.string   "name"
@@ -110,6 +124,10 @@ ActiveRecord::Schema.define(version: 20140209191134) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "sensit_topics", ["application_id"], name: "sensit_topics_application_id_fk", using: :btree
+  add_index "sensit_topics", ["slug"], name: "index_sensit_topics_on_slug", unique: true, using: :btree
+  add_index "sensit_topics", ["user_id"], name: "sensit_topics_user_id_fk", using: :btree
 
   create_table "sensit_users", force: true do |t|
     t.string   "email",                  default: "", null: false
@@ -129,5 +147,23 @@ ActiveRecord::Schema.define(version: 20140209191134) do
 
   add_index "sensit_users", ["email"], name: "index_sensit_users_on_email", unique: true, using: :btree
   add_index "sensit_users", ["reset_password_token"], name: "index_sensit_users_on_reset_password_token", unique: true, using: :btree
+
+  add_foreign_key "oauth_access_grants", "oauth_applications", name: "oauth_access_grants_application_id_fk", column: "application_id"
+  add_foreign_key "oauth_access_grants", "sensit_users", name: "oauth_access_grants_resource_owner_id_fk", column: "resource_owner_id"
+
+  add_foreign_key "oauth_access_tokens", "oauth_applications", name: "oauth_access_tokens_application_id_fk", column: "application_id"
+  add_foreign_key "oauth_access_tokens", "sensit_users", name: "oauth_access_tokens_resource_owner_id_fk", column: "resource_owner_id"
+
+  add_foreign_key "sensit_subscriptions", "oauth_applications", name: "sensit_subscriptions_application_id_fk", column: "application_id"
+  add_foreign_key "sensit_subscriptions", "sensit_users", name: "sensit_subscriptions_user_id_fk", column: "user_id"
+
+  add_foreign_key "sensit_topic_fields", "sensit_topics", name: "sensit_topic_fields_topic_id_fk", column: "topic_id"
+
+  add_foreign_key "sensit_topic_report_facets", "sensit_topic_reports", name: "sensit_report_facets_report_id_fk", column: "report_id"
+
+  add_foreign_key "sensit_topic_reports", "sensit_topics", name: "sensit_topic_reports_topic_id_fk", column: "topic_id"
+
+  add_foreign_key "sensit_topics", "oauth_applications", name: "sensit_topics_application_id_fk", column: "application_id"
+  add_foreign_key "sensit_topics", "sensit_users", name: "sensit_topics_user_id_fk", column: "user_id"
 
 end

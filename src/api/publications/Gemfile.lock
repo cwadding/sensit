@@ -3,6 +3,7 @@ PATH
   specs:
     sensit_publications (0.0.1)
       sensit_core (= 0.0.1)
+      sensit_percolator (= 0.0.1)
 
 PATH
   remote: ../core
@@ -20,6 +21,12 @@ PATH
       roo (~> 1.13.0)
       rubyzip (~> 1.1.0)
       versioncake (~> 1.3.0)
+
+PATH
+  remote: ../percolator
+  specs:
+    sensit_percolator (0.0.1)
+      sensit_core (= 0.0.1)
 
 GEM
   remote: https://rubygems.org/
@@ -199,6 +206,7 @@ DEPENDENCIES
   oauth2
   rspec-rails
   sensit_core!
+  sensit_percolator!
   sensit_publications!
   shoulda-matchers
   simplecov

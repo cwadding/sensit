@@ -34,7 +34,6 @@ API
 		- Authorization based on User or api key?
 	Unit Conversion
 		- seed the database with different unit types and groups for different datatypes to support conversion to the default unit (only stored in the default unit type)		
-	- foreigner for generating foreign keys
 	- Multi-tennantcy
 	- Performance and Profiling Testing
 
@@ -51,7 +50,6 @@ API
 	Heroku plugins
 		Notifications (Benbria company notifications)
 		PushNotifications
-			-ZeroPush (need zero push integrated into iOS app a more portable way may be to just use MQTT)
 			-CloudMQTT (can be used as a messaging protocl for push notifications for any plataform)
 		SMS
 			-Blower IO (https://devcenter.heroku.com/articles/blowerio#provisioning-the-add-on)
