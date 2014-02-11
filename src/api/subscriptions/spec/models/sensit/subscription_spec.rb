@@ -20,7 +20,7 @@ module Sensit
 		end
 	end
     describe "#uri" do
-    	it "returns the uri as a string" do
+    	it "returns the uri as with authentication a string" do
 			subscription = Subscription.new
 			subscription.protocol = "mqtt"
 			subscription.username = "user"
@@ -29,6 +29,13 @@ module Sensit
 			subscription.port = 1883
 			subscription.uri.should == "mqtt://user:pass@broker.cloudmqtt.com:1883"
     	end
+    	it "returns the uri as without authentication a string" do
+			subscription = Subscription.new
+			subscription.protocol = "mqtt"
+			subscription.host = "broker.cloudmqtt.com"
+			subscription.port = 1883
+			subscription.uri.should == "mqtt://broker.cloudmqtt.com:1883"
+    	end    	
     end	
   end
 end

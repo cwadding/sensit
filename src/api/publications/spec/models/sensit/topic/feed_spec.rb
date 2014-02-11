@@ -9,7 +9,8 @@ module Sensit
 
 		describe "#broadcast_create" do
 			before(:each) do
-				@feed = Topic::Feed.new
+				topic = FactoryGirl.create(:topic, user: @user, application: nil)
+				@feed = Topic::Feed.new(index: ELASTIC_INDEX_NAME, type: topic.to_param, at: Time.now, data: {"assf" => "dsdsag"})
 			end
 			it "calls broadcast" do
 				@feed.should_receive(:broadcast).with("create")
@@ -19,7 +20,8 @@ module Sensit
 
 		describe "#broadcast_update" do
 			before(:each) do
-				@feed = Topic::Feed.new
+				topic = FactoryGirl.create(:topic, user: @user, application: nil)
+				@feed = Topic::Feed.new(index: ELASTIC_INDEX_NAME, type: topic.to_param, at: Time.now, data: {"assf" => "dsdsag"})
 			end
 			it "calls broadcast" do
 				@feed.should_receive(:broadcast).with("update")
@@ -29,7 +31,8 @@ module Sensit
 
 		describe "#broadcast_destroy" do
 			before(:each) do
-				@feed = Topic::Feed.new
+				topic = FactoryGirl.create(:topic, user: @user, application: nil)
+				@feed = Topic::Feed.new(index: ELASTIC_INDEX_NAME, type: topic.to_param, at: Time.now, data: {"assf" => "dsdsag"})
 			end
 			it "calls broadcast" do
 				@feed.should_receive(:broadcast).with("destroy")
@@ -39,46 +42,52 @@ module Sensit
 
 		describe "#broadcast_percolate" do
 			before(:each) do
-				@feed = Topic::Feed.new
+				topic = FactoryGirl.create(:topic, user: @user, application: nil)
+				@feed = Topic::Feed.new(index: ELASTIC_INDEX_NAME, type: topic.to_param, at: Time.now, data: {"assf" => "dsdsag"})
 			end
 			it "calls broadcast" do
-				@feed.should_receive(:broadcast).with("percolate")
+				@feed.should_receive(:percolate).and_return({"ok" => true, "matches" => []})
+				@feed.should_receive(:publish)
 				@feed.broadcast_percolate
 			end
 		end
 
 		describe "#after_create" do
 			before(:each) do
-				@feed = Topic::Feed.new
+				topic = FactoryGirl.create(:topic, user: @user, application: nil)
+				@feed = Topic::Feed.new(index: ELASTIC_INDEX_NAME, type: topic.to_param, at: Time.now, data: {"assf" => "dsdsag"})
 			end
 			describe 'after_create' do
 				it 'should run the proper callbacks' do
 					@feed.should_receive(:broadcast_create)
-					@feed.run_callbacks(:after_create)
+					@feed.should_receive(:broadcast_percolate)
+					@feed.run_callbacks(:create)
 				end
 			end
 		end
 
 		describe "#after_update" do
 			before(:each) do
-				@feed = Topic::Feed.new
+				topic = FactoryGirl.create(:topic, user: @user, application: nil)
+				@feed = Topic::Feed.new(index: ELASTIC_INDEX_NAME, type: topic.to_param, at: Time.now, data: {"assf" => "dsdsag"})
 			end
 			describe 'after_update' do
 				it 'should run the proper callbacks' do
 					@feed.should_receive(:broadcast_update)
-					@feed.run_callbacks(:after_update)
+					@feed.run_callbacks(:update)
 				end
 			end
 		end
 
 		describe "#after_destroy" do
 			before(:each) do
-				@feed = Topic::Feed.new
+				topic = FactoryGirl.create(:topic, user: @user, application: nil)
+				@feed = Topic::Feed.new(index: ELASTIC_INDEX_NAME, type: topic.to_param, at: Time.now, data: {"assf" => "dsdsag"})
 			end
 			describe 'after_destroy' do
 				it 'should run the proper callbacks' do
 					@feed.should_receive(:broadcast_destroy)
-					@feed.run_callbacks(:after_update)
+					@feed.run_callbacks(:destroy)
 				end
 			end
 		end

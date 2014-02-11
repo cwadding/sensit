@@ -3,9 +3,10 @@ require 'spec_helper'
 describe "sensit/publications/index" do
   context "when publication is incomplete" do
     before(:each) do
+      @topic = FactoryGirl.create(:topic, user: @user)
       @publications = [
-        FactoryGirl.create(:publication, :topic => @user),
-        FactoryGirl.create(:publication, :topic => @user)
+        FactoryGirl.create(:publication, :topic => @topic),
+        FactoryGirl.create(:publication, :topic => @topic)
       ]
       assign(:publications, @publications)
     end

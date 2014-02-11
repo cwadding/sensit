@@ -16,6 +16,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'sensit_core', Sensit::VERSION
   s.add_dependency 'sensit_percolator', Sensit::VERSION
+  s.add_dependency 'sensit_messenger', "0.0.1"
 
   s.add_development_dependency "sqlite3"
   s.add_development_dependency 'rspec-rails'

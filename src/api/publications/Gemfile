@@ -3,6 +3,7 @@ source "https://rubygems.org"
 
 gem 'sensit_core', :path => "../core"
 gem 'sensit_percolator', :path => "../percolator"
+gem 'sensit_messenger', :path => "../messenger"
 
 # Declare your gem's dependencies in sensit_publications.gemspec.
 # Bundler will treat runtime dependencies like base dependencies, and

@@ -8,6 +8,8 @@ module Sensit
 	extend ::ActiveModel::Callbacks
 	include ::ActiveModel::Dirty
 
+	define_model_callbacks :create, :update, :save, :destroy
+
   	attr_accessor :name, :query, :topic_id, :user_id
 	attr_reader :errors
 
@@ -58,17 +60,14 @@ module Sensit
 	end
 
 	def self.destroy(arguments = {})
-		# run_callbacks :destroy do
-			user_id, topic_id, name = extract_params_with_name(arguments)
-			elastic_client.delete arguments.merge(index: elastic_index_name(user_id), type: type_key(user_id, topic_id), id: name)
-		# end
+		percolator = self.new(arguments)
+		percolator.instance_variable_set(:@new_record, false)
+		percolator.destroy
 	end
 
 	def self.destroy_all(arguments = {})
-		# run_callbacks :destroy do
-			user_id, topic_id = extract_params(arguments)
-			elastic_client.indices.delete arguments.merge(index: elastic_index_name(user_id), type: type_key(user_id, topic_id))
-		# end
+		user_id, topic_id = extract_params(arguments)
+		elastic_client.indices.delete arguments.merge(index: elastic_index_name(user_id), type: type_key(user_id, topic_id))
 	end
 
 
@@ -86,14 +85,17 @@ module Sensit
 	end
 
 	def save
-		# run_callbacks :save do
+		run_callbacks :save do
 		valid? ? (new_record? ? create : update) : false
-		# end
+		end
 	end	
 
 	def destroy
+		debugger
 		raise ::Elasticsearch::Transport::Transport::Errors::BadRequest.new if new_record? || [self.name, self.topic_id, self.user_id].any?(&:nil?)		
-		self.class.destroy({user_id: self.user_id, topic_id: self.topic_id, name: self.name})
+		run_callbacks :destroy do
+			elastic_client.delete index: elastic_index_name(self.user_id), type: type_key(self.user_id, self.topic_id), id: self.name
+		end
 	end
 
 	# need a custom validation to ensure that the data value is the datatype that is expected based on the field value type and that the key is correct as well
@@ -142,18 +144,20 @@ private
 
 
 	def update
-		response = elastic_client.update attributes_to_update
-		response["ok"] || false
+		run_callbacks :update do
+			response = elastic_client.update attributes_to_update
+			response["ok"] || false
+		end
 	end
 
 	def create
-		# run_callbacks :create do
-		response = elastic_client.create attributes_to_create
-		if (response["ok"])
-			@new_record = false
+		run_callbacks :create do
+			response = elastic_client.create attributes_to_create
+			if (response["ok"])
+				@new_record = false
+			end
+			response["ok"]
 		end
-		# end
-		response["ok"]
 	end
 
 	def self.elastic_index_name(user_id)

@@ -41,7 +41,7 @@ describe "PUT sensit/publications#update" do
 
 					it "returns the expected json" do
 						response = process_oauth_request(@access_grant,@publication, @params)
-						response.body.should be_json_eql("{\"host\": \"#{@params[:publication][:host]}\"}")
+						response.body.should be_json_eql("{\"host\": \"#{@params[:publication][:host]}\", \"protocol\": \"#{@params[:publication][:protocol]}\"}")
 					end
 				end
 
@@ -55,7 +55,7 @@ describe "PUT sensit/publications#update" do
 					it "returns the expected json" do
 						response = process_oauth_request(@access_grant,@publication, @params)
 						response.status.should == 200
-						response.body.should be_json_eql("{\"host\": \"#{@params[:publication][:host]}\"}")
+						response.body.should be_json_eql("{\"host\": \"#{@params[:publication][:host]}\", \"protocol\": \"#{@params[:publication][:protocol]}\"}")
 					end
 				end
 

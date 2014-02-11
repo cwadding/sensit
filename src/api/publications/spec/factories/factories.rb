@@ -5,7 +5,7 @@ FactoryGirl.define do
 	factory :publication, :class => Sensit::Topic::Publication do
 		protocol "mqtt"
 		host "broker.cloudmqtt.com"
-		actions_mask
+		actions_mask 0
 		topic
 	end
 
