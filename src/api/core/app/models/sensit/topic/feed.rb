@@ -61,7 +61,10 @@ module Sensit
 	end
 
 	def self.destroy(arguments = {})
+		id = arguments.delete(:id)
 		feed = self.new(arguments)
+		feed.instance_variable_set(:@id, id)
+		feed.instance_variable_set(:@new_record, false)
 		feed.destroy
 	end
 
@@ -82,7 +85,7 @@ module Sensit
 	def destroy
 		raise ::Elasticsearch::Transport::Transport::Errors::BadRequest.new if new_record? || id.nil?
 		run_callbacks :destroy do
-			elastic_client.delete {index: index, type: type, id: id}
+			elastic_client.delete({index: self.index, type: self.type, id: self.id})
 		end
 	end
 

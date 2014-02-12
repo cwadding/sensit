@@ -1,6 +1,7 @@
 source "https://rubygems.org"
 
 gem 'sensit_core', :path => "../core"
+gem 'sensit_messenger', :path => "../messenger"
 gem 'sqlite3'
 # Declare your gem's dependencies in sensit_api.gemspec.
 # Bundler will treat runtime dependencies like base dependencies, and

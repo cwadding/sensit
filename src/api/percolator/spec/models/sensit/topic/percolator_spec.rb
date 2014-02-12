@@ -8,11 +8,7 @@ module Sensit
     it { should validate_presence_of(:user_id) }
 
     before(:each) do
-        if ENV['ELASTICSEARCH_URL']
-            @client = ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL'])
-        else
-            @client = ::Elasticsearch::Client.new
-        end        
+        @client = ENV['ELASTICSEARCH_URL'] ? ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL']) : ::Elasticsearch::Client.new
     end
 
     describe ".count" do
@@ -132,8 +128,7 @@ module Sensit
         end
         context "when the record exists" do
             it "executes the elastic delete" do
-                @client.should_receive(:delete).with({index: ELASTIC_INDEX_NAME, type: "#{@params[:user_id]}:#{@params[:topic_id]}", id: @params[:name] }).and_return({"ok"=>true, "found"=>true, "_index"=>"transactions", "_type"=>"atm", "_id"=>"8eI2kKfwSymCrhqkjnGYiA", "_version"=>4})
-                Topic::Percolator.stub(:elastic_client).and_return(@client)
+                Topic::Percolator.any_instance.should_receive(:destroy)
                 Topic::Percolator.destroy(@params)
             end
         end
@@ -254,7 +249,8 @@ module Sensit
                 @percolator.stub(:new_record?).and_return(false)
             end
             it "executes the elastic delete" do
-                Topic::Percolator.should_receive(:destroy).with({user_id: @user.name, topic_id: "mytype", name: 3}).and_return(true)
+                @client.should_receive(:delete).with({index: ELASTIC_INDEX_NAME, type: "#{@user.name}:mytype", id: 3 }).and_return({"ok"=>true, "found"=>true, "_index"=>"transactions", "_type"=>"atm", "_id"=>"8eI2kKfwSymCrhqkjnGYiA", "_version"=>4})
+                @percolator.stub(:elastic_client).and_return(@client)
                 @percolator.destroy.should be_true
             end
         end

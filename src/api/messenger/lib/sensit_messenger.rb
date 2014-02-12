@@ -1,3 +1,4 @@
+
 require "sensit_messenger/version"
 
 module Sensit

@@ -91,10 +91,9 @@ module Sensit
 	end	
 
 	def destroy
-		debugger
 		raise ::Elasticsearch::Transport::Transport::Errors::BadRequest.new if new_record? || [self.name, self.topic_id, self.user_id].any?(&:nil?)		
 		run_callbacks :destroy do
-			elastic_client.delete index: elastic_index_name(self.user_id), type: type_key(self.user_id, self.topic_id), id: self.name
+			elastic_client.delete index: elastic_index_name, type: elastic_index_type, id: self.name
 		end
 	end
 
@@ -123,11 +122,7 @@ private
 	end
 
 	def self.elastic_client
-		if ENV['ELASTICSEARCH_URL']
-			@@client ||= ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL'])
-		else
-			@@client ||= ::Elasticsearch::Client.new
-		end		
+		@@client ||= ENV['ELASTICSEARCH_URL'] ? ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL']) : ::Elasticsearch::Client.new
 	end
 
 	def elastic_client

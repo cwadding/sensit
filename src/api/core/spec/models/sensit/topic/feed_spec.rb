@@ -160,15 +160,12 @@ module Sensit
 		end
 		context "when the record exists" do
 			it "executes the elastic delete" do
-				@client.should_receive(:delete).with(@params).and_return({"ok"=>true, "found"=>true, "_index"=>"transactions", "_type"=>"atm", "_id"=>"8eI2kKfwSymCrhqkjnGYiA", "_version"=>4})
-				Topic::Feed.stub(:elastic_client).and_return(@client)
+				Topic::Feed.any_instance.should_receive(:destroy)
 				Topic::Feed.destroy(@params)
 			end
 		end
 		context "when the record does not exist" do
 			it "throws an exception that it is not found" do
-				@client.stub(:delete).with(@params).and_raise(::Elasticsearch::Transport::Transport::Errors::NotFound)
-				Topic::Feed.stub(:elastic_client).and_return(@client)
 				expect{
 					Topic::Feed.destroy(@params)
 				}.to raise_error(::Elasticsearch::Transport::Transport::Errors::NotFound)
@@ -295,7 +292,8 @@ module Sensit
 				@feed.stub(:new_record?).and_return(false)
 			end
 			it "executes the elastic delete" do
-				Topic::Feed.should_receive(:destroy).with({index: ELASTIC_INDEX_NAME, type: 'mytype', id: 1}).and_return(true)
+				@client.should_receive(:delete).with({index: ELASTIC_INDEX_NAME, type: 'mytype', id:1}).and_return({"ok"=>true, "found"=>true, "_index"=>"transactions", "_type"=>"atm", "_id"=>"8eI2kKfwSymCrhqkjnGYiA", "_version"=>4})
+				@feed.stub(:elastic_client).and_return(@client)
 				@feed.destroy.should be_true
 			end
 		end

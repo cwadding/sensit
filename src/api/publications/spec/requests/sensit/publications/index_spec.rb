@@ -62,7 +62,7 @@ describe "GET sensit/publications#index" do
 					response.body.should be_json_eql("{\"publications\": [#{pub_arr.join(",")}]}")
 				end
 
-				it "returns the expected json", current: true do
+				it "returns the expected json" do
 					response = process_oauth_request(@access_grant,@topic, {page:3, per:1})
 					response.body.should be_json_eql("{\"publications\": [{\"host\": \"#{@publications[2].host}\", \"protocol\": \"#{@publications[2].protocol}\"}]}")
 				end

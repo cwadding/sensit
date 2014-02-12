@@ -22,7 +22,7 @@ module Sensit
 			end
 
 			config.to_prepare do
-				# ::Doorkeeper::Application.send :include, ::SubscribableApplication
+				::Doorkeeper::Application.send :include, ::SubscribableApplication
 			end
 
 			config.view_versions = [1]

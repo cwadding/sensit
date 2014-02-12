@@ -39,7 +39,7 @@ module Sensit
 		end
 
 		def client
-			@client ||= Messenger.parse(uri: uri)
+			@client ||= Messenger.parse(uri)
 		end
 
 

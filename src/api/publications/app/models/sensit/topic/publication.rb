@@ -57,7 +57,7 @@ module Sensit
 		def client
 			@client ||= case self.protocol
 			when "tcp", "udp", "http", "mqtt"
-				Messenger.parse(uri: uri)				
+				Messenger.parse(uri)				
 			when "blower.io"
 				Messenger::HTTP.new(uri: (ENV['BLOWERIO_URL'] || "http://localhost") + '/messages')
 			else

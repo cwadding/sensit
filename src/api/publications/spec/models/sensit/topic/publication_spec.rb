@@ -23,7 +23,7 @@ module Sensit
 			end
 		end
 
-		describe ".with_publications", current: true do
+		describe ".with_publications" do
 			before(:each) do
 				@topic = FactoryGirl.create(:topic, user: @user)
 				@publication1 = FactoryGirl.create(:publication, topic: @topic)
@@ -103,7 +103,7 @@ module Sensit
 					client.should be_nil
 				end
 			end
-			context "with http protocol" do
+			context "with http protocol", current:true do
 				before(:each) do
 					@publication = ::Sensit::Topic::Publication.new(protocol: "http")
 					@publication.stub(:uri).and_return("http://localhost")
@@ -125,7 +125,7 @@ module Sensit
 			context "with udp protocol" do
 				before(:each) do
 					@publication = ::Sensit::Topic::Publication.new(protocol: "udp")
-					@publication.stub(:uri).and_return("tcp://localhost")
+					@publication.stub(:uri).and_return("udp://localhost")
 				end
 				it "calls publish on the client" do
 					@publication.client.should be_an_instance_of(::Sensit::Messenger::UDP)
