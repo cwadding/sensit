@@ -35,9 +35,6 @@ module Sensit
       else
         topic = scoped_owner("manage_any_publications").topics.find(params[:topic_id])
         @publication = topic.publications.build(publication_params)
-        facets_params.each do |facet_params|
-          @publication.facets.build(facet_params)
-        end
         if @publication.save
           respond_with(@publication,:status => :created, :template => "sensit/publications/show")
         else
@@ -75,9 +72,10 @@ module Sensit
 
       # Only allow a trusted parameter "white list" through.
       def publication_params
-        # fields = Topic::Field.joins(:topic).where(:sensit_topics => {:slug => params[:topic_id]}).map(&:key)
-        params.require(:publication).permit(:name).tap do |whitelisted|
-          whitelisted[:query] = params[:publication][:query] if params[:publication].has_key?(:query)
+        if params[:publication] && params[:publication].has_key?(:uri)
+          params.require(:publication).permit(:uri)
+        else
+          params.require(:publication).permit(:host, :protocol, :username, :password, :port)
         end
       end
 

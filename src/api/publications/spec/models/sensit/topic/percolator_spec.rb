@@ -5,7 +5,7 @@ module Sensit
 
 		describe "#create_rule" do
 			it "creates a rule" do
-				percolator = new Sensit::Topic::Percolator(name: "rule")
+				percolator = Sensit::Topic::Percolator.new(name: "rule")
 				expect{
 					percolator.create_rule
 				}.to change(::Sensit::Rule, :count).by(1)				
@@ -17,7 +17,7 @@ module Sensit
 				Sensit::Rule.create(:name => "rule")
 			end
 			it "destroys the rule" do
-				percolator = new Sensit::Topic::Percolator(name: "rule")
+				percolator = Sensit::Topic::Percolator.new(name: "rule")
 				expect{
 					percolator.destroy_rule
 				}.to change(::Sensit::Rule, :count).by(-1)				
@@ -26,24 +26,24 @@ module Sensit
 
 		describe "#after_create" do
 			before(:each) do
-				@feed = Topic::Feed.new
+				@percolator = Sensit::Topic::Percolator.new(name: "rule")
 			end
 			describe 'after_create' do
 				it 'should run the proper callbacks' do
-					@feed.should_receive(:create_rule)
-					@feed.run_callbacks(:after_create)
+					@percolator.should_receive(:create_rule)
+					@percolator.run_callbacks(:create)
 				end
 			end
 		end
 
 		describe "#after_destroy" do
 			before(:each) do
-				@feed = Topic::Feed.new
+				@percolator = Sensit::Topic::Percolator.new(name: "rule")
 			end
 			describe 'after_destroy' do
 				it 'should run the proper callbacks' do
-					@feed.should_receive(:destroy_rule)
-					@feed.run_callbacks(:after_update)
+					@percolator.should_receive(:destroy_rule)
+					@percolator.run_callbacks(:destroy)
 				end
 			end
 		end

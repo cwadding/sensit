@@ -1,4 +1,6 @@
 require 'sensit/core'
+require 'sensit_percolator'
+require 'sensit_messenger'
 
 module Sensit
 	module Publications
@@ -18,6 +20,7 @@ module Sensit
 			end
 
 			config.to_prepare do
+				::Sensit::Topic.send :include, ::PublicationsTopic
 				::Sensit::Topic::Feed.send :include, ::Publishable
 				::Sensit::Topic::Percolator.send :include, ::Percolatable
 			end

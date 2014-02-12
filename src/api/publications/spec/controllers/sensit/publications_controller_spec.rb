@@ -106,8 +106,8 @@ module Sensit
       end
       describe "with valid params" do
         it "updates the requested publication" do
-          ::Sensit::Topic::Publication.any_instance.should_receive(:update).with({ :host => "127.0.0.1", :protocol => "mqtt"} )
-          put :update, valid_request({:id => @publication.to_param, :topic_id => @topic.to_param, :publication => { :host => "127.0.0.1", :protocol => "mqtt"}}] }}), valid_session(user_id: @user.to_param)
+          ::Sensit::Topic::Publication.any_instance.should_receive(:update).with({ "host" => "127.0.0.1", "protocol" => "mqtt"} )
+          put :update, valid_request({:id => @publication.to_param, :topic_id => @topic.to_param, :publication => { :host => "127.0.0.1", :protocol => "mqtt"}}), valid_session(user_id: @user.to_param)
         end
 
         it "assigns the requested publication as @publication" do
@@ -124,7 +124,7 @@ module Sensit
       describe "with invalid params" do
         it "assigns the publication as @publication" do
           ::Sensit::Topic::Publication.any_instance.stub(:save).and_return(false)
-          put :update, valid_request({:id => @publication.to_param, :topic_id => @topic.to_param, :publication => { :host => "127.0.0.1", :protocol => "mqtt"}}]}), valid_session(user_id: @user.to_param)
+          put :update, valid_request({:id => @publication.to_param, :topic_id => @topic.to_param, :publication => { :host => "127.0.0.1", :protocol => "mqtt"}}), valid_session(user_id: @user.to_param)
           assigns(:publication).should eq(@publication)
         end
 
@@ -151,5 +151,23 @@ module Sensit
         response.status.should == 204
       end
     end
+
+    describe "#publication_params" do
+      context "with uri" do
+        it "it is valid and returns the same hash" do
+          controller.params = {:publication => { :uri => "http://user:pass@localhost:80"}}
+          new_params = controller.send(:publication_params)
+          new_params.should == controller.params[:publication]
+        end
+      end
+      context "with :host, :protocol, :username, :password, :port" do
+        it "it is valid and returns the same hash" do
+          controller.params = {:publication => { :host => "localhost", :protocol => "http", :username => "user", :password => "pass", :port => "88" }}
+          new_params = controller.send(:publication_params)
+          new_params.should == controller.params[:publication]
+        end
+      end      
+    end
+
   end
 end

@@ -8,7 +8,7 @@ module Sensit
 	extend ::ActiveModel::Callbacks
 	include ::ActiveModel::Dirty
 	# include ElasticUniquenessValidator
-  	define_model_callbacks :create, :update, :save
+  	define_model_callbacks :create, :update, :save, :destroy
 
   	attr_accessor :at, :type, :index
 	attr_reader :errors, :id, :data
@@ -28,7 +28,6 @@ module Sensit
 
 	validates :index, presence: true
 	validates :type, presence: true
-	# validates :topic_id, presence: true
 	validates :at, presence: true, elastic_uniqueness: {scope: [:topic_id]}
 	validates :data, presence: true
 
@@ -62,7 +61,8 @@ module Sensit
 	end
 
 	def self.destroy(arguments = {})
-		elastic_client.delete arguments
+		feed = self.new(arguments)
+		feed.destroy
 	end
 
 	def self.destroy_all(arguments = {})
@@ -81,8 +81,9 @@ module Sensit
 
 	def destroy
 		raise ::Elasticsearch::Transport::Transport::Errors::BadRequest.new if new_record? || id.nil?
-		
-		self.class.destroy({index: index, type: type, id: id})
+		run_callbacks :destroy do
+			elastic_client.delete {index: index, type: type, id: id}
+		end
 	end
 
 	def percolate

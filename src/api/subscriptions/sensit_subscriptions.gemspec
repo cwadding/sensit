@@ -15,6 +15,7 @@ Gem::Specification.new do |s|
 
 
   s.add_dependency 'sensit_core', Sensit::VERSION 
+  s.add_dependency 'sensit_messenger', '0.0.1'
   # s.add_dependency 'em-websocket'# , '0.0.3'
   s.add_dependency 'socketio-client'# , '0.0.3'
   s.add_dependency 'faye', '1.0.0'

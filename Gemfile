@@ -38,8 +38,10 @@ end
 
 # Use debugger
 # gem 'debugger', group: [:development, :test]
+gem 'sensit_messenger', :path => "src/api/messenger"
 gem 'sensit_core', :path => "src/api/core"
 gem 'sensit_percolator', :path => "src/api/percolator"
+gem 'sensit_publications', :path => "src/api/publication"
 gem 'sensit_reports', :path => "src/api/reports"
 gem 'sensit_subscriptions', :path => "src/api/subscriptions"
 

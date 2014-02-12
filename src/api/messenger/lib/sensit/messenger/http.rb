@@ -22,5 +22,6 @@ module Sensit
 				end
 			end
 		end
+		@@schemes['HTTP'] = HTTP
 	end
 end

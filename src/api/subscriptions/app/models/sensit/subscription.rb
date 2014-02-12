@@ -24,9 +24,9 @@ module Sensit
 
 		def uri
 			if (self.username)
-				"mqtt://#{self.username}:#{self.password}@#{self.host}:#{self.port}"
+				"#{self.protocol}://#{self.username}:#{self.password}@#{self.host}:#{self.port}"
 			else
-				"mqtt://#{self.host}:#{self.port}"
+				"#{self.protocol}://#{self.host}:#{self.port}"
 			end
 		end
 
@@ -39,12 +39,7 @@ module Sensit
 		end
 
 		def client
-			@client ||= case self.protocol
-			when "mqtt"
-				MQTT.new(url: uri)
-			else
-				nil
-			end
+			@client ||= Messenger.parse(uri: uri)
 		end
 
 

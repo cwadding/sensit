@@ -1,2 +1,2 @@
-collection @subscriptions => "subscriptions"
-extends "sensit/subscriptions/show"
+collection @publications => "publications"
+extends "sensit/publications/show"

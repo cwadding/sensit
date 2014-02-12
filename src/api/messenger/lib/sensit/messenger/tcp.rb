@@ -24,5 +24,6 @@ module Sensit
 				s.close				
 			end
 		end
+		@@schemes['TCP'] = TCP
 	end
 end

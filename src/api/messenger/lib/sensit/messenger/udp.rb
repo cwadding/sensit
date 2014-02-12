@@ -15,6 +15,7 @@ module Sensit
 				s.bind(self.host, self.port)
 				s.send(data, "0", self.host, self.port)
 			end
-		end	
+		end
+		@@schemes['UDP'] = UDP	
 	end
 end

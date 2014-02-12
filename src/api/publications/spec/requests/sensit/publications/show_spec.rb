@@ -33,7 +33,7 @@ describe "GET sensit/publications#show" do
 					# facet_arr = @publication.facets.inject([]) do |facet_arr, facet|
 					# 	facet_arr << "{\"query\":#{facet.query.to_json}, \"name\":\"#{facet.name}\"}"
 					# end
-					response.body.should be_json_eql("{\"host\": \"#{@publication.host}\"}")
+					response.body.should be_json_eql("{\"host\": \"#{@publication.host}\", \"protocol\": \"#{@publication.protocol}\"}")
 				end
 			end
 
@@ -49,7 +49,7 @@ describe "GET sensit/publications#show" do
 				it "returns the expected json" do
 					expect{
 						response = oauth_get @access_grant, "/api/topics/1/publications/1", valid_request, valid_session(:user_id => @user.to_param)
-						response.body.should be_json_eql("{\"host\": \"#{@publication.host}\"}")
+						response.body.should be_json_eql("{\"host\": \"#{@publication.host}\", \"protocol\": \"#{@publication.protocol}\"}")
 					}.to raise_error(ActiveRecord::RecordNotFound)
 					
 				end
@@ -65,7 +65,7 @@ describe "GET sensit/publications#show" do
 				it "returns the expected json" do
 					response = process_oauth_request(@access_grant,@publication)
 					response.status.should == 200
-					response.body.should be_json_eql("{\"host\": \"#{@publication.host}\"}")
+					response.body.should be_json_eql("{\"host\": \"#{@publication.host}\", \"protocol\": \"#{@publication.protocol}\"}")
 				end
 			end
 

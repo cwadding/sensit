@@ -9,17 +9,16 @@ module Sensit
 		has_many :percolations, dependent: :destroy, foreign_key: "publication_id"
 		has_many :rules, through: :percolations
 
-		validates :name, presence: true, uniqueness:  {scope: :user_id}
 		validates :host, presence: true
 		validates :protocol, presence: true
 		validates :port, numericality: { only_integer: true, greater_than: 0, less_than:49152}, allow_nil: true
 		has_secure_password :validations => false
 		
-		scope :with_action, -> { |action| where(:actions_mask & 2**ACTIONS.index(action.to_s) > 0)}
-		scope :with_rules, -> { |rule_names| rules.where(:name => rule_names)}
+		scope :with_action, lambda{ |action| where("actions_mask & ? > 0 ", 2**ACTIONS.index(action.to_s))}
+		scope :with_percolations, lambda{ |rule_names| joins(:rules).where("sensit_rules" => {:name => rule_names}).select("DISTINCT sensit_topic_publications.*")}
 
-		def actions=(roles)
-			self.actions_mask = (actions & ACTIONS).map { |r| 2**ACTIONS.index(r) }.sum
+		def actions=(actions_array)
+			self.actions_mask = (actions_array & ACTIONS).map { |r| 2**ACTIONS.index(r) }.sum
 		end
 
 		def actions
@@ -27,17 +26,11 @@ module Sensit
 		end
 
 
-		def publish(message, action)
+		def publish(message, action=nil)
 			name = self.topic_id
 			case self.protocol
 			when "blower.io"
 				message = {to: '+14155550000', message: message}
-			when "mail"
-				case action
-				when "create"
-				when "tag"
-				when "update"
-				end
 			else
 				nil
 			end			
@@ -63,14 +56,10 @@ module Sensit
 
 		def client
 			@client ||= case self.protocol
-			when "tcp"
-				TCP.new(url: uri)
-			when "udp"
-				UDP.new(url: uri)
-			when "http"
-				HTTP.new(url: uri)
+			when "tcp", "udp", "http", "mqtt"
+				Messenger.parse(uri: uri)				
 			when "blower.io"
-				HTTP.new(ENV['BLOWERIO_URL'] + '/messages')
+				Messenger::HTTP.new(uri: (ENV['BLOWERIO_URL'] || "http://localhost") + '/messages')
 			else
 				nil
 			end

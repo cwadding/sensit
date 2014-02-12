@@ -7,14 +7,8 @@ SimpleCov.start 'rails'
 
 load "#{Rails.root.to_s}/db/schema.rb" unless ENV['from_file']
 
-OAUTH2_REDIRECT_URI = "http://localhost:8080/oauth2/callback"
-ELASTIC_INDEX_NAME = "my_index"
-
 require 'sensit_publications'
-require "sensit/core/test/dependencies"
-require "sensit/core/test/request_helpers"
-require "sensit/core/test/oauth_helpers"
-require "sensit/core/test/user_cleaner"
+require "sensit/core/test/all"
 require "sensit/core/factories"
 
 Rails.backtrace_cleaner.remove_silencers!

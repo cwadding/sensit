@@ -22,12 +22,13 @@ module Sensit
 					mqtt.subscribe(nil)
 				end
 
-				# it "receives a message", current:true do
-				# 	mqtt = ::Sensit::MQTT.new({host: "localhost",port: 1883})
+				# it "receives a message" do
+				# 	mqtt = ::Sensit::Messenger::MQTT.new({host: "localhost",port: 1883})
 				# 	block = Proc.new { |channel, data|  puts "channel: #{channel} data: #{data.inspect}"}
-				# 	block.should_receive(:call).with("channel", {"some" => "data"})
+				# 	block.should_receive(:call)
 				# 	thr = mqtt.subscribe("channel", &block)
 				# 	mqtt.publish("channel", {"some" => "data"})
+				# 	sleep(2)
 				# end
 			end
 

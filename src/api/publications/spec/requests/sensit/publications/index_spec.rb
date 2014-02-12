@@ -32,7 +32,7 @@ describe "GET sensit/publications#index" do
 			context "with 1 publication" do
 				before(:each) do
 					@topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @access_grant.application)
-					@publication = FactoryGirl.create(:publication, :name => "My Publication", :topic => @topic)
+					@publication = FactoryGirl.create(:publication, :topic => @topic)
 				end
 				it "is successful" do
 					response = process_oauth_request(@access_grant,@topic)
@@ -41,22 +41,30 @@ describe "GET sensit/publications#index" do
 
 				it "returns the expected json" do
 					response = process_oauth_request(@access_grant,@topic)
-					response.body.should be_json_eql("{\"publications\": [{\"host\": \"#{@params[:publication][:host]}\"}]}")
+					response.body.should be_json_eql("{\"publications\": [{\"host\": \"#{@publication.host}\", \"protocol\": \"#{@publication.protocol}\"}]}")
 				end
 			end
 			context "with > 1 publication" do
 				before(:each) do
 					@topic = FactoryGirl.create(:topic_with_feeds, user: @user, application: @access_grant.application)
 					@publications = [
-						FactoryGirl.create(:publication, :topic => @topic), 
-						FactoryGirl.create(:publication, :topic => @topic), 
-						FactoryGirl.create(:publication, :topic => @topic)
+						FactoryGirl.create(:publication, host: "broker1.cloudmqtt.com", :topic => @topic), 
+						FactoryGirl.create(:publication, host: "broker2.cloudmqtt.com", :topic => @topic), 
+						FactoryGirl.create(:publication, host: "broker3.cloudmqtt.com", :topic => @topic)
 					]
 				end
 
-				it "returns the expected json" do
+				it "returns all the associated publications" do
+					response = process_oauth_request(@access_grant,@topic)
+					pub_arr = @publications.inject([]) do |arr,publication|
+						arr << "{\"host\": \"#{publication.host}\", \"protocol\": \"#{publication.protocol}\"}"
+					end
+					response.body.should be_json_eql("{\"publications\": [#{pub_arr.join(",")}]}")
+				end
+
+				it "returns the expected json", current: true do
 					response = process_oauth_request(@access_grant,@topic, {page:3, per:1})
-					response.body.should be_json_eql("{\"publications\": [{\"host\": \"#{@params[:publication][:host]}\"}]}")
+					response.body.should be_json_eql("{\"publications\": [{\"host\": \"#{@publications[2].host}\", \"protocol\": \"#{@publications[2].protocol}\"}]}")
 				end
 			end
 
@@ -70,7 +78,7 @@ describe "GET sensit/publications#index" do
 				it "returns the expected json" do
 					response = process_oauth_request(@access_grant,@topic)
 					response.status.should == 200
-					response.body.should be_json_eql("{\"publications\": [{\"host\": \"#{@params[:publication][:host]}\"}]}")
+					response.body.should be_json_eql("{\"publications\": [{\"host\": \"#{@publication.host}\", \"protocol\": \"#{@publication.protocol}\"}]}")
 				end
 			end
 
