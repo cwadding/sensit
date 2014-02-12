@@ -45,5 +45,5 @@ gem 'sensit_subscriptions', :path => "src/api/subscriptions"
 
 gem "foreman"
 gem "puma"
-
+gem 'rack-cors', :require => 'rack/cors'
 gem 'newrelic_rpm'

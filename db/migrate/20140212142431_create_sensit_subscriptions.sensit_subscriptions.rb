@@ -15,6 +15,6 @@ class CreateSensitSubscriptions < ActiveRecord::Migration
     end
     add_index :sensit_subscriptions, :slug,:unique => true
     add_foreign_key "sensit_subscriptions", "oauth_applications", name: "sensit_subscriptions_application_id_fk", column: "application_id"
-    add_foreign_key "sensit_subscriptions", "sensit_users", name: "sensit_subscriptions_user_id_fk", column: "user_id"
+    add_foreign_key "sensit_subscriptions", "sensit_users", name: "sensit_subscriptions_user_id_fk", column: "user_id"    
   end
 end

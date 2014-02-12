@@ -19,6 +19,6 @@ class CreateSensitTopics < ActiveRecord::Migration
     add_foreign_key "oauth_access_tokens", "sensit_users", name: "oauth_access_tokens_resource_owner_id_fk", column: "resource_owner_id"
     
     add_foreign_key "sensit_topics", "oauth_applications", name: "sensit_topics_application_id_fk", column: "application_id"
-    add_foreign_key "sensit_topics", "sensit_users", name: "sensit_topics_user_id_fk", column: "user_id"
+    add_foreign_key "sensit_topics", "sensit_users", name: "sensit_topics_user_id_fk", column: "user_id"    
   end
 end
