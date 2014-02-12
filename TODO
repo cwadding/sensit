@@ -1,11 +1,18 @@
+- Fix generators and conflict with Doorkeeper preventing the generator from running
+- use of NodeRED for configuring different services with sensit
+
+
+
+
+-Auditing with PaperTrail gem?
+
 API
 	OAuth
-		- generator to run the doorkeeper generator
 		- generator will generate the new doorkeeper configuration file for sensit
 		- customize views for sensit application
 		- create user sessions html version
 	Core
-		-support http compression (config.middleware.use Rack::Deflater)
+		- support http compression (config.middleware.use Rack::Deflater)
 			http://calebwoods.github.io/http-compression-rails/
 		- Be able to search feeds (use the the subset of queries from the percolator for strong parameters)
 		- parent child relationships (ancestry gem)		
@@ -21,28 +28,20 @@ API
 		- strong_parameters mass assignment of elasticsearch percolator querys
 	Subscriptions
 		- Add support for various Pub/Sub providers
-			MQTT
 			ZeroMQ
 			Socket.io
 			Faye
 			pubnub(https://devcenter.heroku.com/articles/pubnub#get-pubnub-gem)
 	Security
-		- Rack-Attack: https://github.com/kickstarter/rack-attack
+		- Rack-Attack: https://github.com/kickstarter/rack-attack (black listing and whitelisting rate limiting)
 		- Feed Security (Public (No API Key), Shared (multi-tennant),	Private (single api key single user))
-		-whitelist or black list of ip's
-		- Authorization based on User or api key?
 	Unit Conversion
 		- seed the database with different unit types and groups for different datatypes to support conversion to the default unit (only stored in the default unit type)		
 	- Multi-tennantcy
 	- Performance and Profiling Testing
 
-	- filters on whether rows should be added to database or not (like validations on the data) (If query is met then row is not added to the database)
-
 	Publications
 		-support
-			tcp
-			udp
-			http POST
 			Websocket via Pusher (https://devcenter.heroku.com/articles/pusher#install-pusher-gem)
 			pubnub (https://devcenter.heroku.com/articles/pubnub#get-pubnub-gem)
 

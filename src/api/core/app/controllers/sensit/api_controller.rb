@@ -1,7 +1,11 @@
 module Sensit
 	class ApiController < ActionController::Base
 
-		# force_ssl
+		# force_ssl if: :ssl_configured?
+
+		# def ssl_configured?
+		# 	true # Rails.env.production?
+		# end
 
 		def current_user
 			if doorkeeper_token

@@ -6,7 +6,7 @@ module Sensit
 	module Publications
 		class Engine < ::Rails::Engine
 			isolate_namespace Sensit
-			engine_name "sensit_subscriptions"
+			engine_name "sensit_publications"
 			config.generators do |g|
 				g.test_framework :rspec, :fixture => false
 				g.fixture_replacement :factory_girl, :dir => 'spec/factories'

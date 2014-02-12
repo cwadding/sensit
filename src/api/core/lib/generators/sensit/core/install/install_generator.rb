@@ -31,11 +31,18 @@ class Sensit::Core::InstallGenerator < Rails::Generators::Base
 	end	
 
 	def uncomment_enable_application_owner
-		gsub_file("config/initializers/doorkeeper.rb", "# enable_application_owner :confirmation => false", "enable_application_owner :confirmation => false")
+		gsub_file("config/initializers/doorkeeper.rb", "# enable_application_owner :confirmation => false", "enable_application_owner :confirmation => true")
 	end
 
 	def gsub_resource_owner_authenticator
 		gsub_file("config/initializers/doorkeeper.rb", /resource_owner_authenticator do(\s+)(.+)(\s+)(.+)(\s+)(.+)(\s+)(.+)/, "resource_owner_authenticator do\n\t\tSensit::User.find_by_id(session[:user_id]) || redirect_to(new_user_session_url)")
 	end
+
+	def inject_into_application_controller
+		content = "\tbefore_filter :configure_permitted_parameters, if: :devise_controller?\n\n\tprotected\n\n\tdef configure_permitted_parameters\n\t\tdevise_parameter_sanitizer.for(:sign_up) { |u| u.permit(:name, :email, :password, :password_confirmation, :remember_me) }\nend\n"
+		# \t\tdevise_parameter_sanitizer.for(:sign_in) { |u| u.permit(:login, :username, :email, :password, :remember_me) }\n\t\tdevise_parameter_sanitizer.for(:account_update) { |u| u.permit(:username, :email, :password, :password_confirmation, :current_password) }\n\t
+		inject_into_class("app/controllers/application_controller.rb", "ApplicationController", content)
+	end
+
 
 end

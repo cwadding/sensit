@@ -1,4 +1,5 @@
 object @subscription
+cache @subscription
 attribute :name, :host, :protocol
 node :port do |u|
 	u.port

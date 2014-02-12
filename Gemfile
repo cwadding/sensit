@@ -30,6 +30,10 @@ group :doc do
   gem 'sdoc', require: false
 end
 
+# group :development do
+#   gem "rails-erd", git: "https://github.com/bshelton229/rails-erd.git"
+# end
+
 # Use unicorn as the app server
 # gem 'unicorn'
 
@@ -37,11 +41,11 @@ end
 # gem 'capistrano', group: :development
 
 # Use debugger
-# gem 'debugger', group: [:development, :test]
+gem 'debugger', group: [:development, :test]
 gem 'sensit_messenger', :path => "src/api/messenger"
 gem 'sensit_core', :path => "src/api/core"
 gem 'sensit_percolator', :path => "src/api/percolator"
-gem 'sensit_publications', :path => "src/api/publication"
+gem 'sensit_publications', :path => "src/api/publications"
 gem 'sensit_reports', :path => "src/api/reports"
 gem 'sensit_subscriptions', :path => "src/api/subscriptions"
 

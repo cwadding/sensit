@@ -8,7 +8,7 @@ require 'roo'
 require 'zip'
 require 'friendly_id'
 require 'kaminari'
-require 'authority'
+# require 'authority'
 require 'doorkeeper'
 require 'devise'
 
@@ -47,7 +47,7 @@ module Sensit
 			  # kaminari.param_name = :page
 			end
 
-			::Authority.configure do |config|
+			# ::Authority.configure do |config|
 
 			  # USER_METHOD
 			  # ===========
@@ -109,7 +109,7 @@ module Sensit
 			  # config.logger = Logger.new('log/authority.log')  # Use this file
 			  # config.logger = Logger.new('/dev/null')          # Don't log at all (on a Unix system)
 
-			end
+			# end
 
 
 		end

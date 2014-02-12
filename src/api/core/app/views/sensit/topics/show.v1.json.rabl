@@ -1,4 +1,5 @@
 object @topic
+cache @topic
 attribute :id, :name, :description
 
 child @topic.feeds(params) => :feeds do

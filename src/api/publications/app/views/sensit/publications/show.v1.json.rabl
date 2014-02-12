@@ -1,4 +1,5 @@
 object @publication
+cache @publication
 attribute :name, :host, :protocol
 node :port do |u|
 	u.port

@@ -18,6 +18,9 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency 'mqtt'
+  spec.add_dependency 'eventmachine'
+  spec.add_dependency 'amqp'
+  spec.add_dependency 'blather'
   # https://github.com/ruby-amqp/amqp
   
   spec.add_development_dependency "bundler", "~> 1.5"

@@ -8,12 +8,12 @@ Sensit::Application.routes.draw do
   mount Sensit::Reports::Engine => "/"
   mount Sensit::Percolator::Engine => "/"
   mount Sensit::Subscriptions::Engine => "/"
-  # mount Sensit::Publications::Engine => "/"
+  mount Sensit::Publications::Engine => "/"
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
   # You can have the root of your site routed with "root"
-  root 'sensit/topics#index'
+  root 'oauth/applications#index'
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'

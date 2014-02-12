@@ -1,4 +1,5 @@
 object @feed
+cache @feed
 attributes :id
 
 node :at do |u|

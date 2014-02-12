@@ -70,14 +70,6 @@ module Sensit
       (!has_scope?(scope) && !current_application.topics.map(&:slug).include?(params[:topic_id].to_s)) || !current_user.topics.map(&:slug).include?(params[:topic_id].to_s)
     end
 
-      # Use callbacks to share common setup or constraints between actions.
-    def elastic_client
-      @client ||= ENV['ELASTICSEARCH_URL'] ? ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL']) : ::Elasticsearch::Client.new
-    end
-
-    def query_params
-      params.require(:percolator).require(:query).permit!
-    end
     # Only allow a trusted parameter "white list" through.
 
     def percolator_params

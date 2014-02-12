@@ -12,14 +12,6 @@ module Sensit
     validates :kind, presence: true, inclusion: { in: FACET_TYPES, message: "%{value} is not a valid facet type" }
   	validates :query, presence: true
 
-    def type=(value)
-      self.kind = value
-    end
-
-    def type
-      self.kind
-    end    
-
     def total
       query_results["total"] || 0
     end

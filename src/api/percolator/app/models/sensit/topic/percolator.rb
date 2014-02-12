@@ -107,11 +107,6 @@ module Sensit
 	# 	"Name"
 	# end
 
-	def update_attributes(params)
-		self.query = params
-		save
-	end
-
 private
 
 	def self.map_results(result)
