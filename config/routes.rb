@@ -1,9 +1,7 @@
 Sensit::Application.routes.draw do
   
   mount Sensit::Core::Engine => "/"
-  use_doorkeeper do
-		controllers :applications => 'oauth/applications'
-	end
+  use_doorkeeper
   devise_for :users, :class_name => "Sensit::User"
   mount Sensit::Reports::Engine => "/"
   mount Sensit::Percolator::Engine => "/"
@@ -13,7 +11,8 @@ Sensit::Application.routes.draw do
   # See how all your routes lay out with "rake routes".
 
   # You can have the root of your site routed with "root"
-  root 'oauth/applications#index'
+  root :to => redirect('/index.html')
+  # root 'sensit/users#show'
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'

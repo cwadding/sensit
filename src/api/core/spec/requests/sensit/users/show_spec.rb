@@ -19,7 +19,7 @@ describe "GET sensit/users#show" do
 		end
 
 		context "when the node exists" do
-			it "is successful and returns the expected json" do
+			it "is successful and returns the expected json", current: true do
 				response = process_oauth_request(@access_grant)
 				response.status.should == 200
 				response.body.should be_json_eql("{\"id\":#{@user.id},\"name\": \"#{@user.name}\"}")

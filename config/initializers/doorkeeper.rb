@@ -7,15 +7,18 @@ Doorkeeper.configure do
 
   # This block will be called to check whether the resource owner is authenticated or not.
   resource_owner_authenticator do
-		Sensit::User.find_by_id(session[:user_id]) || redirect_to(new_user_session_url)
+    if current_user.nil?
+      debugger
+    end
+		current_user || warden.authenticate!(:scope => :user) # current_user || redirect_to(new_user_session_url(return_to: request.fullpath))
   end
 
   # If you want to restrict access to the web interface for adding oauth authorized applications, you need to declare the block below.
-  # admin_authenticator do
-  #   # Put your admin authentication logic here.
-  #   # Example implementation:
-  #   Admin.find_by_id(session[:admin_id]) || redirect_to(new_admin_session_url)
-  # end
+  admin_authenticator do
+    # Put your admin authentication logic here.
+    # Example implementation:
+    redirect_to(new_user_session_url) unless current_user.present? && current_user.name == 'Administrator' 
+  end
 
   # Authorization Code expiration time (default 10 minutes).
   # authorization_code_expires_in 10.minutes
@@ -31,12 +34,12 @@ Doorkeeper.configure do
   # Optional parameter :confirmation => true (default false) if you want to enforce ownership of
   # a registered application
   # Note: you must also run the rails g doorkeeper:application_owner generator to provide the necessary support
-  enable_application_owner :confirmation => true
+  # enable_application_owner :confirmation => true
 
   # Define access token scopes for your provider
   # For more information go to https://github.com/applicake/doorkeeper/wiki/Using-Scopes
-  # default_scopes  :public
-  # optional_scopes :write, :update
+  default_scopes :read_application_data, :manage_application_data
+  optional_scopes :read_any_data, :manage_any_data, :read_any_percolations, :manage_any_percolations, :read_application_percolations, :manage_application_percolations, :read_any_publications, :manage_any_publications, :read_application_publications, :manage_application_publications, :read_any_subscriptions, :manage_any_subscriptions, :read_application_subscriptions, :manage_application_subscriptions, :read_any_publications, :manage_any_publications, :read_application_publications, :manage_application_publications
 
   # Change the way client credentials are retrieved from the request object.
   # By default it retrieves first from the `HTTP_AUTHORIZATION` header, then

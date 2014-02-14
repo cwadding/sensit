@@ -2,7 +2,7 @@ module Sensit
 	class ApiController < ActionController::Base
 
 		# force_ssl if: :ssl_configured?
-
+		# protect_from_forgery :null_session
 		# def ssl_configured?
 		# 	true # Rails.env.production?
 		# end
