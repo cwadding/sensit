@@ -22,3 +22,9 @@ task :default => :spec
 
 Bundler::GemHelper.install_tasks
 
+
+desc "Generates a dummy app for testing"
+task :test_app do
+  ENV['LIB_NAME'] = 'api/core'
+  Rake::Task['common:test_app'].invoke
+end
