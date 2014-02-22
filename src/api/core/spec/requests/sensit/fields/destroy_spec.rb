@@ -35,7 +35,7 @@ describe "DELETE sensit/fields#destroy" do
 		          }.to change(Sensit::Topic::Field, :count).by(-1)
 		        end
 
-		        it "removes that field from the elastic_search index"
+		        it "deletes all feed data in the index of the field"
 
 			end
 
