@@ -58,8 +58,8 @@ FactoryGirl.define do
         client = ENV['ELASTICSEARCH_URL'] ? ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL']) : ::Elasticsearch::Client.new        
         evaluator.feeds_count.times do |i|
           values = evaluator.field_keys.inject({}) {|h, key| h.merge!(key => i)}
-          Sensit::Topic::Feed.create({index: topic.user.name, type: topic.to_param, at: Time.now, :tz => "UTC", data: values})
-          client.indices.refresh(:index => topic.user.name)
+          Sensit::Topic::Feed.create({index: topic.user.name.parameterize, type: topic.to_param, at: Time.now, :tz => "UTC", data: values})
+          client.indices.refresh(:index => topic.user.name.parameterize)
         end
       end
     end
@@ -74,8 +74,8 @@ FactoryGirl.define do
         key_arr = []
         client = ENV['ELASTICSEARCH_URL'] ? ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL']) : ::Elasticsearch::Client.new
         evaluator.feeds_count.times do |i|
-          Sensit::Topic::Feed.create({index: topic.user.name, type: topic.to_param, at: Time.now, :tz => "UTC", data: {value1: i}})
-          client.indices.refresh(:index => topic.user.name)
+          Sensit::Topic::Feed.create({index: topic.user.name.parameterize, type: topic.to_param, at: Time.now, :tz => "UTC", data: {value1: i}})
+          client.indices.refresh(:index => topic.user.name.parameterize)
         end
       end
     end

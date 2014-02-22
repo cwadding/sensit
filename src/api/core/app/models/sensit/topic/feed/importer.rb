@@ -39,7 +39,7 @@ module Sensit
       unless @feeds.empty?
         if @feeds.map(&:valid?).all?
           response = elastic_client.bulk(index: self.index, type: self.type, body: bulk_body)
-          response["items"].map {|item| item.values.first["ok"]}.all? || false
+          response["items"].map {|item| item.values.first["ok"] || item.values.first["status"] === 201}.all? || false
         else
           @feeds.each_with_index do |feed, index|
             feed.errors.full_messages.each do |message|

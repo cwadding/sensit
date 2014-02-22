@@ -29,7 +29,7 @@ module Sensit
       end
 
       def valid_request(h = {})
-        {:use_route => :sensit_api, :format => "json", :api_version => 1}.merge!(h)
+        {:use_route => :sensit_api, :format => "json", :api_version => "1"}.merge!(h)
       end
 
       def valid_session
@@ -50,7 +50,7 @@ module Sensit
           client.should_receive(:update).and_return({"ok" => true })
           controller.stub(:elastic_client).and_return(client)
           # ::Sensit::Topic::Feed.any_instance.should_receive(:update).with({ "value" => "456" })
-          put :update, valid_request({:id => @data_key, :feed_id => @feed.id, :topic_id => @topic.to_param, :value => "456" }), valid_session
+          put :update, valid_request({:id => @data_key, :feed_id => @feed.id, :topic_id => @topic.to_param, :value => "sdg456" }), valid_session
         end
 
         it "returns an ok status" do
@@ -66,7 +66,7 @@ module Sensit
 
         it "re-renders the 'edit' template" do
           client  = ::Elasticsearch::Client.new
-          client.should_receive(:update).and_return({"ok" => false })
+          client.should_receive(:update).and_return(nil)
           controller.stub(:elastic_client).and_return(client)
           put :update, valid_request({:id => @data_key, :feed_id => @feed.id, :topic_id => @topic.to_param, :value => "456" }), valid_session
           response.status.should == 422

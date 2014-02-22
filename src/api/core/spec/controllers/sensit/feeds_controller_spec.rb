@@ -30,13 +30,13 @@ module Sensit
       end
 
       def valid_request(h = {})
-        h.merge!({:use_route => :sensit_core, :format => "json", :api_version => 1})
+        h.merge!({:use_route => :sensit_core, :format => "json", :api_version => "1"})
       end
       # This should return the minimal set of attributes required to create a valid
       # ::Sensit::Topic::Feed. As you add validations to ::Sensit::Topic::Feed, be sure to
       # update the return value of this method accordingly.
       def valid_attributes
-        { at: Time.now, tz: "Eastern Time (US & Canada)", data: {"assf" => "dsdsag"}}
+        { at: 1.minute.ago, tz: "Eastern Time (US & Canada)", data: {"assf" => "dsdsag"}}
       end
 
       # This should return the minimal set of values that should be in the session

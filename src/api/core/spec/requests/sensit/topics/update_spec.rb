@@ -168,7 +168,7 @@ describe "PUT sensit/topics#update" do
                end
             end
 
-            context "writing a topic owned by another user", current: true do
+            context "writing a topic owned by another user" do
                before(:each) do
                   @client.indices.create({index: "another_user", :body => {:settings => {:index => {:store => {:type => :memory}}}}}) unless @client.indices.exists({ index: "another_user"})
                   @another_user = Sensit::User.create(:name => "another_user", :email => "anouther_user@example.com", :password => "password", :password_confirmation => "password")

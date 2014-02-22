@@ -17,9 +17,9 @@ module Sensit
 				config.include_child_root = false
 			end
 
-			config.view_versions = [1]
-			config.view_version_extraction_strategy = :http_header
-			config.default_version = 1
+			config.versioncake.supported_version_numbers = [1]
+			config.versioncake.extraction_strategy = :http_header
+			config.versioncake.default_version = 1
 
 			config.to_prepare do
 				::Sensit::Topic::Field.send :include, ::Sensit::Measurable

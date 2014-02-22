@@ -14,7 +14,7 @@ module Sensit
     describe ".count" do
         context "when the index exists" do
             it "executes the elastic count query" do                
-                @client.should_receive(:count).with({index: ELASTIC_INDEX_NAME, type: "#{@user.name}:atm"}).and_return({"count"=>4, "_shards"=>{"total"=>1, "successful"=>1, "failed"=>0}})
+                @client.should_receive(:count).with({index: ELASTIC_INDEX_NAME.parameterize, type: "#{@user.name}:atm"}).and_return({"count"=>4, "_shards"=>{"total"=>1, "successful"=>1, "failed"=>0}})
                 Topic::Percolator.stub(:elastic_client).and_return(@client)
                 total = Topic::Percolator.count({topic_id: 'atm', user_id: @user.name})
             end
@@ -150,7 +150,7 @@ module Sensit
         end
         context "when the index exists" do
             it "executes the elastic index delete" do
-                @indices_client.should_receive(:delete).with({index: ELASTIC_INDEX_NAME, :type => "#{@user.name}:my_type"}).and_return({"ok"=>true, "acknowledged"=>true})
+                @indices_client.should_receive(:delete).with({index: ELASTIC_INDEX_NAME.parameterize, :type => "#{@user.name}:my_type"}).and_return({"ok"=>true, "acknowledged"=>true})
                 @client.stub(:indices).and_return(@indices_client)
                 Topic::Percolator.stub(:elastic_client).and_return(@client)
                 Topic::Percolator.destroy_all({:topic_id => "my_type", :user_id => @user.name})
@@ -158,7 +158,7 @@ module Sensit
         end
         context "when the index does not exist" do
             it "throws an exception that it is not found" do
-                @indices_client.should_receive(:delete).with({index: ELASTIC_INDEX_NAME, :type => "#{@user.name}:my_type"}).and_raise(::Elasticsearch::Transport::Transport::Errors::NotFound)
+                @indices_client.should_receive(:delete).with({index: ELASTIC_INDEX_NAME.parameterize, :type => "#{@user.name}:my_type"}).and_raise(::Elasticsearch::Transport::Transport::Errors::NotFound)
                 @client.stub(:indices).and_return(@indices_client)
                 Topic::Percolator.stub(:elastic_client).and_return(@client)
                 expect{
@@ -225,7 +225,7 @@ module Sensit
             @percolator.stub(:new_record?).and_return(false)
         end
         it "executes the update class action" do
-            @client.should_receive(:update).with({index: ELASTIC_INDEX_NAME, type: "#{@user.name}:mytype", id: 3, body:{ doc:{ query: { query_string: { query: 'foo' } }}}}).and_return({"ok"=>true, "_index"=>'_percolator', "_type"=>'mytype', "_id"=>"myrule", "_version"=>1})
+            @client.should_receive(:update).with({index: ELASTIC_INDEX_NAME.parameterize, type: "#{@user.name}:mytype", id: 3, body:{ doc:{ query: { query_string: { query: 'foo' } }}}}).and_return({"ok"=>true, "_index"=>'_percolator', "_type"=>'mytype', "_id"=>"myrule", "_version"=>1})
             @percolator.stub(:elastic_client).and_return(@client)
             success = @percolator.send(:update)
         end
@@ -249,7 +249,7 @@ module Sensit
                 @percolator.stub(:new_record?).and_return(false)
             end
             it "executes the elastic delete" do
-                @client.should_receive(:delete).with({index: ELASTIC_INDEX_NAME, type: "#{@user.name}:mytype", id: 3 }).and_return({"ok"=>true, "found"=>true, "_index"=>"transactions", "_type"=>"atm", "_id"=>"8eI2kKfwSymCrhqkjnGYiA", "_version"=>4})
+                @client.should_receive(:delete).with({index: ELASTIC_INDEX_NAME.parameterize, type: "#{@user.name}:mytype", id: 3 }).and_return({"ok"=>true, "found"=>true, "_index"=>"transactions", "_type"=>"atm", "_id"=>"8eI2kKfwSymCrhqkjnGYiA", "_version"=>4})
                 @percolator.stub(:elastic_client).and_return(@client)
                 @percolator.destroy.should be_true
             end

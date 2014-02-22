@@ -5,7 +5,6 @@ class Oauth::TokensController < ActionController::Metal
   include ActionController::Instrumentation
 
   def create
-    debugger
     response = strategy.authorize
     self.headers.merge! response.headers
     self.response_body = response.body.to_json

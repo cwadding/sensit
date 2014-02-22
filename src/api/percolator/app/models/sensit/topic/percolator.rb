@@ -136,22 +136,23 @@ private
 	def update
 		run_callbacks :update do
 			response = elastic_client.update attributes_to_update
-			response["ok"] || false
+			!response.nil?
 		end
 	end
 
 	def create
 		run_callbacks :create do
 			response = elastic_client.create attributes_to_create
-			if (response["ok"])
+			success = response["ok"] || response["created"] || false
+			if (success)
 				@new_record = false
 			end
-			response["ok"]
+			success
 		end
 	end
 
 	def self.elastic_index_name(user_id)
-		@@index = Rails.env.test? ? user_id : "_percolator"
+		@@index = Rails.env.test? ? user_id.parameterize : "_percolator"
 	end
 
 	def elastic_index_name

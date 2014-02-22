@@ -25,6 +25,7 @@ module Sensit
         if params.has_key?(:feeds)
           # have an async option to avoid timeouts and just return immediately with the confirmation that it was received
           importer = Topic::Feed::Importer.new({index: elastic_index_name, type: elastic_type_name, :fields => topic.fields, :feeds => feeds_params(topic.fields)})
+          # debugger
           if importer.save
             @fields = topic.fields
             @feeds = importer.feeds
@@ -47,8 +48,8 @@ module Sensit
     def update
       if attempting_to_access_topic_from_another_application_without_privilage("manage_any_data")
         raise ::Elasticsearch::Transport::Transport::Errors::NotFound
-      else      
-        @feed = Topic::Feed.find({index: elastic_index_name, type: elastic_type_name, id: params[:id].to_s})
+      else
+        @feed = Topic::Feed.find({index: elastic_index_name, type: elastic_type_name, id: params[:id].to_s})        
         if @feed.update_attributes(feed_update_params(@feed.fields))
           respond_with(@feed,:status => :ok, :template => "sensit/feeds/show")
         else

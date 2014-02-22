@@ -1,6 +1,10 @@
 object @topic
-cache @topic
-attribute :id, :name, :description
+
+attribute :name, :description
+
+node :id do |u|
+	u.slug
+end
 
 child @topic.feeds(params) => :feeds do
 	attributes :id

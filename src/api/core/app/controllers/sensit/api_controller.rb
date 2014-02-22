@@ -36,7 +36,7 @@ module Sensit
 		end
 
 		def elastic_index_name
-			current_user.name
+			current_user.name.parameterize
 		end
 
 		def elastic_type_name

@@ -104,7 +104,7 @@ private
 
 
 	def elastic_index_name
-		user.name
+		user.name.parameterize
 	end
 	def elastic_type_name
 		self.to_param

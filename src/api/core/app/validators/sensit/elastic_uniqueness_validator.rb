@@ -11,11 +11,14 @@ module Sensit
 		end
 
 		def validate_each(record, attribute, value)
-			client = ENV['ELASTICSEARCH_URL'] ? ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL']) : ::Elasticsearch::Client.new			
-			# TODO need to refine query to include scope
-			response = client.count(index: record.index, type: record.type, body: { match: { term: { attribute => value } } })
-			if response["count"].to_i > 0
-				record.errors[attribute] << (options[:message] || "is not unique")
+			if record.new_record?
+				client = ENV['ELASTICSEARCH_URL'] ? ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL']) : ::Elasticsearch::Client.new			
+				# TODO need to refine query to include scope
+				value = value.to_f if value.is_a? Time
+				response = client.count(index: record.index, type: record.type, body: { query: { term: { attribute => value } } })
+				if response["count"].to_i > 0
+					record.errors[attribute] << (options[:message] || "is not unique")
+				end
 			end
 		end
 	end

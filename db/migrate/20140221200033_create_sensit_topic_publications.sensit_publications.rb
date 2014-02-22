@@ -1,3 +1,4 @@
+# This migration comes from sensit_publications (originally 20140209164427)
 class CreateSensitTopicPublications < ActiveRecord::Migration
   def change
     create_table :sensit_topic_publications do |t|

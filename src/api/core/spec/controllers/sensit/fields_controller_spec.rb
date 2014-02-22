@@ -31,7 +31,7 @@ module Sensit
     # ::Sensit::Topic::Field. As you add validations to ::Sensit::Topic::Field, be sure to
     # adjust the attributes here as well.
       def valid_request(h = {})
-        h.merge!({:use_route => :sensit_api, :format => "json", :api_version => 1})
+        h.merge!({:use_route => :sensit_api, :format => "json", :api_version => "1"})
       end
       # This should return the minimal set of attributes required to create a valid
       # ::Sensit::Topic::Field. As you add validations to ::Sensit::Topic::Feed, be sure to

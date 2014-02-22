@@ -1,16 +1,16 @@
 RSpec::Runner.configure do |config|
   config.before(:all) do
     @client = ENV['ELASTICSEARCH_URL'] ? ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL']) : ::Elasticsearch::Client.new
-    @client.indices.delete({index: ELASTIC_INDEX_NAME}) if @client.indices.exists({ index: ELASTIC_INDEX_NAME})
-    @client.indices.create({index: ELASTIC_INDEX_NAME, :body => {:settings => {:index => {:store => {:type => :memory}}}}})
+    @client.indices.delete({index: ELASTIC_INDEX_NAME.parameterize}) if @client.indices.exists({ index: ELASTIC_INDEX_NAME.parameterize})
+    @client.indices.create({index: ELASTIC_INDEX_NAME.parameterize, :body => {:settings => {:index => {:store => {:type => :memory}}}}})
   end
   config.after(:each) do
     @client = ::Elasticsearch::Client.new
-    @client.indices.flush(index: ELASTIC_INDEX_NAME, refresh: true)
+    @client.indices.flush(index: ELASTIC_INDEX_NAME.parameterize, refresh: true)
   end
   config.after(:all) do
     @client = ::Elasticsearch::Client.new
-    @client.indices.delete(index: ELASTIC_INDEX_NAME)
+    @client.indices.delete(index: ELASTIC_INDEX_NAME.parameterize)
   end
 end
 
@@ -23,7 +23,7 @@ RSpec.configure do |config|
   end
 
   config.before(:each) do
-    @user = Sensit::User.create(:name => ELASTIC_INDEX_NAME, :email => "user@example.com", :password => "password", :password_confirmation => "password")
+    @user = Sensit::User.create(:name => ELASTIC_INDEX_NAME.parameterize, :email => "user@example.com", :password => "password", :password_confirmation => "password")
   end
 
   # config.before(:each, :type => :request) do

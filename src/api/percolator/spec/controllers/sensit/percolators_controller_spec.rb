@@ -29,7 +29,7 @@ module Sensit
 
       
       def valid_request(h = {})
-        h.merge!({:use_route => :sensit_percolator, :format => "json", :topic_id => "topic_type", :api_version => 1})
+        h.merge!({:use_route => :sensit_percolator, :format => "json", :topic_id => "topic_type", :api_version => "1"})
       end
       # This should return the minimal set of attributes required to create a valid
       # ::Sensit::Topic::Percolator. As you add validations to ::Sensit::Topic::Percolator, be sure to
@@ -59,7 +59,7 @@ module Sensit
             client = ENV['ELASTICSEARCH_URL'] ? ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL']) : ::Elasticsearch::Client.new
             expect {
               post :create, valid_request(:percolator => { topic_id: "topic_type", user_id: @user.name, :name => "mytest1", :query => { query_string: { query: 'foo' } }}), valid_session(user_id: @user.name)
-              client.indices.refresh(index: ELASTIC_INDEX_NAME)
+              client.indices.refresh(index: ELASTIC_INDEX_NAME.parameterize)
             }.to change{::Sensit::Topic::Percolator.count({ topic_id: "topic_type", user_id: @user.name})}.by(1)
           end
 
@@ -141,10 +141,10 @@ module Sensit
         end
         it "destroys the requested percolator", current: true do
           client = ENV['ELASTICSEARCH_URL'] ? ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL']) : ::Elasticsearch::Client.new
-          client.indices.refresh(index: ELASTIC_INDEX_NAME)
+          client.indices.refresh(index: ELASTIC_INDEX_NAME.parameterize)
           expect {
             delete :destroy, valid_request(:id => @percolator.name), valid_session(user_id: @user.name)
-            client.indices.refresh(index: ELASTIC_INDEX_NAME)
+            client.indices.refresh(index: ELASTIC_INDEX_NAME.parameterize)
           }.to change{::Sensit::Topic::Percolator.count({topic_id: "topic_type", user_id: @user.name})}.by(-1)
         end
 

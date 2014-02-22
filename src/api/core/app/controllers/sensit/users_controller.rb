@@ -7,6 +7,7 @@ module Sensit
 	doorkeeper_for :all    
     def show
       @user = current_user
+      @topics = scoped_owner("read_any_data").topics
       respond_with @user
     end
   end

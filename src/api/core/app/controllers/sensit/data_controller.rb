@@ -8,14 +8,16 @@ module Sensit
 
     # GET topics/1/feeds/1/data/:key
     def show
+
       if attempting_to_access_topic_from_another_application_without_privilage("read_any_data")
         raise ::Elasticsearch::Transport::Transport::Errors::NotFound
       else
         response = elastic_client.get(index: elastic_index_name, type: elastic_type_name,:id => params[:feed_id], :fields => "#{params[:id]}")
-        if response["exists"]
-            render text: response["fields"][params[:id]]
+        if response["exists"] || response["found"]
+          value = response["fields"][params[:id]]
+          render text: value.is_a?(Array) ? value[0] : value
         else
-            raise ::Elasticsearch::Transport::Transport::Errors::NotFound
+          raise ::Elasticsearch::Transport::Transport::Errors::NotFound
         end
       end
     end
@@ -29,10 +31,10 @@ module Sensit
           head :status => :not_found
         else
           response = elastic_client.update(index: elastic_index_name, type: elastic_type_name,:id => params[:feed_id], :body => {doc: {params[:id] => data_param[:value]}})
-          if response["ok"]
-            head :status => :ok
-          else
+          if response.nil?
             head :status => :unprocessable_entity
+          else
+            head :status => :ok
           end
         end
       end

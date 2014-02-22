@@ -34,6 +34,6 @@ Dummy::Application.configure do
   # Print deprecation notices to the stderr.
   config.active_support.deprecation = :stderr
 
-  config.view_version_extraction_strategy = [:query_parameter, :request_parameter, :http_header, :http_accept_parameter]
+  config.versioncake.extraction_strategy = [:query_parameter, :request_parameter, :http_header, :http_accept_parameter]
 
 end

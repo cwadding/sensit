@@ -13,17 +13,17 @@ Gem::Specification.new do |s|
 
   s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.rdoc"]
 
-  s.add_dependency "rails", "~> 4.0.2"
+  s.add_dependency "rails", "~> 4.0.3"
   s.add_dependency 'rabl', '~> 0.9.3'
-  s.add_dependency 'versioncake', '~>1.3.0'
-  s.add_dependency 'kaminari', '~>0.15.0'
+  s.add_dependency 'versioncake', '~>2.0.0'
+  s.add_dependency 'kaminari', '~>0.15.1'
   s.add_dependency 'foreigner', '~>1.6.0'  
   s.add_dependency 'rubyzip', '~> 1.1.0'
-  s.add_dependency "elasticsearch", "~> 0.4.7"
-  s.add_dependency 'roo', "~> 1.13.0"
-  s.add_dependency 'friendly_id', '~> 5.0.2'
+  s.add_dependency "elasticsearch", "~> 1.0.0"
+  s.add_dependency 'roo', "~> 1.13.2"
+  s.add_dependency 'friendly_id', '~> 5.0.3'
   s.add_dependency 'doorkeeper', '~> 1.0.0'
-  s.add_dependency 'devise', '~> 3.2.2'
+  s.add_dependency 'devise', '~> 3.2.3'
 
   s.add_development_dependency "sqlite3"
   s.add_development_dependency 'rspec-rails'

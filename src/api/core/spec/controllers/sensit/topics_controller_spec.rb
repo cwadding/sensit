@@ -27,7 +27,7 @@ module Sensit
       end
 
       def valid_request(h = {})
-        h.merge!({:use_route => :sensit_api, :format => "json", :api_version => 1})
+        h.merge!({:use_route => :sensit_api, :format => "json", :api_version => "1"})
       end
       # This should return the minimal set of attributes required to create a valid
       # Topic. As you add validations to Topic, be sure to

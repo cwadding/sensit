@@ -1,4 +1,5 @@
 erd.pdf
+*.sqlite3
 *.log
 *.gem
 *.rbc

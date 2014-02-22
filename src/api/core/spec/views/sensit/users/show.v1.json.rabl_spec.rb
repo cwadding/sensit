@@ -6,7 +6,7 @@ describe "sensit/users/show" do
   end
   it "renders the json data" do
     render
-    [:id, :name].each do |key|
+    [:name, :email, :topics].each do |key|
       rendered.should have_json_path("#{key.to_s}")
     end
   end

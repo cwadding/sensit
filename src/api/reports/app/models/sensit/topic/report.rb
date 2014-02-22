@@ -57,7 +57,7 @@ private
 	end
 
 	def elastic_index_name
-		self.topic.user.name
+		self.topic.user.name.parameterize
 	end
 
 	def elastic_type_name

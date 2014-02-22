@@ -163,7 +163,7 @@ private
 	def update
 		run_callbacks :update do
 			response = elastic_client.update attributes_to_update
-			response["ok"] || false
+			!response.nil?
 		end
 	end
 
@@ -180,11 +180,12 @@ private
 				convert_rawdata_to_datatype
 			end
 			response = elastic_client.create attributes_to_create
-			if (response["ok"])
+			success = response["ok"] || response["created"] || false
+			if (success)
 				@new_record = false
 				@id = response["_id"]
 			end
-			response["ok"] || false
+			success
 		end
 	end
 

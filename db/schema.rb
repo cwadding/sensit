@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140212142431) do
+ActiveRecord::Schema.define(version: 20140221200038) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -55,6 +55,21 @@ ActiveRecord::Schema.define(version: 20140212142431) do
 
   add_index "oauth_applications", ["uid"], name: "index_oauth_applications_on_uid", unique: true, using: :btree
 
+  create_table "sensit_percolations", force: true do |t|
+    t.integer  "publication_id"
+    t.integer  "rule_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "sensit_rules", force: true do |t|
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "sensit_rules", ["name"], name: "index_sensit_rules_on_name", unique: true, using: :btree
+
   create_table "sensit_subscriptions", force: true do |t|
     t.string   "name"
     t.string   "protocol"
@@ -84,6 +99,18 @@ ActiveRecord::Schema.define(version: 20140212142431) do
 
   add_index "sensit_topic_fields", ["key"], name: "index_sensit_topic_fields_on_key", unique: true, using: :btree
   add_index "sensit_topic_fields", ["slug"], name: "index_sensit_topic_fields_on_slug", unique: true, using: :btree
+
+  create_table "sensit_topic_publications", force: true do |t|
+    t.string   "host"
+    t.integer  "port"
+    t.string   "username"
+    t.string   "password_digest"
+    t.string   "protocol"
+    t.integer  "topic_id"
+    t.integer  "actions_mask"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
 
   create_table "sensit_topic_report_facets", force: true do |t|
     t.string   "name"
@@ -147,10 +174,15 @@ ActiveRecord::Schema.define(version: 20140212142431) do
   add_foreign_key "oauth_access_tokens", "oauth_applications", name: "oauth_access_tokens_application_id_fk", column: "application_id"
   add_foreign_key "oauth_access_tokens", "sensit_users", name: "oauth_access_tokens_resource_owner_id_fk", column: "resource_owner_id"
 
+  add_foreign_key "sensit_percolations", "sensit_rules", name: "sensit_percolations_rule_id_fk", column: "rule_id"
+  add_foreign_key "sensit_percolations", "sensit_topic_publications", name: "sensit_topic_publications_publication_id_fk", column: "publication_id"
+
   add_foreign_key "sensit_subscriptions", "oauth_applications", name: "sensit_subscriptions_application_id_fk", column: "application_id"
   add_foreign_key "sensit_subscriptions", "sensit_users", name: "sensit_subscriptions_user_id_fk", column: "user_id"
 
   add_foreign_key "sensit_topic_fields", "sensit_topics", name: "sensit_topic_fields_topic_id_fk", column: "topic_id"
+
+  add_foreign_key "sensit_topic_publications", "sensit_topics", name: "sensit_topic_publications_topic_id_fk", column: "topic_id"
 
   add_foreign_key "sensit_topic_report_facets", "sensit_topic_reports", name: "sensit_report_facets_report_id_fk", column: "report_id"
 

@@ -20,11 +20,11 @@ module OAuthHelpers
 
 
 	def oauth_get(access_grant, url, params = {}, session ={})
-		debugger
 		oauth_token(access_grant).get( url, params: params)
 	end
 
 	def oauth_post(access_grant, url, params = {}, session ={})
+		# debugger
 		oauth_token(access_grant).post( url, {body: params})
 	end
 
