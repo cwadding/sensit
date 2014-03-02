@@ -1,4 +1,5 @@
 require 'sensit_core'
+require 'ancestry'
 module Sensit
 	module Reports
 		class Engine < ::Rails::Engine

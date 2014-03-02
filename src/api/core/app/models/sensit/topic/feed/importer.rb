@@ -22,7 +22,7 @@ module Sensit
     def feeds=(value)
       if value.is_a?(Array)
           @feeds = value.inject([]) do |arr, body|
-            arr << Topic::Feed.new(body.merge!({index: self.index, type: self.type}))
+            arr << Topic::Feed.new(body.merge!({index: self.index, type: self.type, fields: self.fields}))
           end
       elsif value.is_a?(ActionDispatch::Http::UploadedFile) || value.is_a?(Rack::Test::UploadedFile)
         @feeds = load_feeds(value)
@@ -68,7 +68,7 @@ private
           values = temp_fields.inject({}) {|h,field| h.merge!(field.key => field.convert(row[header.index(field.key)]))}
           at = row[header.index("at")]
           tz = row[header.index("tz")]
-          feed_arr << Topic::Feed.new({index: self.index, type: self.type, at: at, tz: tz, data: values})
+          feed_arr << Topic::Feed.new({index: self.index, type: self.type, at: at, tz: tz, data: values, fields: self.fields})
         end
       end
       feed_arr.uniq {|feed| feed.at}

@@ -6,7 +6,7 @@ describe "sensit/reports/show" do
   end
   it "renders the json data" do
     render
-    [:name, :query, :facets].each do |key|
+    [:name, :query, :aggregations].each do |key|
       rendered.should have_json_path("#{key.to_s}")
     end
   end

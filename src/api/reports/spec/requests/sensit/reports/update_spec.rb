@@ -41,10 +41,10 @@ describe "PUT sensit/reports#update" do
 
 					it "returns the expected json" do
 						response = process_oauth_request(@access_grant,@report, @params)
-						facet_arr = @report.facets.inject([]) do |facet_arr, facet|
-							facet_arr << "{\"query\":#{facet.query.to_json},\"type\":\"terms\" \"name\":\"#{facet.name}\"}"
-						end
-						response.body.should be_json_eql("{\"name\": \"#{@params[:report][:name]}\",\"query\":{\"match_all\":{}},\"total\": 3,\"facets\": [{\"missing\": 0,\"name\": \"My Reportfacet\",\"type\": \"terms\",\"query\": {\"field\": \"value1\"},\"results\": [{\"count\": 1,\"term\": 2},{\"count\": 1,\"term\": 1},{\"count\": 1,\"term\": 0}],\"total\": 3}]}")
+						# aggregation_arr = @report.aggregations.inject([]) do |aggregation_arr, aggregation|
+						# 	aggregation_arr << "{\"query\":#{aggregation.query.to_json},\"type\":\"terms\" \"name\":\"#{aggreagtion.name}\"}"
+						# end
+						response.body.should be_json_eql("{\"name\": \"#{@params[:report][:name]}\",\"query\":{\"match_all\":{}},\"aggregations\":[{\"name\": \"My Reportaggregation\",\"type\":\"terms\", \"query\": {\"field\": \"value1\"},\"results\": {\"buckets\": [{\"doc_count\": 1, \"key\": 0}, {\"doc_count\": 1, \"key\": 1}, {\"doc_count\": 1,\"key\": 2  }]}}], \"total\":3}")
 					end
 				end
 
@@ -58,7 +58,7 @@ describe "PUT sensit/reports#update" do
 					it "returns the expected json" do
 						response = process_oauth_request(@access_grant,@report, @params)
 						response.status.should == 200
-						response.body.should be_json_eql("{\"name\": \"#{@params[:report][:name]}\",\"query\":{\"match_all\":{}},\"total\": 3,\"facets\": [{\"missing\": 0,\"name\": \"My Reportfacet\",\"type\":\"terms\",\"query\": {\"field\": \"value1\"},\"results\": [{\"count\": 1,\"term\": 2},{\"count\": 1,\"term\": 1},{\"count\": 1,\"term\": 0}],\"total\": 3}]}")
+						response.body.should be_json_eql("{\"name\": \"#{@params[:report][:name]}\",\"query\":{\"match_all\":{}},\"aggregations\":[{\"name\": \"My Reportaggregation\",\"type\":\"terms\", \"query\": {\"field\": \"value1\"},\"results\": {\"buckets\": [{\"doc_count\": 1, \"key\": 0}, {\"doc_count\": 1, \"key\": 1}, {\"doc_count\": 1,\"key\": 2  }]}}], \"total\":3}")						
 					end
 				end
 

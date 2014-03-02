@@ -48,11 +48,11 @@ puts "Creating ElasticSearch index..."
 puts "...Successfully created elasticsearch index"
 
 
-Sensit::User.destroy_all
 Doorkeeper::Application.destroy_all
 Doorkeeper::AccessGrant.destroy_all
 Sensit::Topic.destroy_all
 Sensit::Topic::Field.destroy_all
+Sensit::User.destroy_all
 
 path_to_csv = File.dirname(__FILE__) + "/data/ILP_20131009_1801.csv"
 
@@ -248,7 +248,7 @@ File.open('seed_errors.txt', 'w') do |f|
 					values.merge!(field.key => val)
 				end
 			end
-			feed = Sensit::Topic::Feed.new({index: @user.name, type: @topic.to_param, at: at, data: values})
+			feed = Sensit::Topic::Feed.new({index: @user.name, type: @topic.to_param, at: at, data: values, fields: fields})
 			check_if_created(feed, f)
 		end
 	end

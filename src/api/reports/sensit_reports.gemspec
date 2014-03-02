@@ -15,6 +15,7 @@ Gem::Specification.new do |s|
 
 
   s.add_dependency 'sensit_core', Sensit::VERSION
+  s.add_dependency 'ancestry', "~> 2.0.0"
 
   s.add_development_dependency "sqlite3"
   s.add_development_dependency 'rspec-rails'

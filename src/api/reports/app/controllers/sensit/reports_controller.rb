@@ -36,8 +36,8 @@ module Sensit
       else
         topic = scoped_owner("manage_any_reports").topics.find(params[:topic_id])
         @report = topic.reports.build(report_params)
-        facets_params.each do |facet_params|
-          @report.facets.build(facet_params)
+        aggregations_params.each do |aggregation_params|
+          @report.aggregations.build(aggregation_params)
         end
         if @report.save
           respond_with(@report,:status => :created, :template => "sensit/reports/show")
@@ -54,9 +54,9 @@ module Sensit
       else
         @report = scoped_owner("manage_any_reports").topics.find(params[:topic_id]).reports.find(params[:id])
 
-        (params[:report][:facets] || []).each do |facet_params|
-          facet = @report.facets.where( name: facet_params[:name]).first || nil
-          facet.update(query: facet_params[:query]) unless facet.blank?
+        (params[:report][:aggregations] || []).each do |aggregation_params|
+          aggregation = @report.aggregations.where( name: aggregation_params[:name]).first || nil
+          aggregation.update(query: aggregation_params[:query]) unless aggregation.blank?
         end
 
         if @report.update(report_params)
@@ -89,25 +89,17 @@ module Sensit
       end
 
       # Only allow a trusted parameter "white list" through.
-      def facets_params
+      def aggregations_params
         # fields = Topic::Field.joins(:topic).where(:sensit_topics => {:slug => params[:topic_id]}).map(&:key)
-        params.require(:report).require(:facets).map do |facet|
-          type = facet.delete(:type)
-          facet[:kind] = type
-          facet.tap do |whitelisted|
-            whitelisted[:name] = facet[:name] if facet.has_key?(:name)
-            whitelisted[:kind] = facet[:kind]
-            whitelisted[:query] = facet[:query] if facet.has_key?(:query)
+        params.require(:report).require(:aggregations).map do |aggregation|
+          type = aggregation.delete(:type)
+          aggregation[:kind] = type
+          aggregation.tap do |whitelisted|
+            whitelisted[:name] = aggregation[:name] if aggregation.has_key?(:name)
+            whitelisted[:kind] = aggregation[:kind]
+            whitelisted[:query] = aggregation[:query] if aggregation.has_key?(:query)
           end
         end
-        # (:name, 
-        #   :query => {:match_all => {}},
-        #   :facets => {
-        #     :statistical => [:field, :fields, :script, :params],
-        #     :terms => [:field, :size, :order], 
-        #     :histogram => [:field, :interval, :time_interval, :key_field, :value_field, :key_script, :value_script, :params]
-        #   }
-        # )
       end
 
 

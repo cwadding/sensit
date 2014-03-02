@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140209185629) do
+ActiveRecord::Schema.define(version: 20140228200209) do
 
   create_table "oauth_access_grants", force: true do |t|
     t.integer  "resource_owner_id", null: false
@@ -62,6 +62,19 @@ ActiveRecord::Schema.define(version: 20140209185629) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  create_table "sensit_topic_report_aggregations", force: true do |t|
+    t.integer  "report_id"
+    t.string   "name"
+    t.string   "query"
+    t.string   "kind"
+    t.string   "ancestry"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "sensit_topic_report_aggregations", ["ancestry"], name: "index_sensit_topic_report_aggregations_on_ancestry"
+  add_index "sensit_topic_report_aggregations", ["report_id"], name: "index_sensit_topic_report_aggregations_on_report_id"
 
   create_table "sensit_topic_report_facets", force: true do |t|
     t.string   "name"

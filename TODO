@@ -80,7 +80,6 @@ https://github.com/pksunkara/alpaca
 	// Analysis
 		// Machine learning or other rule processing based api
 		// Pattern rules
-		// forecasting using kalman or particle filters while observing the data
 	// Actions
 		// Downloading an image from a camera
 			// Module to manage connections to various NAS's

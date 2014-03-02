@@ -15,12 +15,12 @@ describe "POST sensit/reports#create"  do
 
 	context "with valid attributes" do
 
-		context "with facets" do 
+		context "with aggregations" do 
 			before(:each) do
 				@params = {
 					:report => {
 						:name => "My Report",
-						:facets => [{"name" => "facet1", "type" => "terms", "query" => { :field => "value1"}}]
+						:aggregations => [{"name" => "agg1", "type" => "terms", "query" => { :field => "value1"}}]
 					}
 				}
 			end
@@ -38,11 +38,19 @@ describe "POST sensit/reports#create"  do
 							response.status.should == 201
 						end
 
+						# for facets
+						# it "returns the expected json" do
+						# 	response = process_oauth_request(@access_grant,@topic, @params)
+						# 	response.body.should be_json_eql("{\"name\": \"#{@params[:report][:name]}\",\"query\":{\"match_all\":{}},\"facets\":[{\"missing\": 0,\"name\": \"facet1\",\"type\":\"terms\", \"query\": {\"field\": \"value1\"},\"results\": [{\"count\": 1,\"term\": 2},{\"count\": 1,\"term\": 1},{\"count\": 1,\"term\": 0}],\"total\": 3}], \"total\":3}")
+						# end
+
+						# for aggregations
 						it "returns the expected json" do
 							response = process_oauth_request(@access_grant,@topic, @params)
-							response.body.should be_json_eql("{\"name\": \"#{@params[:report][:name]}\",\"query\":{\"match_all\":{}},\"facets\":[{\"missing\": 0,\"name\": \"facet1\",\"type\":\"terms\", \"query\": {\"field\": \"value1\"},\"results\": [{\"count\": 1,\"term\": 2},{\"count\": 1,\"term\": 1},{\"count\": 1,\"term\": 0}],\"total\": 3}], \"total\":3}")
+							response.body.should be_json_eql("{\"name\": \"#{@params[:report][:name]}\",\"query\":{\"match_all\":{}},\"aggregations\":[{\"name\": \"agg1\",\"type\":\"terms\", \"query\": {\"field\": \"value1\"},\"results\": {\"buckets\": [{\"doc_count\": 1, \"key\": 0}, {\"doc_count\": 1, \"key\": 1}, {\"doc_count\": 1,\"key\": 2  }]}}], \"total\":3}")
 						end
 					end
+
 					context "creating report for another application" do
 						before(:each) do
 							@application = FactoryGirl.create(:application)
@@ -52,7 +60,7 @@ describe "POST sensit/reports#create"  do
 						it "returns the expected json" do
 							response = process_oauth_request(@access_grant,@topic, @params)
 							response.status.should == 201
-							response.body.should be_json_eql("{\"name\": \"#{@params[:report][:name]}\",\"query\":{\"match_all\":{}},\"facets\":[{\"missing\": 0,\"name\": \"facet1\",\"type\":\"terms\",\"query\": {\"field\": \"value1\"},\"results\": [{\"count\": 1,\"term\": 2},{\"count\": 1,\"term\": 1},{\"count\": 1,\"term\": 0}],\"total\": 3}], \"total\":3}")
+							response.body.should be_json_eql("{\"name\": \"#{@params[:report][:name]}\",\"query\":{\"match_all\":{}},\"aggregations\":[{\"name\": \"agg1\",\"type\":\"terms\", \"query\": {\"field\": \"value1\"},\"results\": {\"buckets\": [{\"doc_count\": 1, \"key\": 0}, {\"doc_count\": 1, \"key\": 1}, {\"doc_count\": 1,\"key\": 2  }]}}], \"total\":3}")							
 						end
 					end
 
@@ -99,7 +107,7 @@ describe "POST sensit/reports#create"  do
 			end				
 		end
 		context "without facets" do
-			#{@params[:report][:facets].to_json		
+			#{@params[:report][:aggregations].to_json		
 		end
 	end
 	context "with incorrect attributes" do

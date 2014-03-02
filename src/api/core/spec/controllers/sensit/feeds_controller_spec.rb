@@ -144,7 +144,7 @@ module Sensit
       end
 
       describe "DELETE destroy" do
-        it "destroys the requested feed" do
+        it "destroys the requested feed", current: true do
           feed = ::Sensit::Topic::Feed.create valid_attributes.merge!(index: ELASTIC_INDEX_NAME, type: @topic.to_param)
           client = ENV['ELASTICSEARCH_URL'] ? ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL']) : ::Elasticsearch::Client.new
           client.indices.refresh(index: ELASTIC_INDEX_NAME)

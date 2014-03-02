@@ -34,7 +34,7 @@ module Sensit
     # ::Sensit::Topic::Feed. As you add validations to ::Sensit::Topic::Feed, be sure to
     # update the return value of this method accordingly.
     def valid_attributes
-      { :name => "My Report", :query => {"match_all" => {  }}, :facets => [{"name" => "facet1", "type" => "terms" ,"query" => { :field => "value1"}}]}
+      { :name => "My Report", :query => {"match_all" => {  }}, :aggregations => [{"name" => "aggregation1", "type" => "terms" ,"query" => { :field => "value1"}}]}
     end
 
     # This should return the minimal set of values that should be in the session
@@ -87,14 +87,14 @@ module Sensit
         it "assigns a newly created but unsaved report as @report" do
           # Trigger the behavior that occurs when invalid params are submitted
           ::Sensit::Topic::Report.any_instance.stub(:save).and_return(false)
-          post :create, valid_request({:topic_id => @topic.to_param, :report => { "name" => "invalid value", :query => {"match_all" => {  }}, :facets => [{"name" => "facet1", "type" => "terms", "query" => { :field => "value1"}}]}}), valid_session(user_id: @user.to_param)
+          post :create, valid_request({:topic_id => @topic.to_param, :report => { "name" => "invalid value", :query => {"match_all" => {  }}, :aggregations => [{"name" => "aggregation1", "type" => "terms", "query" => { :field => "value1"}}]}}), valid_session(user_id: @user.to_param)
           assigns(:report).should be_a_new(::Sensit::Topic::Report)
         end
 
         it "re-renders the 'new' template" do
           # Trigger the behavior that occurs when invalid params are submitted
           Topic::Report.any_instance.stub(:save).and_return(false)
-          post :create, valid_request({:topic_id => @topic.to_param, :report => { "name" => "invalid value", :query => {"match_all" => {  }}, :facets => [{"name" => "facet1", "type" => "terms" ,"query" => { :field => "value1"}}]}}), valid_session(user_id: @user.to_param)
+          post :create, valid_request({:topic_id => @topic.to_param, :report => { "name" => "invalid value", :query => {"match_all" => {  }}, :aggregations => [{"name" => "aggregation1", "type" => "terms" ,"query" => { :field => "value1"}}]}}), valid_session(user_id: @user.to_param)
           response.status.should == 422
         end
       end
@@ -107,7 +107,7 @@ module Sensit
       describe "with valid params" do
         it "updates the requested report" do
           ::Sensit::Topic::Report.any_instance.should_receive(:update).with({ "name" => "MyString", "query" => {"match_all" => {  }}} )
-          put :update, valid_request({:id => @report.to_param, :topic_id => @topic.to_param, :report => { "name" => "MyString", :query => {"match_all" => {  }}, :facets => [{"name" => "facet1", "type" => "terms", "query" => { :field => "value1"}}] }}), valid_session(user_id: @user.to_param)
+          put :update, valid_request({:id => @report.to_param, :topic_id => @topic.to_param, :report => { "name" => "MyString", :query => {"match_all" => {  }}, :aggregations => [{"name" => "aggregation1", "type" => "terms", "query" => { :field => "value1"}}] }}), valid_session(user_id: @user.to_param)
         end
 
         it "assigns the requested report as @report" do
@@ -124,13 +124,13 @@ module Sensit
       describe "with invalid params" do
         it "assigns the report as @report" do
           ::Sensit::Topic::Report.any_instance.stub(:save).and_return(false)
-          put :update, valid_request({:id => @report.to_param, :topic_id => @topic.to_param, :report => { "name" => "invalid value", :query => {"match_all" => {  }} }, :facets => [{"name" => "facet1", "type" => "terms","query" => { :field => "value1"}}]}), valid_session(user_id: @user.to_param)
+          put :update, valid_request({:id => @report.to_param, :topic_id => @topic.to_param, :report => { "name" => "invalid value", :query => {"match_all" => {  }} }, :aggregations => [{"name" => "aggregation1", "type" => "terms","query" => { :field => "value1"}}]}), valid_session(user_id: @user.to_param)
           assigns(:report).should eq(@report)
         end
 
         it "re-renders the 'edit' template" do
           ::Sensit::Topic::Report.any_instance.stub(:save).and_return(false)
-          put :update, valid_request({:id => @report.to_param, :topic_id => @topic.to_param, :report => { "name" => "invalid value", :query => {"match_all" => {  }} }, :facets => [{"name" => "facet1", "type" => "terms","query" => { :field => "value1"}}]}), valid_session(user_id: @user.to_param)
+          put :update, valid_request({:id => @report.to_param, :topic_id => @topic.to_param, :report => { "name" => "invalid value", :query => {"match_all" => {  }} }, :aggregations => [{"name" => "aggregation1", "type" => "terms","query" => { :field => "value1"}}]}), valid_session(user_id: @user.to_param)
           response.status.should == 422
         end
       end
@@ -158,198 +158,397 @@ module Sensit
       after(:each) do
         @new_params.should == controller.params[:report]
       end
-      # context "terms facet" do
+      # context "terms aggregation" do
       #   it "ordering" do
-      #     controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {  }}, :facets => [{ "name" => "tag", "body" => { "terms" => {"field" => "tag","size" => 10, "order" => "term"}} }]}}
+      #     controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {  }}, :aggregations => [{ "name" => "tag", "body" => { "terms" => {"field" => "tag","size" => 10, "order" => "term"}} }]}}
       #     @new_params = controller.send(:report_params)
       #   end
       #   it "all terms" do
-      #     controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {  }}, :facets => [{  "name" => "tag", "body" => { "terms" => {"field" => "tag","all_terms" => true}} }]}}
+      #     controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {  }}, :aggregations => [{  "name" => "tag", "body" => { "terms" => {"field" => "tag","all_terms" => true}} }]}}
       #     @new_params = controller.send(:report_params)
       #   end
       #   it "excluding terms" do
-      #     controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {  }}, :facets => [{  "name" => "tag", "body" => { "terms" => {"field" => "tag","exclude" => ["term1", "term2"]}} }]}}
+      #     controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {  }}, :aggregations => [{  "name" => "tag", "body" => { "terms" => {"field" => "tag","exclude" => ["term1", "term2"]}} }]}}
       #     @new_params = controller.send(:report_params)
       #   end
       #   it "regex" do
-      #     controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {  }}, :facets => [{  "name" => "tag", "body" => { "terms" => {"field" => "tag","regex" => "_regex expression here_", "regex_flags" => "DOTALL"}} }]}}
+      #     controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {  }}, :aggregations => [{  "name" => "tag", "body" => { "terms" => {"field" => "tag","regex" => "_regex expression here_", "regex_flags" => "DOTALL"}} }]}}
       #     @new_params = controller.send(:report_params)
       #   end  
       #   it "term scripts" do
-      #     controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {  }}, :facets => [{  "name" => "tag", "body" => { "terms" => {"field" => "tag","size" => 10, "script" => "term + 'aaa'"}} }]}}
+      #     controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {  }}, :aggregations => [{  "name" => "tag", "body" => { "terms" => {"field" => "tag","size" => 10, "script" => "term + 'aaa'"}} }]}}
       #     @new_params = controller.send(:report_params)
       #   end
       #   it "multi fields" do
-      #     controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {  }}, :facets => [{  "name" => "tag", "body" => { "terms" => {"fields" => ["tag1", "tag2"],"size" => 10}} }]}}
+      #     controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {  }}, :aggregations => [{  "name" => "tag", "body" => { "terms" => {"fields" => ["tag1", "tag2"],"size" => 10}} }]}}
       #     @new_params = controller.send(:report_params)
       #   end 
       # end     
     end
 
 
-    describe ".facets_params" do
+
+
+
+    describe ".aggregations_params" do
       after(:each) do
-        controller.params[:report][:facets].map do |facet|
-          type = facet.delete("type")
-          facet["kind"] = type
+        controller.params[:report][:aggregations].map do |aggregation|
+          type = aggregation.delete("type")
+          aggregation["kind"] = type
         end
-        @new_params.should == controller.params[:report][:facets]
+        @new_params.should == controller.params[:report][:aggregations]
       end
-      context "terms facet" do
+
+      # AGGREGATION_TYPES = %w[min max sum avg stats extended_stats value_count global filter missing terms range date_range ip_range histogram date_histogram geo_distance geohash_grid]
+
+      context "avg aggregations" do
+        it "field" do
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"aggregations" => [{"name" => "tag_price_stats", "type" => "avg", "query" => {"field" => "tag"}}]}}
+          @new_params = controller.send(:aggregations_params)
+        end  
+        it "script with params" do
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"aggregations" => [{"name" => "tag_price_stats", "type" => "avg", "query" => {"field" => "tag", "script" => "_value * conversion_rate", "params" => {"conversion_rate" => 1.2}}}]}}
+          @new_params = controller.send(:aggregations_params)
+        end
+      end
+
+      context "min aggregations" do
+        it "field" do
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"aggregations" => [{"name" => "tag_price_stats", "type" => "min", "query" => {"field" => "tag"}}]}}
+          @new_params = controller.send(:aggregations_params)
+        end  
+        it "script with params" do
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"aggregations" => [{"name" => "tag_price_stats", "type" => "min", "query" => {"field" => "tag", "script" => "_value * conversion_rate", "params" => {"conversion_rate" => 1.2}}}]}}
+          @new_params = controller.send(:aggregations_params)
+        end
+      end   
+      
+      context "max aggregations" do
+        it "field" do
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"aggregations" => [{"name" => "tag_price_stats", "type" => "max", "query" => {"field" => "tag"}}]}}
+          @new_params = controller.send(:aggregations_params)
+        end  
+        it "script with params" do
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"aggregations" => [{"name" => "tag_price_stats", "type" => "max", "query" => {"field" => "tag", "script" => "_value * conversion_rate", "params" => {"conversion_rate" => 1.2}}}]}}
+          @new_params = controller.send(:aggregations_params)
+        end
+      end 
+
+      context "sum aggregations" do
+        it "field" do
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"aggregations" => [{"name" => "tag_price_stats", "type" => "sum", "query" => {"field" => "tag"}}]}}
+          @new_params = controller.send(:aggregations_params)
+        end  
+        it "script with params" do
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"aggregations" => [{"name" => "tag_price_stats", "type" => "sum", "query" => {"field" => "tag", "script" => "_value * conversion_rate", "params" => {"conversion_rate" => 1.2}}}]}}
+          @new_params = controller.send(:aggregations_params)
+        end
+      end 
+
+      context "value_count aggregations" do
+        it "field" do
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"aggregations" => [{"name" => "tag_price_stats", "type" => "value_count", "query" => {"field" => "tag"}}]}}
+          @new_params = controller.send(:aggregations_params)
+        end  
+        it "script with params" do
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"aggregations" => [{"name" => "tag_price_stats", "type" => "value_count", "query" => {"field" => "tag", "script" => "_value * conversion_rate", "params" => {"conversion_rate" => 1.2}}}]}}
+          @new_params = controller.send(:aggregations_params)
+        end
+      end
+
+      context "stats aggregations" do
+        it "field" do
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"aggregations" => [{"name" => "tag_price_stats", "type" => "stats", "query" => {"field" => "tag"}}]}}
+          @new_params = controller.send(:aggregations_params)
+        end  
+        it "script with params" do
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"aggregations" => [{"name" => "tag_price_stats", "type" => "stats", "query" => {"field" => "tag", "script" => "_value * conversion_rate", "params" => {"conversion_rate" => 1.2}}}]}}
+          @new_params = controller.send(:aggregations_params)
+        end
+      end
+
+      context "extended_stats aggregations" do
+        it "field" do
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"aggregations" => [{"name" => "tag_price_stats", "type" => "extended_stats", "query" => {"field" => "tag"}}]}}
+          @new_params = controller.send(:aggregations_params)
+        end  
+        it "script with params" do
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"aggregations" => [{"name" => "tag_price_stats", "type" => "extended_stats", "query" => {"field" => "tag", "script" => "_value * conversion_rate", "params" => {"conversion_rate" => 1.2}}}]}}
+          @new_params = controller.send(:aggregations_params)
+        end
+      end      
+
+
+      context "terms aggregation" do
         it "ordering" do
-          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {  }}, :facets => [{ "name" => "tag", "type" => "terms", "query" => {"field" => "tag","size" => 10, "order" => "term"} }]}}
-          @new_params = controller.send(:facets_params)
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {  }}, :aggregations => [{ "name" => "tag", "type" => "terms", "query" => {"field" => "tag","size" => 10, "order" => {"_count" => "asc"}, "min_doc_count" => 10, "execution_hint" =>  "map"} }]}}
+          @new_params = controller.send(:aggregations_params)
         end
-        it "all terms" do
-          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {  }}, :facets => [{  "name" => "tag", "type" => "terms", "query" => {"field" => "tag","all_terms" => true} }]}}
-          @new_params = controller.send(:facets_params)
+        it "including and excluding terms" do
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {  }}, :aggregations => [{  "name" => "tag", "type" => "terms", "query" => { "field" => "tag", "include" => "water_.*", "exclude" => ".*sport.*"} }]}}
+          @new_params = controller.send(:aggregations_params)
         end
-        it "excluding terms" do
-          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {  }}, :facets => [{  "name" => "tag", "type" => "terms", "query" => { "field" => "tag","exclude" => ["term1", "term2"]} }]}}
-          @new_params = controller.send(:facets_params)
-        end
-        it "regex" do
-          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {  }}, :facets => [{  "name" => "tag", "type" => "terms", "query" => {"field" => "tag","regex" => "_regex expression here_", "regex_flags" => "DOTALL"}} ]}}
-          @new_params = controller.send(:facets_params)
+        it "complex including and excluding" do
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {  }}, :aggregations => [{  "name" => "tag", "type" => "terms", "query" => {"field" => "tag","include" => {"pattern" => ".*sport.*", "flags" => "CANON_EQ|CASE_INSENSITIVE"}, "exclude" => {"pattern" => "water_.*", "flags" => "CANON_EQ|CASE_INSENSITIVE"}}}]}}
+          @new_params = controller.send(:aggregations_params)
         end  
         it "term scripts" do
-          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {  }}, :facets => [{  "name" => "tag", "type" => "terms", "query" => {"field" => "tag","size" => 10, "script" => "term + 'aaa'"}} ]}}
-          @new_params = controller.send(:facets_params)
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {  }}, :aggregations => [{  "name" => "tag", "type" => "terms", "query" => {"field" => "tag","size" => 10, "script" => "term + 'aaa'"}} ]}}
+          @new_params = controller.send(:aggregations_params)
         end
-        it "multi fields" do
-          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {  }}, :facets => [{  "name" => "tag", "type" => "terms", "query" => {"fields" => ["tag1", "tag2"],"size" => 10}} ]}}
-          @new_params = controller.send(:facets_params)
-        end
-
         it "script with params" do
-          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"facets" => [{"name" => "stat1", "type" => "terms", "query" =>  {"script" => "(doc['value1'].value + doc['num2'].value) * factor", "params" => {"factor" => 5}}}]}}
-          @new_params = controller.send(:facets_params)
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"aggregations" => [{"name" => "stat1", "type" => "terms", "query" =>  {"script" => "(doc['value1'].value + doc['num2'].value) * factor", "params" => {"factor" => 5}}}]}}
+          @new_params = controller.send(:aggregations_params)
         end
         it "script" do
-          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"facets" => [{"name" => "stat1", "type" => "terms", "query" =>  {"script" => "doc['value1'].value + doc['num2'].value"}}]}}
-          @new_params = controller.send(:facets_params)
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"aggregations" => [{"name" => "stat1", "type" => "terms", "query" =>  {"script" => "doc['value1'].value + doc['num2'].value"}}]}}
+          @new_params = controller.send(:aggregations_params)
         end
       end
 
 
-      context "range facets" do
+      context "range aggregations" do
         it "default Option 1" do
-          controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"facets" => [{"name" => "range1", "type" => "range", "query" => {"field" => "field_name","ranges" => [{ "to" => 50 },{ "from" => 20, "to" => 70 },{ "from" => 70, "to" => 120 },{ "from" => 150 }]}}]}}
-          @new_params = controller.send(:facets_params)
+          controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"aggregations" => [{"name" => "range1", "type" => "range", "query" => {"field" => "field_name", "keyed" => true,"ranges" => [{ "to" => 50 },{ "from" => 20, "to" => 70 },{ "from" => 70, "to" => 120 },{ "from" => 150 }]}}]}}
+          @new_params = controller.send(:aggregations_params)
         end
 
         it "default Option 2" do
-          controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"facets" => [{"name" => "range1", "type" => "range", "query" => {"my_field" => [{ "to" => 50 },{ "from" => 20, "to" => 70 },{ "from" => 70, "to" => 120 },{ "from" => 150 }]}}]}}
-          @new_params = controller.send(:facets_params)
-        end
-
-        it "key and value" do
-          controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"facets" => [{"name" => "range1", "type" => "range", "query" => {"key_field" => "field_name","value_field" => "another_field_name","ranges" => [{ "to" => 50 },{ "from" => 20, "to" => 70 },{ "from" => 70, "to" => 120 },{ "from" => 150 }]}}]}}
-          @new_params = controller.send(:facets_params)
+          controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"aggregations" => [{"name" => "range1", "type" => "range", "query" => {"field" => "field_name", "ranges" => [{ "key" => "cheap", "to" => 50 },{ "key" => "average", "from" => 20, "to" => 70 },{ "key" => "expensive", "from" => 70}]}}]}}
+          @new_params = controller.send(:aggregations_params)
         end
 
         it "script key and value" do
-          controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"facets" => [{"name" => "range1", "type" => "range", "query" =>  {"key_script" => "doc['date'].date.minuteOfHour","value_script" => "doc['value1'].value","ranges" => [{ "to" => 50 },{ "from" => 20, "to" => 70 },{ "from" => 70, "to" => 120 },{ "from" => 150 }]}}]}}
-          @new_params = controller.send(:facets_params)
+          controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"aggregations" => [{"name" => "range1", "type" => "range", "query" =>  {"script" => "_value * conversion_rate", "field" => "price","params" => {"conversion_rate" => 0.8}, "ranges" => [{ "to" => 50 },{ "from" => 20, "to" => 70 },{ "from" => 70, "to" => 120 },{ "from" => 150 }]}}]}}
+          @new_params = controller.send(:aggregations_params)
         end
       end
-      context "histogram facets" do
+
+      context "histogram aggregations" do
         it "integer interval" do
-          controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"facets" => [{"name" => "histo1", "type" => "histogram", "query" => {"field" => "field_name","interval" => 100}}]}}
-          @new_params = controller.send(:facets_params)
-        end
-        it "key and value" do
-          controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"facets" => [{"name" => "histo1", "type" => "histogram", "query" =>{"key_field" => "key_field_name","value_field" => "value_field_name","interval" => 100}}]}}
-          @new_params = controller.send(:facets_params)
-        end
-        it "script key and value" do
-          controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"facets" => [{"name" => "histo1", "type" => "histogram", "query" => {"key_script" => "doc['date'].date.minuteOfHour","value_script" => "doc['value1'].value","interval" => 100}}]}}
-          @new_params = controller.send(:facets_params)
-        end
-        it "script key and value with params" do
-          controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"facets" => [{"name" => "histo1", "type" => "histogram", "query" => {"key_script" => "doc['date'].date.minuteOfHour*factor1","value_script" => "doc['value1'].value+factor2","params" => {"factor1" => 2, "factor2" => 3},"interval" => 100}}]}}
-          @new_params = controller.send(:facets_params)
+          controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"aggregations" => [{"name" => "histo1", "type" => "histogram", "query" => {"field" => "field_name","interval" => 100, "min_doc_count" => 0, "order" => {"_key" => "desc"}}}]}}
+          @new_params = controller.send(:aggregations_params)
         end
       end
-      context "date histogram facet" do
+
+
+      context "date histogram aggregation" do
         # ["year", "quarter", "month", "week", "day", "hour", "minute"]
         it "integer interval" do
-          controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"facets" => [{"name" => "histo1", "type" => "date_histogram", "query" => {"field" => "field_name","interval" => "day"}}]}}
-          @new_params = controller.send(:facets_params)
-        end
-        it "key and value" do
-          controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"facets" => [{"name" => "histo1", "type" => "date_histogram", "query" => {"key_field" => "timestamp","value_field" => "price","interval" => "day"}}]}}
-          @new_params = controller.send(:facets_params)
-        end
-        it "script key and value" do
-          controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"facets" => [{"name" => "histo1", "type" => "date_histogram", "query" => {"key_field" => "timestamp","value_script" => "doc['price'].value * 2","interval" => "day"}}]}}
-          @new_params = controller.send(:facets_params)
-        end
-      end
-      context "filter facets" do
-        it "filter" do
-          controller.params = {:report => { "name" => "invalid value","facets" => [{"name" => "wow_facet", "type" => "filter", "query" =>{"term" => { "tag" => "wow" }}}]}}
-          @new_params = controller.send(:facets_params)
-        end
-      end
-      context "query facets" do
-        it "query" do
-          controller.params = {:report => { "name" => "invalid value","facets" => [{"name" => "wow_facet", "type" => "query", "query" => {"term" => { "tag" => "wow" }}}]}}
-          @new_params = controller.send(:facets_params)
+          controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"aggregations" => [{"name" => "histo1", "type" => "date_histogram", "query" => {"field" => "field_name","interval" => "day", "format" => "yyyy-MM-dd"}}]}}
+          @new_params = controller.send(:aggregations_params)
         end
       end
 
-      context "terms stats facets" do
-        it "field" do
-          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"facets" => [{"name" => "tag_price_stats", "type" => "terms_stats", "query" => {"key_field" => "tag","value_field" => "price"}}]}}
-          @new_params = controller.send(:facets_params)
-        end  
-        # order => ["term", "reverse_term", "count", "reverse_count", "total", "reverse_total", "min", "reverse_min", "max", "reverse_max", "mean", "reverse_mean"]
-        it "field with size and order" do
-          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"facets" => [{"name" => "tag_price_stats", "type" => "terms_stats", "query" => {"key_field" => "tag","value_field" => "price", "size" => 10, "order" => "count"}}]}}
-          @new_params = controller.send(:facets_params)
+
+      context "filter aggregations" do
+        it "term filter" do
+          controller.params = {:report => { "name" => "invalid value","aggregations" => [{"name" => "wow_aggregation", "type" => "filter", "query" =>{"term" => { "tag" => "wow" }}}]}}
+          @new_params = controller.send(:aggregations_params)
         end
-        it "script with params" do
-          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"facets" => [{"name" => "tag_price_stats", "type" => "terms_stats", "query" => {"key_field" => "tag", "value_script" => "(doc['price'].value * factor", "params" => {"factor" => 5}}}]}}
-          @new_params = controller.send(:facets_params)
-        end
+
+        it "range filter" do
+          controller.params = {:report => { "name" => "invalid value","aggregations" => [{"name" => "wow_aggregation", "type" => "filter", "query" => {"range" => { "stock" => { "gt" => 0 } }}}]}}
+          @new_params = controller.send(:aggregations_params)
+        end        
       end
 
-      context "geo distance facets" do
+      context "geo distance aggregations" do
         it "lat lon as properties" do
-          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"facets" => [{"name" => "geo1", "type" => "geo_distance", "query" => {"pin.location" => {"lat" => 40,"lon" => -70},"ranges" => [{ "to" => 10 },{ "from" => 10, "to" => 20 },{ "from" => 20, "to" => 100 },{ "from" => 100 }]}}]}}
-          @new_params = controller.send(:facets_params)
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"aggregations" => [{"name" => "geo1", "type" => "geo_distance", "query" => {"field" => "location", "origin" => {"lat" => 40,"lon" => -70},"ranges" => [{ "to" => 10 },{ "from" => 10, "to" => 20 },{ "from" => 20, "to" => 100 },{ "from" => 100 }]}}]}}
+          @new_params = controller.send(:aggregations_params)
         end
         it "lat lon as array" do
-          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"facets" => [{"name" => "geo1", "type" => "geo_distance", "query" => {"pin.location" => [40,-70],"ranges" => [{ "to" => 10 },{ "from" => 10, "to" => 20 },{ "from" => 20, "to" => 100 },{ "from" => 100 }]}}]}}
-          @new_params = controller.send(:facets_params)
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"aggregations" => [{"name" => "geo1", "type" => "geo_distance", "query" => {"field" => "location", "origin" => [40,-70],"ranges" => [{ "to" => 10 },{ "from" => 10, "to" => 20 },{ "from" => 20, "to" => 100 },{ "from" => 100 }]}}]}}
+          @new_params = controller.send(:aggregations_params)
         end
 
         it "lat lon as string" do
           # or geo hash "drm3btev3e86"
-          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"facets" => [{"name" => "geo1", "type" => "geo_distance", "query" => {"pin.location" => "40,-70","ranges" => [{ "to" => 10 },{ "from" => 10, "to" => 20 },{ "from" => 20, "to" => 100 },{ "from" => 100 }]}}]}}
-          @new_params = controller.send(:facets_params)
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"aggregations" => [{"name" => "geo1", "type" => "geo_distance", "query" => {"field" => "location", "origin" => "40,-70","ranges" => [{ "to" => 10 },{ "from" => 10, "to" => 20 },{ "from" => 20, "to" => 100 },{ "from" => 100 }]}}]}}
+          @new_params = controller.send(:aggregations_params)
         end
 
         it "lat lon as string with unit and distance_type" do
           # "unit" => [mi, miles, in, inch, yd, yards, kilometers, mm, millimeters, cm, centimeters, m, meters]
           # "distance_type" => [arc (better precision), sloppy_arc (faster) or plane (fastest)]
-          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"facets" => [{"name" => "geo1", "type" => "geo_distance", "query" => {"pin.location" => "40,-70","ranges" => [{ "to" => 10 },{ "from" => 10, "to" => 20 },{ "from" => 20, "to" => 100 },{ "from" => 100 }], "unit" => "mi", "distance_type" => "arc"}}]}}
-          @new_params = controller.send(:facets_params)
-        end
-
-        it "lat lon as string with value_field" do
-          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"facets" => [{"name" => "geo1", "type" => "geo_distance", "query" => {"pin.location" => "40,-70", "value_field" => "value1", "ranges" => [{ "to" => 10 },{ "from" => 10, "to" => 20 },{ "from" => 20, "to" => 100 },{ "from" => 100 }]}}]}}
-          @new_params = controller.send(:facets_params)
-        end
-
-        it "lat lon as string with value_script" do
-          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"facets" => [{"name" => "geo1", "type" => "geo_distance", "query" => {"pin.location" => "40,-70", "value_script" => "doc['value1'].value * factor","params" => {"factor" => 5}, "ranges" => [{ "to" => 10 },{ "from" => 10, "to" => 20 },{ "from" => 20, "to" => 100 },{ "from" => 100 }]}}]}}
-          @new_params = controller.send(:facets_params)
+          controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"aggregations" => [{"name" => "geo1", "type" => "geo_distance", "query" => {"field" => "location", "origin" => "40,-70","ranges" => [{ "to" => 10 },{ "from" => 10, "to" => 20 },{ "from" => 20, "to" => 100 },{ "from" => 100 }], "unit" => "mi", "distance_type" => "arc"}}]}}
+          @new_params = controller.send(:aggregations_params)
         end
         
       end      
     end
+
+
+
+
+
+
+
+
+    # describe ".aggregations_params" do
+    #   after(:each) do
+    #     controller.params[:report][:aggregations].map do |aggregation|
+    #       type = aggregation.delete("type")
+    #       aggregation["kind"] = type
+    #     end
+    #     @new_params.should == controller.params[:report][:aggregations]
+    #   end
+    #   context "terms aggregation" do
+    #     it "ordering" do
+    #       controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {  }}, :aggregations => [{ "name" => "tag", "type" => "terms", "query" => {"field" => "tag","size" => 10, "order" => "term"} }]}}
+    #       @new_params = controller.send(:aggregations_params)
+    #     end
+    #     it "all terms" do
+    #       controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {  }}, :aggregations => [{  "name" => "tag", "type" => "terms", "query" => {"field" => "tag","all_terms" => true} }]}}
+    #       @new_params = controller.send(:aggregations_params)
+    #     end
+    #     it "excluding terms" do
+    #       controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {  }}, :aggregations => [{  "name" => "tag", "type" => "terms", "query" => { "field" => "tag","exclude" => ["term1", "term2"]} }]}}
+    #       @new_params = controller.send(:aggregations_params)
+    #     end
+    #     it "regex" do
+    #       controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {  }}, :aggregations => [{  "name" => "tag", "type" => "terms", "query" => {"field" => "tag","regex" => "_regex expression here_", "regex_flags" => "DOTALL"}} ]}}
+    #       @new_params = controller.send(:aggregations_params)
+    #     end  
+    #     it "term scripts" do
+    #       controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {  }}, :aggregations => [{  "name" => "tag", "type" => "terms", "query" => {"field" => "tag","size" => 10, "script" => "term + 'aaa'"}} ]}}
+    #       @new_params = controller.send(:aggregations_params)
+    #     end
+    #     it "multi fields" do
+    #       controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {  }}, :aggregations => [{  "name" => "tag", "type" => "terms", "query" => {"fields" => ["tag1", "tag2"],"size" => 10}} ]}}
+    #       @new_params = controller.send(:aggregations_params)
+    #     end
+
+    #     it "script with params" do
+    #       controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"aggregations" => [{"name" => "stat1", "type" => "terms", "query" =>  {"script" => "(doc['value1'].value + doc['num2'].value) * factor", "params" => {"factor" => 5}}}]}}
+    #       @new_params = controller.send(:aggregations_params)
+    #     end
+    #     it "script" do
+    #       controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"aggregations" => [{"name" => "stat1", "type" => "terms", "query" =>  {"script" => "doc['value1'].value + doc['num2'].value"}}]}}
+    #       @new_params = controller.send(:aggregations_params)
+    #     end
+    #   end
+
+
+    #   context "range aggregations" do
+    #     it "default Option 1" do
+    #       controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"aggregations" => [{"name" => "range1", "type" => "range", "query" => {"field" => "field_name","ranges" => [{ "to" => 50 },{ "from" => 20, "to" => 70 },{ "from" => 70, "to" => 120 },{ "from" => 150 }]}}]}}
+    #       @new_params = controller.send(:aggregations_params)
+    #     end
+
+    #     it "default Option 2" do
+    #       controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"aggregations" => [{"name" => "range1", "type" => "range", "query" => {"my_field" => [{ "to" => 50 },{ "from" => 20, "to" => 70 },{ "from" => 70, "to" => 120 },{ "from" => 150 }]}}]}}
+    #       @new_params = controller.send(:aggregations_params)
+    #     end
+
+    #     it "key and value" do
+    #       controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"aggregations" => [{"name" => "range1", "type" => "range", "query" => {"key_field" => "field_name","value_field" => "another_field_name","ranges" => [{ "to" => 50 },{ "from" => 20, "to" => 70 },{ "from" => 70, "to" => 120 },{ "from" => 150 }]}}]}}
+    #       @new_params = controller.send(:aggregations_params)
+    #     end
+
+    #     it "script key and value" do
+    #       controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"aggregations" => [{"name" => "range1", "type" => "range", "query" =>  {"key_script" => "doc['date'].date.minuteOfHour","value_script" => "doc['value1'].value","ranges" => [{ "to" => 50 },{ "from" => 20, "to" => 70 },{ "from" => 70, "to" => 120 },{ "from" => 150 }]}}]}}
+    #       @new_params = controller.send(:aggregations_params)
+    #     end
+    #   end
+    #   context "histogram aggregations" do
+    #     it "integer interval" do
+    #       controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"aggregations" => [{"name" => "histo1", "type" => "histogram", "query" => {"field" => "field_name","interval" => 100}}]}}
+    #       @new_params = controller.send(:aggregations_params)
+    #     end
+    #     it "key and value" do
+    #       controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"aggregations" => [{"name" => "histo1", "type" => "histogram", "query" =>{"key_field" => "key_field_name","value_field" => "value_field_name","interval" => 100}}]}}
+    #       @new_params = controller.send(:aggregations_params)
+    #     end
+    #     it "script key and value" do
+    #       controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"aggregations" => [{"name" => "histo1", "type" => "histogram", "query" => {"key_script" => "doc['date'].date.minuteOfHour","value_script" => "doc['value1'].value","interval" => 100}}]}}
+    #       @new_params = controller.send(:aggregations_params)
+    #     end
+    #     it "script key and value with params" do
+    #       controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"aggregations" => [{"name" => "histo1", "type" => "histogram", "query" => {"key_script" => "doc['date'].date.minuteOfHour*factor1","value_script" => "doc['value1'].value+factor2","params" => {"factor1" => 2, "factor2" => 3},"interval" => 100}}]}}
+    #       @new_params = controller.send(:aggregations_params)
+    #     end
+    #   end
+    #   context "date histogram aggregation" do
+    #     # ["year", "quarter", "month", "week", "day", "hour", "minute"]
+    #     it "integer interval" do
+    #       controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"aggregations" => [{"name" => "histo1", "type" => "date_histogram", "query" => {"field" => "field_name","interval" => "day"}}]}}
+    #       @new_params = controller.send(:aggregations_params)
+    #     end
+    #     it "key and value" do
+    #       controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"aggregations" => [{"name" => "histo1", "type" => "date_histogram", "query" => {"key_field" => "timestamp","value_field" => "price","interval" => "day"}}]}}
+    #       @new_params = controller.send(:aggregations_params)
+    #     end
+    #     it "script key and value" do
+    #       controller.params = {:report => { "name" => "invalid value",  "query" => {"match_all" => {}},"aggregations" => [{"name" => "histo1", "type" => "date_histogram", "query" => {"key_field" => "timestamp","value_script" => "doc['price'].value * 2","interval" => "day"}}]}}
+    #       @new_params = controller.send(:aggregations_params)
+    #     end
+    #   end
+    #   context "filter aggregations" do
+    #     it "filter" do
+    #       controller.params = {:report => { "name" => "invalid value","aggregations" => [{"name" => "wow_aggregation", "type" => "filter", "query" =>{"term" => { "tag" => "wow" }}}]}}
+    #       @new_params = controller.send(:aggregations_params)
+    #     end
+    #   end
+    #   context "query aggregations" do
+    #     it "query" do
+    #       controller.params = {:report => { "name" => "invalid value","aggregations" => [{"name" => "wow_aggregation", "type" => "query", "query" => {"term" => { "tag" => "wow" }}}]}}
+    #       @new_params = controller.send(:aggregations_params)
+    #     end
+    #   end
+
+    #   context "terms stats aggregations" do
+    #     it "field" do
+    #       controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"aggregations" => [{"name" => "tag_price_stats", "type" => "terms_stats", "query" => {"key_field" => "tag","value_field" => "price"}}]}}
+    #       @new_params = controller.send(:aggregations_params)
+    #     end  
+    #     # order => ["term", "reverse_term", "count", "reverse_count", "total", "reverse_total", "min", "reverse_min", "max", "reverse_max", "mean", "reverse_mean"]
+    #     it "field with size and order" do
+    #       controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"aggregations" => [{"name" => "tag_price_stats", "type" => "terms_stats", "query" => {"key_field" => "tag","value_field" => "price", "size" => 10, "order" => "count"}}]}}
+    #       @new_params = controller.send(:aggregations_params)
+    #     end
+    #     it "script with params" do
+    #       controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"aggregations" => [{"name" => "tag_price_stats", "type" => "terms_stats", "query" => {"key_field" => "tag", "value_script" => "(doc['price'].value * factor", "params" => {"factor" => 5}}}]}}
+    #       @new_params = controller.send(:aggregations_params)
+    #     end
+    #   end
+
+    #   context "geo distance aggregations" do
+    #     it "lat lon as properties" do
+    #       controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"aggregations" => [{"name" => "geo1", "type" => "geo_distance", "query" => {"pin.location" => {"lat" => 40,"lon" => -70},"ranges" => [{ "to" => 10 },{ "from" => 10, "to" => 20 },{ "from" => 20, "to" => 100 },{ "from" => 100 }]}}]}}
+    #       @new_params = controller.send(:aggregations_params)
+    #     end
+    #     it "lat lon as array" do
+    #       controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"aggregations" => [{"name" => "geo1", "type" => "geo_distance", "query" => {"pin.location" => [40,-70],"ranges" => [{ "to" => 10 },{ "from" => 10, "to" => 20 },{ "from" => 20, "to" => 100 },{ "from" => 100 }]}}]}}
+    #       @new_params = controller.send(:aggregations_params)
+    #     end
+
+    #     it "lat lon as string" do
+    #       # or geo hash "drm3btev3e86"
+    #       controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"aggregations" => [{"name" => "geo1", "type" => "geo_distance", "query" => {"pin.location" => "40,-70","ranges" => [{ "to" => 10 },{ "from" => 10, "to" => 20 },{ "from" => 20, "to" => 100 },{ "from" => 100 }]}}]}}
+    #       @new_params = controller.send(:aggregations_params)
+    #     end
+
+    #     it "lat lon as string with unit and distance_type" do
+    #       # "unit" => [mi, miles, in, inch, yd, yards, kilometers, mm, millimeters, cm, centimeters, m, meters]
+    #       # "distance_type" => [arc (better precision), sloppy_arc (faster) or plane (fastest)]
+    #       controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"aggregations" => [{"name" => "geo1", "type" => "geo_distance", "query" => {"pin.location" => "40,-70","ranges" => [{ "to" => 10 },{ "from" => 10, "to" => 20 },{ "from" => 20, "to" => 100 },{ "from" => 100 }], "unit" => "mi", "distance_type" => "arc"}}]}}
+    #       @new_params = controller.send(:aggregations_params)
+    #     end
+
+    #     it "lat lon as string with value_field" do
+    #       controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"aggregations" => [{"name" => "geo1", "type" => "geo_distance", "query" => {"pin.location" => "40,-70", "value_field" => "value1", "ranges" => [{ "to" => 10 },{ "from" => 10, "to" => 20 },{ "from" => 20, "to" => 100 },{ "from" => 100 }]}}]}}
+    #       @new_params = controller.send(:aggregations_params)
+    #     end
+
+    #     it "lat lon as string with value_script" do
+    #       controller.params = {:report => { "name" => "invalid value", "query" => {"match_all" => {}},"aggregations" => [{"name" => "geo1", "type" => "geo_distance", "query" => {"pin.location" => "40,-70", "value_script" => "doc['value1'].value * factor","params" => {"factor" => 5}, "ranges" => [{ "to" => 10 },{ "from" => 10, "to" => 20 },{ "from" => 20, "to" => 100 },{ "from" => 100 }]}}]}}
+    #       @new_params = controller.send(:aggregations_params)
+    #     end
+        
+    #   end      
+    # end
 
 
   end

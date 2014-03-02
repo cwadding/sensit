@@ -78,7 +78,14 @@ module Sensit
       end
 
       def feed_params(fields)
-        params.require(:feed).permit(:at, :tz, :data => fields.map(&:key))
+        if fields.empty?
+          feed_hash = params.require(:feed).permit(:at, :tz).tap do |whitelisted|
+            whitelisted[:data] =  params[:feed][:data]
+          end
+        else
+          feed_hash = params.require(:feed).permit(:at, :tz, :data => fields.map(&:key))
+        end
+        feed_hash.merge!(fields: fields)
       end
 
       def feeds_params(fields)

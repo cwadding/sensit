@@ -136,7 +136,7 @@ describe "POST sensit/feeds#create"  do
                      }
                   }
                end
-               it "returns a 201 status code", current:true do
+               it "returns a 201 status code" do
                   response = process_oauth_request(@access_grant,@topic, @params)
                   response.status.should == 201
                end

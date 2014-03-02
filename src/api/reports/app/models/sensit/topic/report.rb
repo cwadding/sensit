@@ -12,8 +12,9 @@ module Sensit
 
 	# validate :valid_query?
 	has_many :facets, class_name: "Sensit::Topic::Report::Facet", dependent: :destroy
+	has_many :aggregations, class_name: "Sensit::Topic::Report::Aggregation", dependent: :destroy
 
-	validates_associated :topic, :facets
+	validates_associated :topic, :aggregations
 
 	def total
 		results["hits"]["total"] || 0
@@ -41,7 +42,7 @@ private
 
 
 	def to_search_query
-		{index: elastic_index_name, type: elastic_type_name, body: {query: self.query, facets: facets.inject({}){|h, facet| h.merge!(facet.to_query)}}}
+		{index: elastic_index_name, type: elastic_type_name, body: {query: self.query, aggregations: aggregations.inject({}){|h, aggregation| h.merge!(aggregation.to_query)}}}
 	end
 
 	def self.elastic_client

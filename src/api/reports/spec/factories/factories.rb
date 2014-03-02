@@ -11,6 +11,17 @@ FactoryGirl.define do
     report
   end
 
+# Read about factories at https://github.com/thoughtbot/factory_girl
+
+  factory :aggregation, :class => Sensit::Topic::Report::Aggregation do
+    sequence :name do |n|
+      "Aggregation#{n}"
+    end
+    kind "terms"
+    query ({ :field => "value1"})
+    report
+  end
+
   factory :report, :class => Sensit::Topic::Report do
     sequence :name do |n|
       "Report#{n}"
@@ -19,7 +30,7 @@ FactoryGirl.define do
     topic
     after(:create) do |report, evaluator|
       key_arr = []
-      FactoryGirl.create(:facet, :report => report, name: "#{evaluator.name}facet")
+      FactoryGirl.create(:aggregation, :report => report, name: "#{evaluator.name}aggregation")
     end
   end
 

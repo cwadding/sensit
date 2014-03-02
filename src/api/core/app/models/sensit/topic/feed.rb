@@ -10,7 +10,7 @@ module Sensit
 	# include ElasticUniquenessValidator
   	define_model_callbacks :create, :update, :save, :destroy
 
-  	attr_accessor :at, :type, :index
+  	attr_accessor :at, :type, :index, :fields
 	attr_reader :errors, :id, :data
 
 	def initialize(params={})
@@ -19,6 +19,8 @@ module Sensit
     	@index = params.delete(:index)
     	t = params.delete(:at)
     	self.at = self.class.convert_to_time(t || Time.now)
+    	extracted_fields = params.delete(:fields)
+    	self.fields = extracted_fields.nil? ? (self.topic.nil? ? [] : topic.fields) : extracted_fields
     	tz = params.delete(:tz)
     	self.at = self.at.in_time_zone(tz) if self.at.present? && tz.present? && ::ActiveSupport::TimeZone.zones_map.keys.include?(tz)
     	super(params)
@@ -28,7 +30,8 @@ module Sensit
 
 	validates :index, presence: true
 	validates :type, presence: true
-	validates :at, presence: true, elastic_uniqueness: {scope: [:topic_id]}
+	# validates :at, presence: true, elastic_uniqueness: {scope: [:topic_id]}
+	validates :at, presence: true
 	validates :data, presence: true
 
 	def data=(value)
@@ -37,12 +40,14 @@ module Sensit
 
   	def self.find(arguments = {})
 		result = elastic_client.get arguments
-		result.nil? ? nil : map_results(result)
+		fields = Topic::Field.joins(:topic).where(sensit_topics:{slug: arguments[:type]}).load if arguments[:type]
+		result.nil? ? nil : map_results(result, fields)
   	end
 
 	def self.search(arguments = {})
 		results = elastic_client.search arguments
-		results["hits"]["hits"].inject([]) {|arr, result| arr << map_results(result)}
+		fields = Topic::Field.joins(:topic).where(sensit_topics:{slug: arguments[:type]}).load if arguments[:type]
+		results["hits"]["hits"].inject([]) {|arr, result| arr << map_results(result, fields)}
 	end
 
 	def self.percolate(arguments = {})
@@ -62,7 +67,7 @@ module Sensit
 
 	def self.destroy(arguments = {})
 		id = arguments.delete(:id)
-		feed = self.new(arguments)
+		feed = self.new(arguments.merge!(fields: []))
 		feed.instance_variable_set(:@id, id)
 		feed.instance_variable_set(:@new_record, false)
 		feed.destroy
@@ -85,7 +90,7 @@ module Sensit
 	def destroy
 		raise ::Elasticsearch::Transport::Transport::Errors::BadRequest.new if new_record? || id.nil?
 		run_callbacks :destroy do
-			elastic_client.delete({index: self.index, type: self.type, id: self.id})
+			elastic_client.delete({index: self.index, type: self.type, id: self.id}) #if elastic_client.exists({index: self.index, id: self.id})
 		end
 	end
 
@@ -102,7 +107,6 @@ module Sensit
 		self.type = record.id
 	end
 
-  	delegate :fields, :to => :topic, :prefix => false
 	delegate :name, :to => :topic, :prefix => true
 	delegate :node_name, :to => :topic, :prefix => false
 	delegate :ttl, :to => :topic, :prefix => false
@@ -129,12 +133,12 @@ module Sensit
 
 private
 
-	def self.map_results(result)
+	def self.map_results(result, fields)
 		t = result["_source"].delete("at")
 		tz = result["_source"].delete("tz")
 		at = Time.at(t) unless t.nil?
 		body = result["_source"]
-		obj = self.new({index: result["_index"], type: result["_type"], at: at, tz: tz, data: body})
+		obj = self.new({index: result["_index"], type: result["_type"], at: at, tz: tz, data: body, fields:fields})
 		obj.instance_variable_set(:@id, result["_id"])
 		obj.instance_variable_set(:@new_record, false)
 		obj
@@ -171,7 +175,7 @@ private
 		run_callbacks :create do
 			if topic && !topic.is_initialized
 				data.each_pair do |key, value|
-					field = topic.fields.find_or_initialize_by(key: key.to_s.parameterize)
+					field = self.fields.find_or_initialize_by(key: key.to_s.parameterize)
 					field.name = key.to_s if field.name.blank?
 					field.datatype = field.guess_datatype(value) if field.datatype.nil?
 					field.save
@@ -200,9 +204,9 @@ private
 	end
 
 	def convert_rawdata_to_datatype
-		fields.each do |field|
+		self.fields.load.each do |field|
 			self.data[field.key] = Topic::Field.convert(self.data[field.key], field.datatype) if self.data.has_key?(field.key)
-		end unless topic.nil? || fields.empty?
+		end unless topic.nil? #|| fields.empty?
 	end
 
   end

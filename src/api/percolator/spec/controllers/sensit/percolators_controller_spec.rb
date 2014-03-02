@@ -139,7 +139,7 @@ module Sensit
         before(:each) do
           @percolator = ::Sensit::Topic::Percolator.create valid_attributes(user_id: @user.name, name:9, topic_id: @topic.to_param)
         end
-        it "destroys the requested percolator", current: true do
+        it "destroys the requested percolator" do
           client = ENV['ELASTICSEARCH_URL'] ? ::Elasticsearch::Client.new(url: ENV['ELASTICSEARCH_URL']) : ::Elasticsearch::Client.new
           client.indices.refresh(index: ELASTIC_INDEX_NAME.parameterize)
           expect {

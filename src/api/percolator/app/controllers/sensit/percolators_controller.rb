@@ -74,7 +74,7 @@ module Sensit
 
     def percolator_params
         params.require(:percolator).permit(:name).tap do |whitelisted|
-          whitelisted[:query] = params[:percolator][:query] if params[:percolator].has_key?(:query)
+          whitelisted[:query] = params[:percolator][:query]
         end
 
       # (:id, 

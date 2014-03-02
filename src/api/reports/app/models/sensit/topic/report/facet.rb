@@ -6,7 +6,7 @@ module Sensit
   	belongs_to :report
   	serialize :query, Hash
 
-    FACET_TYPES = %w[terms range histogram histogram date_histogram filter query statistical terms_stats geo_distance]
+    FACET_TYPES = %w[terms range histogram date_histogram filter query statistical terms_stats geo_distance]
 
   	validates :name, presence: true, uniqueness: {scope: :report_id}
     validates :kind, presence: true, inclusion: { in: FACET_TYPES, message: "%{value} is not a valid facet type" }

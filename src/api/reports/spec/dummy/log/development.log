@@ -489,3 +489,69 @@ Migrating to CreateSensitTopicReportFacets (20140209185629)
   [1m[36mSQL (0.1ms)[0m  [1mINSERT INTO "schema_migrations" ("version") VALUES (?)[0m  [["version", "20140209185629"]]
   [1m[35m (1.5ms)[0m  commit transaction
   [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.3ms)[0m  [1mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+Migrating to CreateSensitTopicReportAggregations (20140228200209)
+  [1m[35m (0.1ms)[0m  begin transaction
+  [1m[36m (0.5ms)[0m  [1mCREATE TABLE "sensit_topic_report_aggregations" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "report_id" integer, "name" varchar(255), "kind" varchar(255), "ancestry" varchar(255), "created_at" datetime, "updated_at" datetime) [0m
+  [1m[35m (0.1ms)[0m  CREATE INDEX "index_sensit_topic_report_aggregations_on_ancestry" ON "sensit_topic_report_aggregations" ("ancestry")
+  [1m[36m (0.1ms)[0m  [1mCREATE INDEX "index_sensit_topic_report_aggregations_on_report_id" ON "sensit_topic_report_aggregations" ("report_id")[0m
+  [1m[35mSQL (0.2ms)[0m  INSERT INTO "schema_migrations" ("version") VALUES (?)  [["version", "20140228200209"]]
+  [1m[36m (3.2ms)[0m  [1mcommit transaction[0m
+  [1m[35mActiveRecord::SchemaMigration Load (0.1ms)[0m  SELECT "schema_migrations".* FROM "schema_migrations"
+  [1m[36mActiveRecord::SchemaMigration Load (0.5ms)[0m  [1mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+  [1m[35mActiveRecord::SchemaMigration Load (0.1ms)[0m  SELECT "schema_migrations".* FROM "schema_migrations"
+  [1m[36m (12.2ms)[0m  [1mCREATE TABLE "schema_migrations" ("version" varchar(255) NOT NULL) [0m
+  [1m[35m (1.0ms)[0m  CREATE UNIQUE INDEX "unique_schema_migrations" ON "schema_migrations" ("version")
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1mSELECT "schema_migrations".* FROM "schema_migrations"[0m
+Migrating to DeviseCreateSensitUsers (20140209185620)
+  [1m[35m (0.1ms)[0m  begin transaction
+  [1m[36m (0.4ms)[0m  [1mCREATE TABLE "sensit_users" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "email" varchar(255) DEFAULT '' NOT NULL, "encrypted_password" varchar(255) DEFAULT '' NOT NULL, "reset_password_token" varchar(255), "reset_password_sent_at" datetime, "remember_created_at" datetime, "sign_in_count" integer DEFAULT 0 NOT NULL, "current_sign_in_at" datetime, "last_sign_in_at" datetime, "current_sign_in_ip" varchar(255), "last_sign_in_ip" varchar(255), "created_at" datetime, "updated_at" datetime) [0m
+  [1m[35m (0.8ms)[0m  CREATE UNIQUE INDEX "index_sensit_users_on_email" ON "sensit_users" ("email")
+  [1m[36m (0.1ms)[0m  [1mCREATE UNIQUE INDEX "index_sensit_users_on_reset_password_token" ON "sensit_users" ("reset_password_token")[0m
+  [1m[35mSQL (0.2ms)[0m  INSERT INTO "schema_migrations" ("version") VALUES (?)  [["version", "20140209185620"]]
+  [1m[36m (1.6ms)[0m  [1mcommit transaction[0m
+Migrating to CreateDoorkeeperTables (20140209185624)
+  [1m[35m (0.1ms)[0m  begin transaction
+  [1m[36m (0.5ms)[0m  [1mCREATE TABLE "oauth_applications" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar(255) NOT NULL, "uid" varchar(255) NOT NULL, "secret" varchar(255) NOT NULL, "redirect_uri" text NOT NULL, "created_at" datetime, "updated_at" datetime) [0m
+  [1m[35m (0.4ms)[0m  CREATE UNIQUE INDEX "index_oauth_applications_on_uid" ON "oauth_applications" ("uid")
+  [1m[36m (0.2ms)[0m  [1mCREATE TABLE "oauth_access_grants" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "resource_owner_id" integer NOT NULL, "application_id" integer NOT NULL, "token" varchar(255) NOT NULL, "expires_in" integer NOT NULL, "redirect_uri" text NOT NULL, "created_at" datetime NOT NULL, "revoked_at" datetime, "scopes" varchar(255)) [0m
+  [1m[35m (0.2ms)[0m  CREATE UNIQUE INDEX "index_oauth_access_grants_on_token" ON "oauth_access_grants" ("token")
+  [1m[36m (0.2ms)[0m  [1mCREATE TABLE "oauth_access_tokens" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "resource_owner_id" integer, "application_id" integer, "token" varchar(255) NOT NULL, "refresh_token" varchar(255), "expires_in" integer, "revoked_at" datetime, "created_at" datetime NOT NULL, "scopes" varchar(255)) [0m
+  [1m[35m (0.1ms)[0m  CREATE UNIQUE INDEX "index_oauth_access_tokens_on_token" ON "oauth_access_tokens" ("token")
+  [1m[36m (0.1ms)[0m  [1mCREATE INDEX "index_oauth_access_tokens_on_resource_owner_id" ON "oauth_access_tokens" ("resource_owner_id")[0m
+  [1m[35m (0.1ms)[0m  CREATE UNIQUE INDEX "index_oauth_access_tokens_on_refresh_token" ON "oauth_access_tokens" ("refresh_token")
+  [1m[36mSQL (0.2ms)[0m  [1mINSERT INTO "schema_migrations" ("version") VALUES (?)[0m  [["version", "20140209185624"]]
+  [1m[35m (1.2ms)[0m  commit transaction
+Migrating to CreateSensitTopics (20140209185625)
+  [1m[36m (0.1ms)[0m  [1mbegin transaction[0m
+  [1m[35m (0.3ms)[0m  CREATE TABLE "sensit_topics" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar(255), "description" varchar(255), "slug" varchar(255), "user_id" integer, "application_id" integer, "ttl" integer, "is_initialized" boolean, "created_at" datetime, "updated_at" datetime) 
+  [1m[36mSQL (0.1ms)[0m  [1mINSERT INTO "schema_migrations" ("version") VALUES (?)[0m  [["version", "20140209185625"]]
+  [1m[35m (1.3ms)[0m  commit transaction
+Migrating to CreateSensitTopicFields (20140209185626)
+  [1m[36m (0.1ms)[0m  [1mbegin transaction[0m
+  [1m[35m (0.4ms)[0m  CREATE TABLE "sensit_topic_fields" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar(255), "key" varchar(255), "unit_id" integer, "topic_id" integer, "datatype" varchar(255), "slug" varchar(255), "created_at" datetime, "updated_at" datetime) 
+  [1m[36mSQL (0.1ms)[0m  [1mINSERT INTO "schema_migrations" ("version") VALUES (?)[0m  [["version", "20140209185626"]]
+  [1m[35m (1.3ms)[0m  commit transaction
+Migrating to AddNameToSensitUsers (20140209185627)
+  [1m[36m (0.1ms)[0m  [1mbegin transaction[0m
+  [1m[35m (0.8ms)[0m  ALTER TABLE "sensit_users" ADD "name" varchar(255)
+  [1m[36mSQL (0.2ms)[0m  [1mINSERT INTO "schema_migrations" ("version") VALUES (?)[0m  [["version", "20140209185627"]]
+  [1m[35m (0.9ms)[0m  commit transaction
+Migrating to CreateSensitTopicReports (20140209185628)
+  [1m[36m (0.1ms)[0m  [1mbegin transaction[0m
+  [1m[35m (0.6ms)[0m  CREATE TABLE "sensit_topic_reports" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar(255), "query" text, "topic_id" integer, "slug" varchar(255), "created_at" datetime, "updated_at" datetime) 
+  [1m[36mSQL (0.2ms)[0m  [1mINSERT INTO "schema_migrations" ("version") VALUES (?)[0m  [["version", "20140209185628"]]
+  [1m[35m (1.9ms)[0m  commit transaction
+Migrating to CreateSensitTopicReportFacets (20140209185629)
+  [1m[36m (0.1ms)[0m  [1mbegin transaction[0m
+  [1m[35m (0.6ms)[0m  CREATE TABLE "sensit_topic_report_facets" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "name" varchar(255), "kind" varchar(255), "slug" varchar(255), "query" text, "report_id" integer, "created_at" datetime, "updated_at" datetime) 
+  [1m[36mSQL (0.2ms)[0m  [1mINSERT INTO "schema_migrations" ("version") VALUES (?)[0m  [["version", "20140209185629"]]
+  [1m[35m (1.2ms)[0m  commit transaction
+Migrating to CreateSensitTopicReportAggregations (20140228200209)
+  [1m[36m (0.1ms)[0m  [1mbegin transaction[0m
+  [1m[35m (0.4ms)[0m  CREATE TABLE "sensit_topic_report_aggregations" ("id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "report_id" integer, "name" varchar(255), "query" varchar(255), "kind" varchar(255), "ancestry" varchar(255), "created_at" datetime, "updated_at" datetime) 
+  [1m[36m (0.1ms)[0m  [1mCREATE INDEX "index_sensit_topic_report_aggregations_on_ancestry" ON "sensit_topic_report_aggregations" ("ancestry")[0m
+  [1m[35m (0.1ms)[0m  CREATE INDEX "index_sensit_topic_report_aggregations_on_report_id" ON "sensit_topic_report_aggregations" ("report_id")
+  [1m[36mSQL (0.1ms)[0m  [1mINSERT INTO "schema_migrations" ("version") VALUES (?)[0m  [["version", "20140228200209"]]
+  [1m[35m (36.2ms)[0m  commit transaction
+  [1m[36mActiveRecord::SchemaMigration Load (0.3ms)[0m  [1mSELECT "schema_migrations".* FROM "schema_migrations"[0m

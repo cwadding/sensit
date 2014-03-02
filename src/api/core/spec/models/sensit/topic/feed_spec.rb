@@ -120,8 +120,8 @@ module Sensit
 
 		it "returns an array of Feeds" do
 			@client.stub(:search).and_return(@results)
-			Topic::Feed.should_receive(:map_results).with(@result1).and_return(Topic::Feed.new)
-			Topic::Feed.should_receive(:map_results).with(@result2).and_return(Topic::Feed.new)
+			Topic::Feed.should_receive(:map_results).with(@result1, anything()).and_return(Topic::Feed.new)
+			Topic::Feed.should_receive(:map_results).with(@result2, anything()).and_return(Topic::Feed.new)
 
 			Topic::Feed.stub(:elastic_client).and_return(@client)
 
