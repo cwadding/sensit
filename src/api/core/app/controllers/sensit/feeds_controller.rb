@@ -25,7 +25,6 @@ module Sensit
         if params.has_key?(:feeds)
           # have an async option to avoid timeouts and just return immediately with the confirmation that it was received
           importer = Topic::Feed::Importer.new({index: elastic_index_name, type: elastic_type_name, :fields => topic.fields, :feeds => feeds_params(topic.fields)})
-          # debugger
           if importer.save
             @fields = topic.fields
             @feeds = importer.feeds

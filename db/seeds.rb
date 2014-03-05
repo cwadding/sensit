@@ -58,17 +58,21 @@ path_to_csv = File.dirname(__FILE__) + "/data/ILP_20131009_1801.csv"
 
 File.open('seed_errors.txt', 'w') do |f|
 
+
+	@administrator = Sensit::User.new(name: "Administrator", email: "cwadding@gmail.com", password: "password", password_confirmation: "password")
+
+
 	puts "Creating user: #{DEFAULT_USERNAME}..."
 	@user = Sensit::User.new(name: DEFAULT_USERNAME, email: DEFAULT_EMAIL, password: DEFAULT_PASSWORD, password_confirmation: DEFAULT_PASSWORD)
 	check_if_created(@user, f)
 
-	puts "Creating Default OAuth application"
-	@application = Doorkeeper::Application.new(name: DEFAULT_APP_NAME, redirect_uri: DEFAULT_APP_REDIRECT_URI)
-	check_if_created(@application, f)
+	# puts "Creating Default OAuth application"
+	# @application = Doorkeeper::Application.new(name: DEFAULT_APP_NAME, redirect_uri: DEFAULT_APP_REDIRECT_URI)
+	# check_if_created(@application, f)
 
-	puts "Creating OAuth Access Grant for super user"
-	@access_grant = Doorkeeper::AccessGrant.new(application: @application, resource_owner_id:@user.id, expires_in: 6000, redirect_uri: DEFAULT_APP_REDIRECT_URI, scopes: "read_any_data manage_any_data read_any_percolations manage_any_percolations read_any_reports manage_any_reports read_any_subscriptions manage_any_subscriptions")
-	check_if_created(@access_grant, f)
+	# puts "Creating OAuth Access Grant for super user"
+	# @access_grant = Doorkeeper::AccessGrant.new(application: @application, resource_owner_id:@user.id, expires_in: 6000, redirect_uri: DEFAULT_APP_REDIRECT_URI, scopes: "read_any_data manage_any_data read_any_percolations manage_any_percolations read_any_reports manage_any_reports read_any_subscriptions manage_any_subscriptions")
+	# check_if_created(@access_grant, f)
 
 	puts "Creating topic"
 	@topic = Sensit::Topic.new(name: "ILP", description: "ILP transactions", user: @user, application: @application)
@@ -220,6 +224,21 @@ File.open('seed_errors.txt', 'w') do |f|
 	check_if_created(netspend_amount_field, f)
 	fields << netspend_amount_field
 
+	report = @topic.reports.build({name: "CNG"})
+
+	aggregation1 = report.aggregations.build({name:"number_of_transactions_per_store",kind:"terms",query:{:field=>"Store_Num",size:1000}})
+
+	aggregation2 = report.aggregations.build({name:"new_customers",kind:"filter",query:{"term"=>{"Current_Cust_Type"=>"new"}},:aggregations=>[{name:"new_customers_at_max_loan",kind:"filter",query:{"term"=>{"LoanMax"=>"yes"}},:aggregations=>[{name:"associates_with_new_customers_at_max_loan",kind:"terms",query:{:field=>"Employee_Name",size:1000}}]},{name:"new_customers_adv_transactions",kind:"filter",query:{"term"=>{"Transaction_Type"=>"adv"}},:aggregations=>[{name:"associates_with_new_customers_with_adv_transactions",kind:"terms",query:{:field=>"Employee_Name",size:1000}}]},{name:"new_customers_in_default_status",kind:"filter",query:{"term"=>{"Transaction_Type"=>"def"}},:aggregations=>[{name:"associates_with_new_customers_in_default_status",kind:"terms",query:{:field=>"Employee_Name",size:1000},:aggregations=>[{name:"highest_loan_amount_by_associate_with_new_customers_in_default_status",kind:"max",query:{:field=>"Loan_Amt"}}]}]},{name:"associates_with_new_customers",kind:"terms",query:{:field=>"Employee_Name",size:1000}}]})
+
+	aggregation3 = report.aggregations.build({name:"voided_loans",kind:"filter",query:{"term"=>{"Void_ID"=>"v"}},:aggregations=>[{name:"associates_with_voided_loans",kind:"terms",query:{:field=>"Employee_Name",size:1000},:aggregations=>[{name:"store_numbers_for_associates_with_voided_loans",kind:"terms",query:{:field=>"Store_Num"}}]}]})
+
+	aggregation4 = report.aggregations.build({name:"reactivated_customers_in_default_status",kind:"filter", query:{"bool"=>{"must"=>["term"=>{"Current_Cust_Type"=>"reactivated"},"term"=>{"Transaction_Type"=>"def"},]}},:aggregations=>[{name:"associates_reactivated_customers_in_default_status",kind:"terms",query:{:field=>"Employee_Name",size:1000}}]})
+
+	aggregation5 = report.aggregations.build({name:"bankrupt_transactions",kind:"filter",query:{"term"=>{"Transaction_Type"=>"wob"}},:aggregations=>[{name:"associates_with_loans_in_bankruptcy_status",kind:"terms",query:{:field=>"Employee_Name",size:1000}}]})
+
+	check_if_created(report, f)
+
+	fields = @topic.fields
 	# open the csv
 	found_fields = false
 	field_map = {}

@@ -34,15 +34,14 @@ module Sensit
 		response["valid"]
 	end
 
+	def to_search_query
+		{index: elastic_index_name, type: elastic_type_name, body: {query: self.query, aggregations: aggregations.inject({}){|h, aggregation| h.merge!(aggregation.to_query)}}}
+	end
+
 private
 
 	def send_query
 		elastic_client.search(to_search_query.merge!(size: 0))
-	end
-
-
-	def to_search_query
-		{index: elastic_index_name, type: elastic_type_name, body: {query: self.query, aggregations: aggregations.inject({}){|h, aggregation| h.merge!(aggregation.to_query)}}}
 	end
 
 	def self.elastic_client

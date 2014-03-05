@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140221200038) do
+ActiveRecord::Schema.define(version: 20140302202908) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -112,6 +112,19 @@ ActiveRecord::Schema.define(version: 20140221200038) do
     t.datetime "updated_at"
   end
 
+  create_table "sensit_topic_report_aggregations", force: true do |t|
+    t.integer  "report_id"
+    t.string   "name"
+    t.string   "kind"
+    t.string   "ancestry"
+    t.string   "query"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "sensit_topic_report_aggregations", ["ancestry"], name: "index_sensit_topic_report_aggregations_on_ancestry", using: :btree
+  add_index "sensit_topic_report_aggregations", ["report_id"], name: "index_sensit_topic_report_aggregations_on_report_id", using: :btree
+
   create_table "sensit_topic_report_facets", force: true do |t|
     t.string   "name"
     t.string   "kind"
@@ -183,6 +196,8 @@ ActiveRecord::Schema.define(version: 20140221200038) do
   add_foreign_key "sensit_topic_fields", "sensit_topics", name: "sensit_topic_fields_topic_id_fk", column: "topic_id"
 
   add_foreign_key "sensit_topic_publications", "sensit_topics", name: "sensit_topic_publications_topic_id_fk", column: "topic_id"
+
+  add_foreign_key "sensit_topic_report_aggregations", "sensit_topic_reports", name: "sensit_report_aggregations_report_id_fk", column: "report_id"
 
   add_foreign_key "sensit_topic_report_facets", "sensit_topic_reports", name: "sensit_report_facets_report_id_fk", column: "report_id"
 

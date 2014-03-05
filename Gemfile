@@ -41,7 +41,7 @@ end
 # gem 'capistrano', group: :development
 
 # Use debugger
-gem 'debugger', group: [:development, :test]
+# gem 'debugger', group: [:development, :test]
 gem 'sensit_messenger', :path => "src/api/messenger"
 gem 'sensit_core', :path => "src/api/core"
 gem 'sensit_percolator', :path => "src/api/percolator"

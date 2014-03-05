@@ -7,11 +7,13 @@ Sensit::Application.routes.draw do
   mount Sensit::Percolator::Engine => "/"
   mount Sensit::Subscriptions::Engine => "/"
   mount Sensit::Publications::Engine => "/"
+  resources :topics
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 
   # You can have the root of your site routed with "root"
-  root :to => redirect('/index.html')
+  root :to => "topics#index"
+
   # root 'sensit/users#show'
 
   # Example of regular route:
