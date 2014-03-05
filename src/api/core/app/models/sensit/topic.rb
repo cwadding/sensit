@@ -19,7 +19,12 @@ module Sensit
         per = params[:per] || 10
         from = ((params[:page] || 1)-1) * per
         # Sort is not included right now because it causes an exception when there are no documents in the index
-        Topic::Feed.search({index: elastic_index_name, type: elastic_type_name, body: body, size: per, from: from})
+        begin
+        	Topic::Feed.search({index: elastic_index_name, type: elastic_type_name, body: body, size: per, from: from})
+		rescue Exception => exc
+			logger.error("Exception when trying to search for feeds: #{exc.message}")
+			[]
+		end        	
 	end
 
 

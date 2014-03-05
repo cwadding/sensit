@@ -59,7 +59,7 @@ path_to_csv = File.dirname(__FILE__) + "/data/ILP_20131009_1801.csv"
 File.open('seed_errors.txt', 'w') do |f|
 
 
-	@administrator = Sensit::User.new(name: "Administrator", email: "cwadding@gmail.com", password: "password", password_confirmation: "password")
+	@administrator = Sensit::User.create(name: "Administrator", email: "cwadding@gmail.com", password: "password", password_confirmation: "password")
 
 
 	puts "Creating user: #{DEFAULT_USERNAME}..."
