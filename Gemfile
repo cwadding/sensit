@@ -49,6 +49,8 @@ gem 'sensit_publications', :path => "src/api/publications"
 gem 'sensit_reports', :path => "src/api/reports"
 gem 'sensit_subscriptions', :path => "src/api/subscriptions"
 
+gem 'rails_12factor', group: :production
+
 gem "foreman"
 gem "puma"
 gem 'rack-cors', :require => 'rack/cors'
