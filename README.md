@@ -6,17 +6,20 @@
 Currently only tested with ruby MRI which is 2.1.0.
 
 ### ElasticSearch
-	On MacOSX (via homebrew)
-	1. `brew install elasticsearch`
+On MacOSX (via homebrew)
 
-	Make sure ElasticSeach is running with 
-	`elasticsearch -f -D es.config=/usr/local/opt/elasticsearch/config/elasticsearch.yml`
+	brew install elasticsearch
+
+Make sure ElasticSeach is running with 
+
+	elasticsearch -f -D es.config=/usr/local/opt/elasticsearch/config/elasticsearch.yml
 
 ### PostgreSQL
-	On MacOSX (via homebrew)
-	1. `brew install postgresql`
-	2. initdb /usr/local/var/postgres -E utf8
-	3. pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log start
+On MacOSX (via homebrew)
+
+	brew install postgresql
+	initdb /usr/local/var/postgres -E utf8
+	pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log start
 
 
 
@@ -32,7 +35,8 @@ Currently only tested with ruby MRI which is 2.1.0.
 ## Deployment
 There is currently a running instance on heroku as a demo at https://sensit.herokuapp.com/.
 There is also an instance of node-red with some sensit plugins for importing data into the server https://sensit-red.herokuapp.com/.
-	To deploy your own fork on to Heroku
+
+To deploy your own fork on to Heroku
 	```
 	heroku create my-sensit
 	git push heroku master
@@ -44,7 +48,7 @@ There is also an instance of node-red with some sensit plugins for importing dat
 
 [http://docs.sensit.apiary.io/](http://docs.sensit.apiary.io/)
 
-Client Libraries
+## Client Libraries
 
 node
 [https://github.com/cwadding/sensit-node](https://github.com/cwadding/sensit-node)
@@ -74,7 +78,7 @@ The main data abstractions are as follows:
 
 * Field: A topic has many fields and a field defines the column names and the datatypes. It is similar to columninfo and also stores the datatype
 
-( Feed: A topic also has many feeds which represents an event or a row of data at a particular time. The data in feed correspond to fields and their datatypes. Feed data is stored in elasticsearch while all other data is stored in a relational database.
+* Feed: A topic also has many feeds which represents an event or a row of data at a particular time. The data in feed correspond to fields and their datatypes. Feed data is stored in elasticsearch while all other data is stored in a relational database.
 
-###How to run the test suite
-	- Running all of the tests from the root directory is still a work in progress but you can currently run the tests in each of the directories of the individual components
+### How to run the test suite
+Running all of the tests from the root directory is still a work in progress but you can currently run the tests in each of the directories of the individual components
