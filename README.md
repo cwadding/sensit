@@ -65,15 +65,15 @@ To deploy your own fork on to Heroku
 
 * [node](https://github.com/cwadding/sensit-node)
 
-	npm install sensit-client
+	`npm install sensit-client`
 
 * [ruby](https://github.com/cwadding/sensit-ruby)
 
-	gem install sensit-client
+	`gem install sensit-client`
 
 * [python](https://github.com/cwadding/sensit-python)
 
-	pip install sensit-client
+	`pip install sensit-client`
 
 * [php](https://github.com/cwadding/sensit-php)
 
