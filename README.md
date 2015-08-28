@@ -80,5 +80,20 @@ The main data abstractions are as follows:
 
 * Feed: A topic also has many feeds which represents an event or a row of data at a particular time. The data in feed correspond to fields and their datatypes. Feed data is stored in elasticsearch while all other data is stored in a relational database.
 
+## Code Coverage Reports
+
+[Core API](http://cwadding.github.io/sensit/src/api/core/coverage/index.html#_AllFiles)
+
+[Reports API](http://cwadding.github.io/sensit/src/api/reports/coverage/index.html#_AllFiles)
+
+[Percolator API](http://cwadding.github.io/sensit/src/api/percolator/coverage/index.html#_AllFiles)
+
+[Publications API](http://cwadding.github.io/sensit/src/api/publications/coverage/index.html#_AllFiles)
+
+[Subscriptions API](http://cwadding.github.io/sensit/src/api/subscriptions/coverage/index.html#_AllFiles)
+
+[Sensit Messenger gem](http://cwadding.github.io/sensit/src/api/messenger/coverage/index.html#_AllFiles)
+
+
 ### How to run the test suite
 Running all of the tests from the root directory is still a work in progress but you can currently run the tests in each of the directories of the individual components
