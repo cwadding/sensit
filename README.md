@@ -81,24 +81,42 @@ php
 
 ## Contributing
 
-Sensit is organized into several rails engines to make the code more modular. Every major add-on feature is intended to be it's own gem while the core functionality is in the core gem (sensit_core). The UI gems are separated from the API gems.
-
-## Code Coverage Reports
+Sensit is organized into several rails engines to make the code more modular. Every major add-on feature is intended to be it's own gem while the core functionality is in the core gem (sensit_core). The following are the currently the main modules of Sensit along with links to the code coverage reports of the individual module.
 
 [Core API](http://cwadding.github.io/sensit/src/api/core/coverage/index.html#_AllFiles)
 The Core API represents the main data abstractions around Topics, Feeds, Fields, Users and Authentication. It provides a basic REST API for your imported data.
 
+The migrations and installation of the routes for the core api can be installed using a rails generator as follows:
+	
+	rails g sensit:core:install
+
 [Reports API](http://cwadding.github.io/sensit/src/api/reports/coverage/index.html#_AllFiles)
 The Reports API can be added to the core API to allow saving of specific [elasticsearch aggregation](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-aggregations.html) queries to a Topic. This makes for a more accessible way of reporting since the they can be refeered to by a single name and a simple GET request.
+
+The migrations and installation of the routes for the reports api can be installed using a rails generator as follows:
+	
+	rails g sensit:reports:install
 
 [Percolator API](http://cwadding.github.io/sensit/src/api/percolator/coverage/index.html#_AllFiles)
 This Percolator API can be added to the core API to allow access to specific [elasticsearch percolator queries](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-percolate.html) but with the OAuth2 application permissions and partitioning per user.
 
+There are no migrations for the percolator API but the routes for the percolator api can be installed using a rails generator as follows:
+	
+	rails g sensit:percolator:install
+
 [Subscriptions API](http://cwadding.github.io/sensit/src/api/subscriptions/coverage/index.html#_AllFiles)
 The Subscriptions API allows you to import data via a socket rather than just throught the REST API provided by Core API. You can choose your protocol the server to connect to and the topic to listen on for incoming data.
 
+The migrations and installation of the routes for the subscriptions api can be installed using a rails generator as follows:
+	
+	rails g sensit:subscriptions:install
+
 [Publications API](http://cwadding.github.io/sensit/src/api/publications/coverage/index.html#_AllFiles)
 The publications API allows you to broadcast data when a Percolator query is active. You can choose the protocol as well as the server to connect to and the topic name will be the name of your percolator query.
+
+The migrations and installation of the routes for the publications api can be installed using a rails generator as follows:
+	
+	rails g sensit:publications:install
 
 [Sensit Messenger gem](http://cwadding.github.io/sensit/src/api/messenger/coverage/index.html#_AllFiles)
 This is a simple library which creates an abstraction for communication of various protocols that are used by the Subscriptions and Publications API.
